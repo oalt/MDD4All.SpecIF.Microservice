@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Consul" Version="0.7.2.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MDD4All.SpecIF.DataModels\MDD4All.SpecIF.DataModels.csproj" />
+    <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.Contracts\MDD4All.SpecIF.DataProvider.Contracts.csproj" />
+    <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.WebAPI\MDD4All.SpecIF.DataProvider.WebAPI.csproj" />
+    <ProjectReference Include="..\MDD4All.SpecIF.ServiceDataProvider\MDD4All.SpecIF.ServiceDataProvider.csproj" />
+  </ItemGroup>
+
+</Project>

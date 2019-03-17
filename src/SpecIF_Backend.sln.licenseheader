@@ -1,0 +1,15 @@
+extensions: designer.cs generated.cs
+extensions: .cs .cpp .h
+/*
+ * Copyright (c) MDD4All.de, Dr. Oliver Alt
+ */
+extensions: .aspx .ascx
+<%-- 
+Copyright (c) MDD4All.de, Dr. Oliver Alt
+--%>
+extensions: .vb
+'Copyright (c) MDD4All.de, Dr. Oliver Alt
+extensions:  .xml .config .xsd
+<!--
+Copyright (c) MDD4All.de, Dr. Oliver Alt
+-->
