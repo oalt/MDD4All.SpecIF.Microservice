@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("MDD4All.MongoDB.DataAccess.Generic")]
 [assembly: AssemblyDescription("MongoDB data generic access abstraction layer")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("MDD4All.de")]
 [assembly: AssemblyProduct("MDD4All.MongoDB.DataAccess.Generic")]
-[assembly: AssemblyCopyright("Copyright MDD4All.de")]
+[assembly: AssemblyCopyright("© MDD4All.de")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
