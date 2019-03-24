@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("MDD4All.SpecIF.DataProvider.EA")]
 [assembly: AssemblyDescription("SpecIF Enterprise Architect data provider")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("MDD4All.de")]
 [assembly: AssemblyProduct("MDD4All.SpecIF.DataProvider.EA")]
 [assembly: AssemblyCopyright("© MDD4All.de")]
 [assembly: AssemblyTrademark("")]
