@@ -2,6 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Authors>MDD4All.de</Authors>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
