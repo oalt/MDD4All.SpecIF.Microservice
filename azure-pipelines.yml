@@ -66,17 +66,17 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
-#- task: NuGetCommand@2
-#  inputs:
-#    command: pack
-#    packagesToPack: '**/*.csproj'
-#    versioningScheme: byBuildNumber
-#    packDestination: '$(Build.ArtifactStagingDirectory)'
-
-- task: CopyFiles@2
+- task: NuGetCommand@2
   inputs:
-    contents: '**.*.nupkg'
-    targetFolder: '$(Build.ArtifactStagingDirectory)'
+    command: pack
+    packagesToPack: '**/*.csproj;!**/*Test.csproj'
+    versioningScheme: byBuildNumber
+    packDestination: '$(Build.ArtifactStagingDirectory)'
+
+#- task: CopyFiles@2
+#  inputs:
+#    contents: '**/*.nupkg'
+#    targetFolder: '$(Build.ArtifactStagingDirectory)'
 
 - task: PublishBuildArtifacts@1
   inputs:
