@@ -69,7 +69,7 @@ steps:
 - task: NuGetCommand@2
   inputs:
     command: pack
-    packagesToPack: '**/*.csproj'
+    packagesToPack: '**/*.nuspec'
     versioningScheme: byBuildNumber
     packDestination: '$(Build.ArtifactStagingDirectory)'
 
