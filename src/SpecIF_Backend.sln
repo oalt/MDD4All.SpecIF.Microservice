@@ -49,6 +49,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SpecIF.Converters.T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SpecIF.DataModels.Test", "MDD4All.SpecIF.DataModels.Test\MDD4All.SpecIF.DataModels.Test.csproj", "{3EA9BF0E-24CF-4CDE-82BA-860465DF65E8}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SpecIF.DataProvider.EA", "MDD4All.SpecIF.DataProvider.EA\MDD4All.SpecIF.DataProvider.EA.csproj", "{B2723CF2-CFC2-494F-B221-B1AF42575342}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -103,6 +105,10 @@ Global
 		{3EA9BF0E-24CF-4CDE-82BA-860465DF65E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3EA9BF0E-24CF-4CDE-82BA-860465DF65E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3EA9BF0E-24CF-4CDE-82BA-860465DF65E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2723CF2-CFC2-494F-B221-B1AF42575342}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2723CF2-CFC2-494F-B221-B1AF42575342}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2723CF2-CFC2-494F-B221-B1AF42575342}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2723CF2-CFC2-494F-B221-B1AF42575342}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -124,6 +130,7 @@ Global
 		{8D4A3336-9F5E-4516-B5A8-EA799B3F7183} = {7DC60D00-FA4B-4C26-B32F-25D27611923A}
 		{B30339F5-F959-449A-9636-44219FE6033E} = {EAB5FEEC-9DF7-48C7-9F0D-6C920E716F88}
 		{3EA9BF0E-24CF-4CDE-82BA-860465DF65E8} = {1126CA30-A652-4B5A-B162-42B9212B929D}
+		{B2723CF2-CFC2-494F-B221-B1AF42575342} = {7DC60D00-FA4B-4C26-B32F-25D27611923A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C8F9327E-C222-4E00-A62F-20527B230190}

@@ -11,6 +11,21 @@ namespace MDD4All.SpecIF.DataModels
 	[JsonConverter(typeof(KeyConverter))]
 	public class Key : SpecIfElement
 	{
+		public Key()
+		{
+		}
+
+		public Key(string id)
+		{
+			ID = id;
+			Revision = 0;
+		}
+
+		public Key(string id, int revision) : this(id)
+		{
+			Revision = revision;
+		}
+
 		[JsonProperty(PropertyName = "id")]
 		[BsonElement("id")]
 		public string ID { get; set; }
