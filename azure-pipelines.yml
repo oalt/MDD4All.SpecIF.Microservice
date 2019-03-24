@@ -74,7 +74,7 @@ steps:
     versioningScheme: byBuildNumber
     packDestination: '$(Build.ArtifactStagingDirectory)'
     configuration: '$(buildConfiguration)'
-    buildProperties: 'AssemblyVersion=$(build.buildnumber);AssemblyFileVersion=$(build.buildnumber)'
+    buildProperties: 'p:AssemblyVersion=$(build.buildnumber);p:AssemblyFileVersion=$(build.buildnumber)'
 
 - task: PublishBuildArtifacts@1
   inputs:
