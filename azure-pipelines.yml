@@ -70,7 +70,7 @@ steps:
 - task: NuGetCommand@2
   inputs:
     command: pack
-    packagesToPack: '**/*.csproj;!**/*Test.csproj'
+    packagesToPack: '**/*.csproj;!**/*Test.csproj;!**/*Microservice*.csproj'
     versioningScheme: byBuildNumber
     packDestination: '$(Build.ArtifactStagingDirectory)'
     configuration: '$(buildConfiguration)'

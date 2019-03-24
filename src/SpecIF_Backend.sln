@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.271
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1_Converters", "1_Converters", "{7D0FA414-B3D2-4264-A91F-EAA551CA5A5D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2_Converters", "2_Converters", "{7D0FA414-B3D2-4264-A91F-EAA551CA5A5D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2_DataProviders", "2_DataProviders", "{7DC60D00-FA4B-4C26-B32F-25D27611923A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3_DataProviders", "3_DataProviders", "{7DC60D00-FA4B-4C26-B32F-25D27611923A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3_DataAccess", "3_DataAccess", "{510CDA2A-99A0-4003-9F18-D255DAC52333}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4_DataAccess", "4_DataAccess", "{510CDA2A-99A0-4003-9F18-D255DAC52333}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4_DataModels", "4_DataModels", "{B5974E23-6F5A-4D50-AE40-B5A8F74F950C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5_DataModels", "5_DataModels", "{B5974E23-6F5A-4D50-AE40-B5A8F74F950C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{EAB5FEEC-9DF7-48C7-9F0D-6C920E716F88}"
 EndProject
@@ -50,6 +50,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SpecIF.DataModels.Test", "MDD4All.SpecIF.DataModels.Test\MDD4All.SpecIF.DataModels.Test.csproj", "{3EA9BF0E-24CF-4CDE-82BA-860465DF65E8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SpecIF.DataProvider.EA", "MDD4All.SpecIF.DataProvider.EA\MDD4All.SpecIF.DataProvider.EA.csproj", "{B2723CF2-CFC2-494F-B221-B1AF42575342}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1_Microservices", "1_Microservices", "{A925129B-2A55-4DBA-8B2A-44BEB40F89EF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SpecIf.Microservice", "MDD4All.SpecIf.Microservice\MDD4All.SpecIf.Microservice.csproj", "{11635C10-13E7-4DF4-84D0-6ACAE799D8C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -109,6 +113,10 @@ Global
 		{B2723CF2-CFC2-494F-B221-B1AF42575342}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2723CF2-CFC2-494F-B221-B1AF42575342}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2723CF2-CFC2-494F-B221-B1AF42575342}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11635C10-13E7-4DF4-84D0-6ACAE799D8C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11635C10-13E7-4DF4-84D0-6ACAE799D8C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11635C10-13E7-4DF4-84D0-6ACAE799D8C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11635C10-13E7-4DF4-84D0-6ACAE799D8C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -131,6 +139,7 @@ Global
 		{B30339F5-F959-449A-9636-44219FE6033E} = {EAB5FEEC-9DF7-48C7-9F0D-6C920E716F88}
 		{3EA9BF0E-24CF-4CDE-82BA-860465DF65E8} = {1126CA30-A652-4B5A-B162-42B9212B929D}
 		{B2723CF2-CFC2-494F-B221-B1AF42575342} = {7DC60D00-FA4B-4C26-B32F-25D27611923A}
+		{11635C10-13E7-4DF4-84D0-6ACAE799D8C5} = {A925129B-2A55-4DBA-8B2A-44BEB40F89EF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C8F9327E-C222-4E00-A62F-20527B230190}

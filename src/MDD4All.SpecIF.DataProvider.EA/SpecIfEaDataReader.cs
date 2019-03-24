@@ -1,4 +1,7 @@
-﻿using MDD4All.SpecIF.DataModels;
+﻿/*
+ * Copyright (c) MDD4All.de, Dr. Oliver Alt
+ */
+using MDD4All.SpecIF.DataModels;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using System;
 using System.Collections.Generic;
