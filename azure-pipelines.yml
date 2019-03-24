@@ -29,6 +29,8 @@ steps:
     @echo ##vso[build.updatebuildnumber]$(versionToBuild).$(build.buildnumber)
 
 - task: NuGetToolInstaller@0
+  inputs:
+    versionSpec: '4.9.1'
 
 - task: NuGetCommand@2
   inputs:
