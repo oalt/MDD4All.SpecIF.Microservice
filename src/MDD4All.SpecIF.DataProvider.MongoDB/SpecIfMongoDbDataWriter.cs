@@ -17,7 +17,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
 		private MongoDBDataAccessor<Resource> _resourceMongoDbAccessor;
 		private MongoDBDataAccessor<Statement> _statementMongoDbAccessor;
-		private MongoDBDataAccessor<Hierarchy> _hierarchyMongoDbAccessor;
+		private MongoDBDataAccessor<Node> _hierarchyMongoDbAccessor;
 		private MongoDBDataAccessor<Node> _nodeMongoDbAccessor;
 
 		private MongoDBDataAccessor<SpecIfIdentifier> _identifierMongoDbAccessor;
@@ -27,7 +27,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 			_resourceMongoDbAccessor = new MongoDBDataAccessor<Resource>(connectionString, DATABASE_NAME);
 
 			_statementMongoDbAccessor = new MongoDBDataAccessor<Statement>(connectionString, DATABASE_NAME);
-			_hierarchyMongoDbAccessor = new MongoDBDataAccessor<Hierarchy>(connectionString, DATABASE_NAME);
+			_hierarchyMongoDbAccessor = new MongoDBDataAccessor<Node>(connectionString, DATABASE_NAME);
 
 			_nodeMongoDbAccessor = new MongoDBDataAccessor<Node>(connectionString, DATABASE_NAME);
 
@@ -73,12 +73,12 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 			}
 		}
 
-		public override void AddHierarchy(Hierarchy hierarchy)
+		public override void AddHierarchy(Node hierarchy)
 		{
 			_hierarchyMongoDbAccessor.Add(hierarchy);
 		}
 
-		public override void UpdateHierarchy(Hierarchy hierarchyToUpdate)
+		public override void UpdateHierarchy(Node hierarchyToUpdate)
 		{
 			_hierarchyMongoDbAccessor.Update(hierarchyToUpdate, hierarchyToUpdate.Id);
 		}

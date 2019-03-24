@@ -34,16 +34,6 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 		}
 
 
-		public override List<HierarchyClass> GetAllHierarchyClasses()
-		{
-			Task<List<HierarchyClass>> task = GetDataListAsync<HierarchyClass>("/SpecIF/HierarchyClass");
-			task.Wait();
-
-			return task.Result;
-		}
-
-		
-
 		public override List<PropertyClass> GetAllPropertyClasses()
 		{
 			Task<List<PropertyClass>> task = GetDataListAsync<PropertyClass>("/SpecIF/PropertyClass");
@@ -68,13 +58,6 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 			return task.Result;
 		}
 
-		public override HierarchyClass GetHierarchyClassByKey(Key key)
-		{
-			Task<HierarchyClass> task = GetDataByKeyAsync<HierarchyClass>(key, "/SpecIF/HierarchyClass");
-			task.Wait();
-
-			return task.Result;
-		}
 
 		public override ResourceClass GetResourceClassByKey(Key key)
 		{
@@ -119,14 +102,6 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 		public override int GetLatestStatementClassRevision(string statementClassID)
 		{
 			Task<int> task = GetLatestRevisionAsync<StatementClass>(statementClassID, "SpecIF/StatementClass/");
-			task.Wait();
-
-			return task.Result;
-		}
-
-		public override int GetLatestHierarchyClassRevision(string hierarchyClassID)
-		{
-			Task<int> task = GetLatestRevisionAsync<PropertyClass>(hierarchyClassID, "SpecIF/HierarchyClass/");
 			task.Wait();
 
 			return task.Result;

@@ -12,9 +12,9 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 
 		int GetLatestResourceRevision(string resourceID);
 
-		List<Hierarchy> GetAllHierarchies();
+		List<Node> GetAllHierarchies();
 
-		Hierarchy GetHierarchyByKey(Key key);
+		Node GetHierarchyByKey(Key key);
 
 		int GetLatestHierarchyRevision(string hierarchyID);
 

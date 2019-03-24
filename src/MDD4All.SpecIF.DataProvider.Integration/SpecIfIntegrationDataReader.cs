@@ -52,13 +52,13 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 		}
 
 
-		public override List<Hierarchy> GetAllHierarchies()
+		public override List<Node> GetAllHierarchies()
 		{
-			List<Hierarchy> result = new List<Hierarchy>();
+			List<Node> result = new List<Node>();
 
 			foreach (KeyValuePair<string, ISpecIfDataReader> provider in _dataReaders)
 			{
-				List<Hierarchy> part = provider.Value.GetAllHierarchies();
+				List<Node> part = provider.Value.GetAllHierarchies();
 
 				if (part != null && part.Count != 0)
 				{
@@ -75,13 +75,13 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			return new byte[0]; // _metaDataMasterProvider.GetFile(filename);
 		}
 
-		public override Hierarchy GetHierarchyByKey(Key key)
+		public override Node GetHierarchyByKey(Key key)
 		{
-			Hierarchy result = null;
+			Node result = null;
 
 			foreach (KeyValuePair<string, ISpecIfDataReader> dataReader in _dataReaders)
 			{
-				Hierarchy hierarchy = dataReader.Value.GetHierarchyByKey(key);
+				Node hierarchy = dataReader.Value.GetHierarchyByKey(key);
 
 				if (hierarchy != null)
 				{

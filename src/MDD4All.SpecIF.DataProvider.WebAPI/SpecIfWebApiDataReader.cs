@@ -24,21 +24,21 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public override List<Hierarchy> GetAllHierarchies()
+        public override List<Node> GetAllHierarchies()
         {
-            Task<List<Hierarchy>> task = GetAllHierarchiesAsync();
+            Task<List<Node>> task = GetAllHierarchiesAsync();
             task.Wait();
 
             return task.Result;
         }
 
-        public async Task<List<Hierarchy>> GetAllHierarchiesAsync()
+        public async Task<List<Node>> GetAllHierarchiesAsync()
         {
-            List<Hierarchy> result = new List<Hierarchy>();
+            List<Node> result = new List<Node>();
 
             string answer = await _httpClient.GetStringAsync(_connectionURL + "/SpecIF/Hierarchy");
 
-            result = JsonConvert.DeserializeObject<List<Hierarchy>>(answer); 
+            result = JsonConvert.DeserializeObject<List<Node>>(answer); 
 
             return result;
         }
@@ -48,9 +48,9 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
             throw new NotImplementedException();
         }
 
-        public override Hierarchy GetHierarchyByKey(Key key)
+        public override Node GetHierarchyByKey(Key key)
         {
-            Task<Hierarchy> task = GetDataByKeyAsync<Hierarchy>(key, "/SpecIF/Hierarchy/");
+            Task<Node> task = GetDataByKeyAsync<Node>(key, "/SpecIF/Hierarchy/");
             task.Wait();
 
             return task.Result;
@@ -58,7 +58,7 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 
 		public override int GetLatestHierarchyRevision(string hierarchyID)
 		{
-			Task<int> task = GetLatestRevisionAsync<Hierarchy>(hierarchyID, "SpecIF/Hierarchy/");
+			Task<int> task = GetLatestRevisionAsync<Node>(hierarchyID, "SpecIF/Hierarchy/");
 			task.Wait();
 
 			return task.Result;

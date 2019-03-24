@@ -9,7 +9,7 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 {
     public static class HierarchyManipulationExtensions
     {
-		public static Node GetNodeById(this Hierarchy hierarchy, string id)
+		public static Node GetNodeById(this Node hierarchy, string id)
 		{
 			Node result = null;
 
@@ -44,39 +44,25 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 			}
 		}
 
-		public static string GetTypeName(this Hierarchy hierarchy, ISpecIfMetadataReader dataProvider)
-		{
-			string result = "";
+		//public static string GetResourceIdentifierPrefix(this Hierarchy hierarchy, ISpecIfMetadataReader dataProvider)
+		//{
+		//	string result = "";
 
-			HierarchyClass hierarchyType = dataProvider.GetHierarchyClassByKey(hierarchy.HierarchyClass);
+		//	try
+		//	{
+		//		string prefix = hierarchy.Properties.FirstOrDefault(prop => prop.Title == "identifierPrefix")?.GetStringValue(dataProvider);
 
-			if (hierarchyType != null)
-			{
-				result = hierarchyType.Title;
-			}
+		//		if (prefix != null)
+		//		{
+		//			result = prefix;
+		//		}
+		//	}
+		//	catch(Exception)
+		//	{
 
-			return result;
-		}
+		//	}
 
-		public static string GetResourceIdentifierPrefix(this Hierarchy hierarchy, ISpecIfMetadataReader dataProvider)
-		{
-			string result = "";
-
-			try
-			{
-				string prefix = hierarchy.Properties.FirstOrDefault(prop => prop.Title == "identifierPrefix")?.GetStringValue(dataProvider);
-
-				if (prefix != null)
-				{
-					result = prefix;
-				}
-			}
-			catch(Exception)
-			{
-
-			}
-
-			return result;
-		}
+		//	return result;
+		//}
 	}
 }

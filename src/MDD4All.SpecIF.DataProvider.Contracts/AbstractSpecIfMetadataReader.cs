@@ -39,17 +39,14 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 		}
 
 		public abstract List<DataType> GetAllDataTypes();
-		public abstract List<HierarchyClass> GetAllHierarchyClasses();
 		public abstract List<PropertyClass> GetAllPropertyClasses();
 		public abstract List<ResourceClass> GetAllResourceClasses();
 		public abstract DataType GetDataTypeById(string id);
 		public abstract PropertyClass GetPropertyClassByKey(Key key);
-		public abstract HierarchyClass GetHierarchyClassByKey(Key key);
 		public abstract ResourceClass GetResourceClassByKey(Key key);
 		public abstract StatementClass GetStatementClassByKey(Key key);
 		public abstract int GetLatestPropertyClassRevision(string propertyClassID);
 		public abstract int GetLatestResourceClassRevision(string resourceClassID);
 		public abstract int GetLatestStatementClassRevision(string statementClassID);
-		public abstract int GetLatestHierarchyClassRevision(string hierarchyClassID);
 	}
 }

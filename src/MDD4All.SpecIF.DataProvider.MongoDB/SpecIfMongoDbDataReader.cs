@@ -14,7 +14,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
 		private MongoDBDataAccessor<Resource> _resourceMongoDbAccessor;
 		private MongoDBDataAccessor<Statement> _statementMongoDbAccessor;
-		private MongoDBDataAccessor<Hierarchy> _hierarchyMongoDbAccessor;
+		private MongoDBDataAccessor<Node> _hierarchyMongoDbAccessor;
 		private MongoDBDataAccessor<Node> _nodeMongoDbAccessor;
 
 		public SpecIfMongoDbDataReader(string connectionString)
@@ -22,15 +22,15 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 			_resourceMongoDbAccessor = new MongoDBDataAccessor<Resource>(connectionString, DATABASE_NAME);
 
 			_statementMongoDbAccessor = new MongoDBDataAccessor<Statement>(connectionString, DATABASE_NAME);
-			_hierarchyMongoDbAccessor = new MongoDBDataAccessor<Hierarchy>(connectionString, DATABASE_NAME);
+			_hierarchyMongoDbAccessor = new MongoDBDataAccessor<Node>(connectionString, DATABASE_NAME);
 
 			_nodeMongoDbAccessor = new MongoDBDataAccessor<Node>(connectionString, DATABASE_NAME);			
 
 		}
 
-		public override List<Hierarchy> GetAllHierarchies()
+		public override List<Node> GetAllHierarchies()
 		{
-			return new List<Hierarchy>(_hierarchyMongoDbAccessor.GetItems());
+			return new List<Node>(_hierarchyMongoDbAccessor.GetItems());
 		}
 
 		public override byte[] GetFile(string filename)
@@ -43,9 +43,9 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 			return result;
 		}
 
-		public override Hierarchy GetHierarchyByKey(Key key)
+		public override Node GetHierarchyByKey(Key key)
 		{
-			Hierarchy result = null;
+			Node result = null;
 
 			if (key.Revision == 0)
 			{
@@ -118,7 +118,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
 		public override int GetLatestHierarchyRevision(string hierarchyID)
 		{
-			Hierarchy hierarchy = _hierarchyMongoDbAccessor.GetItemWithLatestRevision(hierarchyID);
+			Node hierarchy = _hierarchyMongoDbAccessor.GetItemWithLatestRevision(hierarchyID);
 
 			return hierarchy.Revision;
 		}

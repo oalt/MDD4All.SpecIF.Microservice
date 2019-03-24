@@ -28,27 +28,7 @@ namespace MDD4All.SpecIF.DataProvider.File
 			return _metaData?.DataTypes.FirstOrDefault(dataType => dataType.ID == id);
 		}
 
-		public override HierarchyClass GetHierarchyClassByKey(Key key)
-		{
-			HierarchyClass result = null;
-
-			List<HierarchyClass> hierarchyClassesWithSameID = _metaData?.HierarchyClasses.FindAll(res => res.ID == key.ID);
-
-			if (hierarchyClassesWithSameID.Count != 0)
-			{
-				if (key.Revision == 0)
-				{
-					result = hierarchyClassesWithSameID.OrderByDescending(r => r.Revision).First();
-				}
-				else
-				{
-					result = hierarchyClassesWithSameID.Find(r => r.Revision == key.Revision);
-				}
-			}
-
-			return result;
-		}
-
+		
 		public override ResourceClass GetResourceClassByKey(Key key)
 		{
 			ResourceClass result = null;
@@ -96,11 +76,6 @@ namespace MDD4All.SpecIF.DataProvider.File
 			return _metaData?.PropertyClasses;
 		}
 
-		public override List<HierarchyClass> GetAllHierarchyClasses()
-		{
-			return _metaData?.HierarchyClasses;
-		}
-
 		public override StatementClass GetStatementClassByKey(Key key)
 		{
 			StatementClass result = null;
@@ -142,9 +117,6 @@ namespace MDD4All.SpecIF.DataProvider.File
 			throw new System.NotImplementedException();
 		}
 
-		public override int GetLatestHierarchyClassRevision(string hierarchyClassID)
-		{
-			throw new System.NotImplementedException();
-		}
+	
 	}
 }

@@ -23,7 +23,7 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 			_connectionURL = webApiConnectionURL;
 		}
 
-		public override void AddHierarchy(Hierarchy hierarchy)
+		public override void AddHierarchy(Node hierarchy)
 		{
 			PostDataAsync(_connectionURL + "/Hierarchy", hierarchy).Wait();
 		}
@@ -53,7 +53,7 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 			//throw new NotImplementedException();
 		}
 
-		public override void UpdateHierarchy(Hierarchy hierarchyToUpdate)
+		public override void UpdateHierarchy(Node hierarchyToUpdate)
 		{
 			PutDataAsync(_connectionURL + "/Hierarchy", hierarchyToUpdate).Wait();
 		}

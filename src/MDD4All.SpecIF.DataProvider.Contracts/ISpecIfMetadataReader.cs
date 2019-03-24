@@ -31,11 +31,5 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 		StatementClass GetStatementClassByKey(Key key);
 
 		int GetLatestStatementClassRevision(string statementClassID);
-
-		List<HierarchyClass> GetAllHierarchyClasses();
-
-		HierarchyClass GetHierarchyClassByKey(Key key);
-
-		int GetLatestHierarchyClassRevision(string hierarchyClassID);
 	}
 }

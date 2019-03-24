@@ -16,7 +16,6 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 		private const string DATABASE_NAME = "specif";
 
 		private MongoDBDataAccessor<ResourceClass> _resourceClassMongoDbAccessor;
-		private MongoDBDataAccessor<HierarchyClass> _hierarchyClassMongoDbAccessor;
 		private MongoDBDataAccessor<PropertyClass> _propertyClassMongoDbAccessor;
 		private MongoDBDataAccessor<StatementClass> _statementClassMongoDbAccessor;
 
@@ -25,7 +24,6 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 		public SpecIfMongoDbMetadataReader(string connectionString)
 		{
 			_resourceClassMongoDbAccessor = new MongoDBDataAccessor<ResourceClass>(connectionString, DATABASE_NAME);
-			_hierarchyClassMongoDbAccessor = new MongoDBDataAccessor<HierarchyClass>(connectionString, DATABASE_NAME);
 			_propertyClassMongoDbAccessor = new MongoDBDataAccessor<PropertyClass>(connectionString, DATABASE_NAME);
 			_dataTypeMongoDbAccessor = new MongoDBDataAccessor<DataType>(connectionString, DATABASE_NAME);
 		}
@@ -35,10 +33,6 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 			return new List<DataType>(_dataTypeMongoDbAccessor.GetItems());
 		}
 
-		public override List<HierarchyClass> GetAllHierarchyClasses()
-		{
-			return new List<HierarchyClass>(_hierarchyClassMongoDbAccessor.GetItems());
-		}
 
 		public override List<PropertyClass> GetAllPropertyClasses()
 		{
@@ -53,29 +47,6 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 		public override DataType GetDataTypeById(string id)
 		{
 			return _dataTypeMongoDbAccessor.GetItemByFilter("{ id : '" + id + "' }");
-		}
-
-		public override HierarchyClass GetHierarchyClassByKey(Key key)
-		{
-			HierarchyClass result = null;
-
-			if (key.Revision == 0)
-			{
-				int latestRevision = GetLatestHierarchyClassRevision(key.ID);
-				result = _hierarchyClassMongoDbAccessor.GetItemById(key.ID + "_R_" + latestRevision);
-			}
-			else
-			{
-				result = _hierarchyClassMongoDbAccessor.GetItemById(key.ID + "_R_" + key.Revision);
-			}
-			return result;
-		}
-
-		public override int GetLatestHierarchyClassRevision(string hierarchyClassID)
-		{
-			HierarchyClass hierarchyClass = _hierarchyClassMongoDbAccessor.GetItemWithLatestRevision(hierarchyClassID);
-
-			return hierarchyClass.Revision;
 		}
 
 		public override int GetLatestPropertyClassRevision(string propertyClassID)

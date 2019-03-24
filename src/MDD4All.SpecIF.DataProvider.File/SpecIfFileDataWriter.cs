@@ -96,12 +96,12 @@ namespace MDD4All.SpecIF.DataProvider.File
 			throw new NotImplementedException();
 		}
 
-		public override void AddHierarchy(Hierarchy hierarchy)
+		public override void AddHierarchy(Node hierarchy)
 		{
 			throw new NotImplementedException();
 		}
 
-		public override void UpdateHierarchy(Hierarchy hierarchyToUpdate)
+		public override void UpdateHierarchy(Node hierarchyToUpdate)
 		{
 			throw new NotImplementedException();
 		}
@@ -111,7 +111,7 @@ namespace MDD4All.SpecIF.DataProvider.File
 			throw new NotImplementedException();
 		}
 
-		public void SaveHierarchy(Hierarchy hierarchy)
+		public void SaveHierarchy(Node hierarchy)
 		{
 			string id = hierarchy.ID;
 

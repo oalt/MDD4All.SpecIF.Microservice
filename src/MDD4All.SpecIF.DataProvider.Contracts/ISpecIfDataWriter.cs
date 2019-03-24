@@ -13,11 +13,9 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 
 		void UpdateResource(Resource resource);
 
-		Hierarchy CreateHierarchy(Key hierarchyClassKey);
+		void AddHierarchy(Node hierarchy);
 
-		void AddHierarchy(Hierarchy hierarchy);
-
-		void UpdateHierarchy(Hierarchy hierarchyToUpdate);
+		void UpdateHierarchy(Node hierarchyToUpdate);
 
 		void AddStatement(Statement statement);
 

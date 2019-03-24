@@ -59,48 +59,6 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 			return result;
 		}
 
-		public Hierarchy CreateHierarchy(Key hierarchyClassKey)
-		{
-			Hierarchy result = new Hierarchy();
-
-			HierarchyClass hierarchyType = _metadataReader.GetHierarchyClassByKey(hierarchyClassKey);
-
-			result.HierarchyClass = hierarchyClassKey;
-
-			result.ID = SpecIfGuidGenerator.CreateNewSpecIfGUID();
-			result.Revision = 1;
-
-			result.Nodes = new List<Node>();
-
-			result.Properties = new List<Property>();
-
-
-
-			foreach (Key propertyClassReference in hierarchyType.PropertyClasses)
-			{
-				PropertyClass propertyClass = _metadataReader.GetPropertyClassByKey(propertyClassReference);
-
-				Property property = new Property()
-				{
-					ID = SpecIfGuidGenerator.CreateNewSpecIfGUID(),
-					Title = propertyClass.Title,
-					PropertyClass = propertyClassReference,
-					Description = propertyClass.Description
-				};
-
-				result.Properties.Add(property);
-			}
-
-
-			// TODO changeBy implementation
-			result.ChangedBy = "";
-
-
-			return result;
-		}
-
-
-
 		public long GetNextSpecIfIdentifier(string prefix)
 		{
 			long result = 0;
@@ -133,13 +91,13 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 			return result;
 		}
 
-		public abstract void AddHierarchy(Hierarchy hierarchy);
+		public abstract void AddHierarchy(Node hierarchy);
 		public abstract void AddNode(Node newNode);
 		public abstract void AddResource(Resource resource);
 		public abstract void AddStatement(Statement statement);
 		public abstract void InitializeIdentificators();
 		public abstract void SaveIdentificators();
-		public abstract void UpdateHierarchy(Hierarchy hierarchyToUpdate);
+		public abstract void UpdateHierarchy(Node hierarchyToUpdate);
 		public abstract void UpdateNode(Node nodeToUpdate);
 		public abstract void UpdateResource(Resource resource);
 	}

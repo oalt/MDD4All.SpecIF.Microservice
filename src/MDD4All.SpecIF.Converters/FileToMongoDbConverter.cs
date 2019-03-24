@@ -58,15 +58,15 @@ namespace MDD4All.SpecIF.Converters
 				}
 			}
 
-			if (_specIF.HierarchyClasses != null)
-			{
-				MongoDBDataAccessor<DataModels.HierarchyClass> hierarchyTypeAccessor = new MongoDBDataAccessor<DataModels.HierarchyClass>(_connectionString, "specif");
+			//if (_specIF.HierarchyClasses != null)
+			//{
+			//	MongoDBDataAccessor<DataModels.HierarchyClass> hierarchyTypeAccessor = new MongoDBDataAccessor<DataModels.HierarchyClass>(_connectionString, "specif");
 
-				foreach (DataModels.HierarchyClass hierarchyType in _specIF.HierarchyClasses)
-				{
-					hierarchyTypeAccessor.Add(hierarchyType);
-				}
-			}
+			//	foreach (DataModels.HierarchyClass hierarchyType in _specIF.HierarchyClasses)
+			//	{
+			//		hierarchyTypeAccessor.Add(hierarchyType);
+			//	}
+			//}
 
 			if (_specIF.StatementClasses != null)
 			{
@@ -90,9 +90,9 @@ namespace MDD4All.SpecIF.Converters
 
 			if (_specIF.Hierarchies != null)
 			{
-				MongoDBDataAccessor<DataModels.Hierarchy> resourceAccessor = new MongoDBDataAccessor<DataModels.Hierarchy>(_connectionString, "specif");
+				MongoDBDataAccessor<DataModels.Node> resourceAccessor = new MongoDBDataAccessor<DataModels.Node>(_connectionString, "specif");
 
-				foreach (DataModels.Hierarchy data in _specIF.Hierarchies)
+				foreach (DataModels.Node data in _specIF.Hierarchies)
 				{
 					resourceAccessor.Add(data);
 					foreach(Node node in data.Nodes)
@@ -110,6 +110,16 @@ namespace MDD4All.SpecIF.Converters
 				{
 					statementAccessor.Add(data);
 					
+				}
+			}
+
+			if(_specIF.Files != null)
+			{
+				MongoDBDataAccessor<DataModels.File> fileAccessor = new MongoDBDataAccessor<DataModels.File>(_connectionString, "specif");
+
+				foreach (DataModels.File data in _specIF.Files)
+				{
+					fileAccessor.Add(data);
 				}
 			}
 		}

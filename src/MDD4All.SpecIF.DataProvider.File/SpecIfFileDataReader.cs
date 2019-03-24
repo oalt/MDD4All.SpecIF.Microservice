@@ -13,16 +13,16 @@ namespace MDD4All.SpecIF.DataProvider.File
 	{
 		private DataModels.SpecIF _specIfData;
 
-		public override List<Hierarchy> GetAllHierarchies()
+		public override List<Node> GetAllHierarchies()
 		{
 			return _specIfData?.Hierarchies;
 		}
 
-		public override Hierarchy GetHierarchyByKey(Key key)
+		public override Node GetHierarchyByKey(Key key)
 		{
-			Hierarchy result = null;
+			Node result = null;
 
-			List<Hierarchy> hierarchiesWithSameID = _specIfData?.Hierarchies.FindAll(res => res.ID == key.ID);
+			List<Node> hierarchiesWithSameID = _specIfData?.Hierarchies.FindAll(res => res.ID == key.ID);
 
 			if (hierarchiesWithSameID.Count != 0)
 			{

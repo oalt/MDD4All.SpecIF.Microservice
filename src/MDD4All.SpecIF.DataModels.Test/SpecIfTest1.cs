@@ -14,7 +14,7 @@ namespace MDD4All.SpecIF.DataModels.Test
 	{
 		public SpecIfTest1()
 		{
-			StreamReader file = File.OpenText(@"c:\specif\Test (schema 0-11-1) OK.specif");
+			StreamReader file = System.IO.File.OpenText(@"c:\specif\Test (schema 0-11-1) OK.specif");
 
 
 			JsonSerializer serializer = new JsonSerializer();
@@ -23,7 +23,7 @@ namespace MDD4All.SpecIF.DataModels.Test
 
 			string vorname = specIf.CreatedBy.GivenName;
 
-			using (StreamWriter outfile = File.CreateText(@"c:\specif\out2.specif"))
+			using (StreamWriter outfile = System.IO.File.CreateText(@"c:\specif\out2.specif"))
 			{
 				serializer = new JsonSerializer();
 				serializer.Serialize(outfile, specIf);

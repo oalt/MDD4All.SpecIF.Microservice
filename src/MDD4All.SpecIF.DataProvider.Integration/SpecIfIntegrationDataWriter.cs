@@ -54,7 +54,7 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 		}
 
 
-		public override void AddHierarchy(Hierarchy hierarchy)
+		public override void AddHierarchy(Node hierarchy)
 		{
 			FindDataWriterForHierarchy(hierarchy).AddHierarchy(hierarchy);
 		}
@@ -74,7 +74,7 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			FindDataProviderForStatement(statement).AddStatement(statement);
 		}
 
-		public override void UpdateHierarchy(Hierarchy hierarchyToUpdate)
+		public override void UpdateHierarchy(Node hierarchyToUpdate)
 		{
 			ISpecIfDataWriter writer = FindDataWriterForHierarchy(hierarchyToUpdate);
 
@@ -115,7 +115,7 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 		}
 
 
-		private ISpecIfDataWriter FindDataWriterForHierarchy(Hierarchy hierarchy)
+		private ISpecIfDataWriter FindDataWriterForHierarchy(Node hierarchy)
 		{
 			return _demoDataWriterList[0];
 

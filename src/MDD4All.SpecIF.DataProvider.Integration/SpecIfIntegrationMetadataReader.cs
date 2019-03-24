@@ -63,20 +63,6 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			return result;
 		}
 
-		public override List<HierarchyClass> GetAllHierarchyClasses()
-		{
-			List<HierarchyClass> result = new List<HierarchyClass>();
-
-			foreach (KeyValuePair<string, ISpecIfMetadataReader> reader in _metadataReaders)
-			{
-				List<HierarchyClass> part = reader.Value.GetAllHierarchyClasses();
-
-				result.AddRange(part);
-			}
-
-			return result;
-		}
-
 		public override List<PropertyClass> GetAllPropertyClasses()
 		{
 			List<PropertyClass> result = new List<PropertyClass>();
@@ -124,26 +110,6 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			return result;
 		}
 
-		
-
-		public override HierarchyClass GetHierarchyClassByKey(Key key)
-		{
-			HierarchyClass result = null;
-
-			foreach (KeyValuePair<string, ISpecIfMetadataReader> reader in _metadataReaders)
-			{
-				HierarchyClass hierarchyClass = reader.Value.GetHierarchyClassByKey(key);
-
-				if (hierarchyClass != null)
-				{
-					result = hierarchyClass;
-					break;
-				}
-
-			}
-
-			return result;
-		}
 
 		public override ResourceClass GetResourceClassByKey(Key key)
 		{
@@ -244,20 +210,6 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			return result;
 		}
 
-		public override int GetLatestHierarchyClassRevision(string hierarchyClassID)
-		{
-			int result = 1;
-
-			ISpecIfMetadataReader provider = FindDataProviderForHierarchyClass(hierarchyClassID);
-
-			if (provider != null)
-			{
-				result = provider.GetLatestHierarchyClassRevision(hierarchyClassID);
-			}
-
-			return result;
-		}
-
 		private ISpecIfMetadataReader FindDataProviderForStatementClass(string id)
 		{
 			ISpecIfMetadataReader result = null;
@@ -306,20 +258,5 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			return result;
 		}
 
-		private ISpecIfMetadataReader FindDataProviderForHierarchyClass(string id)
-		{
-			ISpecIfMetadataReader result = null;
-
-			foreach (KeyValuePair<string, ISpecIfMetadataReader> provider in _metadataReaders)
-			{
-				if (provider.Value.GetHierarchyClassByKey(new Key() { ID = id, Revision = 0 }) != null)
-				{
-					result = provider.Value;
-					break;
-				}
-			}
-
-			return result;
-		}
 	}
 }

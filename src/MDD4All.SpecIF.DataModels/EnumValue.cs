@@ -16,8 +16,8 @@ namespace MDD4All.SpecIF.DataModels
 		[BsonElement("id")]
 		public string ID { get; set; }
 
-		[JsonProperty(PropertyName = "title")]
-		[BsonElement("title")]
-		public string Title { get; set; }
+		[JsonProperty(PropertyName = "value")]
+		[BsonElement("value")]
+		public Value Value { get; set; }
 	}
 }
