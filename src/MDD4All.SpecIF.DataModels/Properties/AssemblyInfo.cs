@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("MDD4All.SpecIF.DataModels")]
 [assembly: AssemblyDescription("SpecIF data models")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("MDD4All.de")]
 [assembly: AssemblyProduct("MDD4All.SpecIF.DataModels")]
 [assembly: AssemblyCopyright("Copyright MDD4All.de")]
 [assembly: AssemblyTrademark("")]
