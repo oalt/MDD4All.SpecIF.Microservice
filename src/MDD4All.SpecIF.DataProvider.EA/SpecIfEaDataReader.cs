@@ -3,6 +3,7 @@
  */
 using MDD4All.SpecIF.DataModels;
 using MDD4All.SpecIF.DataProvider.Contracts;
+using MDD4All.SpecIF.DataProvider.EA.Converters;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

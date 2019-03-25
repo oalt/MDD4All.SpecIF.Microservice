@@ -8,7 +8,7 @@ using System.Text;
 using EAAPI = EA;
 using MDD4All.EnterpriseArchitect.Manipulations;
 
-namespace MDD4All.SpecIF.DataProvider.EA
+namespace MDD4All.SpecIF.DataProvider.EA.Converters
 {
     public class EaToSpecIfConverter
     {

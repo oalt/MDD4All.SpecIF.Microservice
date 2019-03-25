@@ -1,11 +1,7 @@
 ﻿/*
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MDD4All.SpecIF.DataProvider.EA
+namespace MDD4All.SpecIF.DataProvider.EA.Converters
 {
     public class EaSpecIfGuidConverter
     {

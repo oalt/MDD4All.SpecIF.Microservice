@@ -24,6 +24,18 @@ namespace MDD4All.SpecIF.Converters
 			_nodeAccessor = new MongoDBDataAccessor<Node>(_connectionString, "specif");		
 		}
 
+		/// <summary>
+		/// Call this constructor, if you still have SpecIF data in memory.
+		/// </summary>
+		/// <param name="specIF">The data to write to the MongoDB.</param>
+		public FileToMongoDbConverter(DataModels.SpecIF specIF)
+		{
+			_specIF = specIF;
+		}
+
+		/// <summary>
+		/// Start the conversion process.
+		/// </summary>
 		public void ConvertFileToDB()
 		{
 			if (_specIF.DataTypes != null)
