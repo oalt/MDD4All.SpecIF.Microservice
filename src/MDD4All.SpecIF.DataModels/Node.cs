@@ -64,7 +64,7 @@ namespace MDD4All.SpecIF.DataModels
 			}
 		}
 
-		private Key _resourceReference = new Key() { Revision = 0 };
+		private Key _resourceReference = new Key() { ID = "", Revision = 0 };
 
 		[JsonIgnore]
 		[BsonElement("resource")]

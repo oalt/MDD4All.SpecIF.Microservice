@@ -55,6 +55,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1_Microservices", "1_Micros
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SpecIf.Microservice", "MDD4All.SpecIf.Microservice\MDD4All.SpecIf.Microservice.csproj", "{11635C10-13E7-4DF4-84D0-6ACAE799D8C5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDD4All.SoecIF.DataProvider.EA.Test", "MDD4All.SoecIF.DataProvider.EA.Test\MDD4All.SoecIF.DataProvider.EA.Test.csproj", "{0713C8D3-670F-46A7-9226-A152D5202B09}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -117,6 +119,10 @@ Global
 		{11635C10-13E7-4DF4-84D0-6ACAE799D8C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11635C10-13E7-4DF4-84D0-6ACAE799D8C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11635C10-13E7-4DF4-84D0-6ACAE799D8C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0713C8D3-670F-46A7-9226-A152D5202B09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0713C8D3-670F-46A7-9226-A152D5202B09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0713C8D3-670F-46A7-9226-A152D5202B09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0713C8D3-670F-46A7-9226-A152D5202B09}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -140,6 +146,7 @@ Global
 		{3EA9BF0E-24CF-4CDE-82BA-860465DF65E8} = {1126CA30-A652-4B5A-B162-42B9212B929D}
 		{B2723CF2-CFC2-494F-B221-B1AF42575342} = {7DC60D00-FA4B-4C26-B32F-25D27611923A}
 		{11635C10-13E7-4DF4-84D0-6ACAE799D8C5} = {A925129B-2A55-4DBA-8B2A-44BEB40F89EF}
+		{0713C8D3-670F-46A7-9226-A152D5202B09} = {E0FCAB9C-4D6A-4F00-974A-E87209D2D682}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C8F9327E-C222-4E00-A62F-20527B230190}

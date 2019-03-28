@@ -38,9 +38,12 @@ namespace MDD4All.SpecIF.DataModels.Converters
 		{
 			Key key = value as Key;
 
-			JToken token = JToken.FromObject(key);
+			if (!string.IsNullOrEmpty(key.ID))
+			{
+				JToken token = JToken.FromObject(key);
 
-			token.WriteTo(writer);
+				token.WriteTo(writer);
+			}
 		}
 	}
 }

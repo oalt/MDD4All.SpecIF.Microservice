@@ -16,10 +16,10 @@ namespace MDD4All.SpecIF.DataModels
 		}
 
 		[JsonProperty(PropertyName = "id")]
-		public string ID { get; set; }
+		public string ID { get; set; } = Guid.NewGuid().ToString();
 
 		[JsonProperty(PropertyName = "title")]
-		public string Title { get; set; }
+		public string Title { get; set; } = "";
 
 		[JsonProperty(PropertyName = "description")]
 		public string Description { get; set; }
@@ -44,27 +44,27 @@ namespace MDD4All.SpecIF.DataModels
 
 		// type definitions (metadata)
 		[JsonProperty(PropertyName = "dataTypes")]
-		public List<DataType> DataTypes { get; set; }
+		public List<DataType> DataTypes { get; set; } = new List<DataType>();
 
 		[JsonProperty(PropertyName = "propertyClasses")]
-		public List<PropertyClass> PropertyClasses { get; set; }
+		public List<PropertyClass> PropertyClasses { get; set; } = new List<PropertyClass>();
 
 		[JsonProperty(PropertyName = "resourceClasses")]
-		public List<ResourceClass> ResourceClasses { get; set; }
+		public List<ResourceClass> ResourceClasses { get; set; } = new List<ResourceClass>();
 
 		[JsonProperty(PropertyName = "statementClasses")]
-		public List<StatementClass> StatementClasses { get; set; }
+		public List<StatementClass> StatementClasses { get; set; } = new List<StatementClass>();
 
 		// data
 		[JsonProperty(PropertyName = "resources")]
-		public List<Resource> Resources { get; set; }
+		public List<Resource> Resources { get; set; } = new List<Resource>();
 
 		[JsonProperty(PropertyName = "statements")]
-		public List<Statement> Statements { get; set; }
+		public List<Statement> Statements { get; set; } = new List<Statement>();
 
 		[JsonProperty(PropertyName = "hierarchies")]
 		[BsonIgnore]
-		public List<Node> Hierarchies { get; set; }
+		public List<Node> Hierarchies { get; set; } = new List<Node>();
 
 		private List<Key> _nodeReferences;
 
@@ -103,6 +103,6 @@ namespace MDD4All.SpecIF.DataModels
 		}
 
 		[JsonProperty(PropertyName = "files")]
-		public List<File> Files { get; set; }
+		public List<File> Files { get; set; } = new List<File>();
 	}
 }

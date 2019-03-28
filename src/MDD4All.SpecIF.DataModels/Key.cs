@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace MDD4All.SpecIF.DataModels
 {
-	[JsonConverter(typeof(KeyConverter))]
+	//[JsonConverter(typeof(KeyConverter))]
 	public class Key : SpecIfElement
 	{
 		public Key()
@@ -21,14 +21,15 @@ namespace MDD4All.SpecIF.DataModels
 			Revision = 0;
 		}
 
-		public Key(string id, int revision) : this(id)
+		public Key(string id, int revision) 
 		{
+			ID = id;
 			Revision = revision;
 		}
 
 		[JsonProperty(PropertyName = "id")]
 		[BsonElement("id")]
-		public string ID { get; set; }
+		public string ID { get; set; } = "";
 
 		[JsonProperty(PropertyName = "revision")]
 		[BsonElement("revision")]
