@@ -32,11 +32,11 @@ namespace MDD4All.SpecIF.DataModels.BaseTypes
 			}
 		}
 
-		[JsonProperty(PropertyName = "id")]
+		[JsonProperty(PropertyName = "id", Order = -100)]
 		[BsonElement("id")]
 		public string ID { get; set; }
 
-		[JsonProperty(PropertyName = "revision")]
+		[JsonProperty(PropertyName = "revision", Order = -99)]
 		[BsonElement("revision")]
 		public int Revision { get; set; }
 

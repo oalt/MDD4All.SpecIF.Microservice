@@ -15,11 +15,11 @@ namespace MDD4All.SpecIF.DataModels.BaseTypes
 			ChangedAt = DateTime.Now;
 		}
 
-		[JsonProperty(PropertyName = "title")]
+		[JsonProperty(PropertyName = "title", Order = -98)]
 		[BsonElement("title")]
 		public string Title { get; set; }
 
-		[JsonProperty(PropertyName = "description")]
+		[JsonProperty(PropertyName = "description", Order = -96)]
 		[BsonElement("description")]
 		public string Description { get; set; }
 

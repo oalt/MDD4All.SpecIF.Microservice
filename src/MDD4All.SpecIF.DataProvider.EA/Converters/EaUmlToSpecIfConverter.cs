@@ -15,8 +15,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 	{
 		private EAAPI.Repository _repository;
 
-		private Resource _modelResource;
-
+		
 		public EaUmlToSpecIfConverter(EAAPI.Repository repository)
 		{
 			_repository = repository;
@@ -24,44 +23,9 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 		public Node GetModelHierarchy(EAAPI.Package selectedPackage)
 		{
-			_modelResource = new Resource()
-			{
-				Title = "UML:Model",
-				ResourceClass = new Key("RC-UML_Model", 1)
-			};
-
-			_modelResource.Properties = new List<Property>();
-
-			_modelResource.Properties.Add(
-				new Property()
-				{
-					Title = "dcterms:title",
-					PropertyClass = new Key("PC-Name", 1),
-					Value = new Value
-					{
-						LanguageValues = new List<LanguageValue>
-						{
-							new LanguageValue
-							{
-								Text = "UML Model: " + selectedPackage.Name
-							}
-						}
-					},
-					ID = _modelResource.ID + "_NAME"
-				}
-				);
-
-			
-
 			Node result = new Node();
 
-			result.ResourceReference = new Key(_modelResource.ID, _modelResource.Revision);
-
-			Node childNode = new Node();
-
-			result.Nodes.Add(childNode);
-
-			GetModelHierarchyRecursively(selectedPackage, childNode);
+			GetModelHierarchyRecursively(selectedPackage, result);
 			
 			return result;
 		}
@@ -138,8 +102,6 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 		public void AddSpecIfDataBasedOnHierarchy(DataModels.SpecIF specIF)
 		{
-			specIF.Resources.Add(_modelResource);
-
 			if (specIF.Hierarchies.Count > 0)
 			{
 				AddSpecIfDataBasedOnHierarchyRecursively(specIF.Hierarchies[0], specIF);
@@ -150,10 +112,21 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 		{
 			Resource resource = GetUmlElementResource(currentNode.ResourceReference);
 
+			if(resource != null)
+			{
+				string eaGUID = EaSpecIfGuidConverter.ConvertSpecIfGuidToEaGuid(resource.ID);
+
+				EAAPI.Element element = _repository.GetElementByGuid(eaGUID);
+
+				specIF.Resources.AddRange(ConvertElementTaggedValues(element));
+
+				AddAttributes(element, specIF);
+			}
+
 			if(resource == null) // is it a diagram GUID?
 			{
 				resource = GetDiagramResource(currentNode.ResourceReference);
-			}
+			}			
 
 			if (resource != null)
 			{
@@ -175,6 +148,21 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				AddSpecIfDataBasedOnHierarchyRecursively(childNode, specIF);
 			}
 		}
+
+		private void AddAttributes(EAAPI.Element eaElement, DataModels.SpecIF specIF)
+		{
+			for(short counter = 0; counter < eaElement.Attributes.Count; counter++ )
+			{
+				EAAPI.Attribute attribute = eaElement.Attributes.GetAt(counter) as EAAPI.Attribute;
+
+				if(attribute != null)
+				{
+					Resource attributeResource = ConvertAttribute(attribute, eaElement);
+					specIF.Resources.Add(attributeResource);
+				}
+			}
+		}
+
 
 		public Resource GetUmlElementResource(Key resourceKey)
 		{
@@ -296,6 +284,27 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 						}
 						);
 
+					result.Properties.Add(
+						new Property()
+						{
+							Title = "SpecIF:Notation",
+							PropertyClass = new Key("PC-Notation", 1),
+							Value = new Value
+							{
+								LanguageValues = new List<LanguageValue>
+								{
+									new LanguageValue
+									{
+										Text = "OMG:UML:2.5.1:" + GetUmlDiagramTypeFromEaType(diagram.Type)
+									}
+								}
+							},
+							ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID + "_NOTATION"),
+							ChangedAt = diagram.ModifiedDate,
+							ChangedBy = diagram.Author
+						}
+						);
+
 				}
 			}
 
@@ -333,6 +342,9 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 				// attributes
 				result.AddRange(GetAttributeStatements(element, resourceKey));
+
+				// operations
+				result.AddRange(GetOperationStatements(element, resourceKey));
 
 				// uml connectors
 				result.AddRange(ConvertUmlConnectors(element));
@@ -407,7 +419,46 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					}
 					);
 
+				string namespc = "";
+				string stereotype = "";
+
+				ParseFullQualifiedName(eaElement.FQStereotype, out namespc, out stereotype);
+
+				string stereotypeValue = "";
+
+				if (namespc != "")
+				{
+					stereotypeValue = namespc + ":" + stereotype;
+				}
+				else
+				{
+					stereotypeValue = stereotype;
+				}
+
 				elementResource.Properties.Add(
+					new Property()
+					{
+						Title = "SpecIF:Stereotype",
+						PropertyClass = new Key("PC-Stereotype", 1),
+						Value = new Value
+						{
+							LanguageValues = new List<LanguageValue>
+							{
+								new LanguageValue
+								{
+									Text = stereotypeValue
+								}
+							}
+						},
+						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID + "_STEREOTYPE"),
+						ChangedAt = eaElement.Modified,
+						ChangedBy = eaElement.Author
+					}
+					);
+
+				if (elementType != "Package")
+				{
+					elementResource.Properties.Add(
 					new Property()
 					{
 						Title = "dcterms:type",
@@ -416,10 +467,10 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 						{
 							LanguageValues = new List<LanguageValue>
 							{
-							new LanguageValue
-							{
-								Text = eaElement.Type
-							}
+								new LanguageValue
+								{
+									Text = "OMG:UML:2.5.1:" + eaElement.Type
+								}
 							}
 						},
 						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID + "_TYPE"),
@@ -427,24 +478,10 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 						ChangedBy = eaElement.Author
 					}
 					);
-
-				//_specIfResult.Resources.Add(elementResource);
-
-				//ConvertAttributes(eaElement, elementResource);
-
-				//EAAPI.Element classifierEA = eaElement.GetClassifier(_repository);
-
-				//if (classifierEA != null)
-				//{
-				//	ConvertClassifier(classifierEA, elementResource);
-				//}
-
+				}
+				
 				result = elementResource;
 			}
-
-			//ConvertConnectors(eaElement);
-
-			
 
 			return result;
 		}
@@ -517,7 +554,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 						{
 									new LanguageValue
 									{
-										Text = "Attribute"
+										Text = "OMG:UML:2.5.1:Attribute"
 									}
 						}
 					},
@@ -528,6 +565,184 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				);
 
 			return attributeResource;
+		}
+
+		private List<Resource> ConvertElementTaggedValues(EAAPI.Element eaElement)
+		{
+			List<Resource> result = new List<Resource>();
+
+			string namespc = "";
+			string stereotype = "";
+
+			ParseFullQualifiedName(eaElement.FQStereotype, out namespc, out stereotype);
+
+			for (short counter = 0; counter < eaElement.TaggedValues.Count; counter++)
+			{
+				EAAPI.TaggedValue tag = eaElement.TaggedValues.GetAt(counter) as EAAPI.TaggedValue;
+
+				string tagNamespace = "";
+				string tagName = tag.Name;
+				ParseFullQualifiedName(tag.FQName, out tagNamespace, out tagName);
+
+				Resource tagResource = new Resource()
+				{
+					ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID),
+					ResourceClass = new Key("RC-UML_ActiveElement", 1),
+					ChangedAt = eaElement.Modified,
+					ChangedBy = eaElement.Author,
+					Revision = 1,
+					Title = tagName
+				};
+
+				tagResource.Properties = new List<Property>();
+
+				tagResource.Properties.Add(
+					new Property()
+					{
+						Title = "dcterms:title",
+						PropertyClass = new Key("PC-Name", 1),
+						Value = new Value
+						{
+							LanguageValues = new List<LanguageValue>
+							{
+									new LanguageValue
+									{
+										Text = tagName
+									}
+							}
+						},
+						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID + "_NAME"),
+						ChangedAt = eaElement.Modified,
+						ChangedBy = eaElement.Author
+					}
+					);
+
+				tagResource.Properties.Add(
+					new Property()
+					{
+						Title = "dcterms:description",
+						PropertyClass = new Key("PC-Text", 1),
+						Value = new Value
+						{
+							LanguageValues = new List<LanguageValue>
+							{
+									new LanguageValue
+									{
+										Text = tag.Notes
+									}
+							}
+						},
+						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID + "_NOTES"),
+						ChangedAt = eaElement.Modified,
+						ChangedBy = eaElement.Author
+					}
+					);
+
+				tagResource.Properties.Add(
+					new Property()
+					{
+						Title = "dcterms:type",
+						PropertyClass = new Key("PC-Type", 1),
+						Value = new Value
+						{
+							LanguageValues = new List<LanguageValue>
+							{
+									new LanguageValue
+									{
+										Text = "OMG:UML:2.5.1:TaggedValue"
+									}
+							}
+						},
+						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID + "_TYPE"),
+						ChangedAt = eaElement.Modified,
+						ChangedBy = eaElement.Author
+					}
+					);
+
+				tagResource.Properties.Add(
+					new Property()
+					{
+						Title = "rdf:value",
+						PropertyClass = new Key("PC-Value", 1),
+						Value = new Value
+						{
+							LanguageValues = new List<LanguageValue>
+							{
+									new LanguageValue
+									{
+										Text = eaElement.GetTaggedValueString(tag.Name)
+									}
+							}
+						},
+						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID + "_VALUE"),
+						ChangedAt = eaElement.Modified,
+						ChangedBy = eaElement.Author
+					}
+					);
+
+				string stereotypeValue = "";
+
+				if(namespc != "")
+				{
+					stereotypeValue = namespc + ":" + stereotype;
+				}
+				else
+				{
+					stereotypeValue = stereotype;
+				}
+
+				tagResource.Properties.Add(
+					new Property()
+					{
+						Title = "SpecIF:Stereotype",
+						PropertyClass = new Key("PC-Stereotype", 1),
+						Value = new Value
+						{
+							LanguageValues = new List<LanguageValue>
+							{
+									new LanguageValue
+									{
+										Text = stereotypeValue
+									}
+							}
+						},
+						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID + "_STEREOTYPE"),
+						ChangedAt = eaElement.Modified,
+						ChangedBy = eaElement.Author
+					}
+					);
+
+				result.Add(tagResource);
+			}
+
+
+			return result;
+		}
+
+		private void ParseFullQualifiedName(string fullQualifiedName, out string namespc, out string name)
+		{
+			if(fullQualifiedName.Contains("::"))
+			{
+				string[] separator = { "::" };
+				
+				string[] tokens = fullQualifiedName.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+
+				if(tokens.Length == 2)
+				{
+					namespc = tokens[0];
+					name = tokens[1];
+				}
+				else
+				{
+					namespc = "";
+					name = fullQualifiedName;
+				}
+			}
+			else
+			{
+				namespc = "";
+				name = fullQualifiedName;
+			}
 		}
 
 		private List<Statement> GetAttributeStatements(EAAPI.Element eaElement, Key elementResource)
@@ -548,27 +763,77 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					// add UML:AtributeReference statement
 					Statement attributeReferenceStatement = new Statement()
 					{
-						Title = "UML:AtributeReference",
-						StatementClass = new Key("SC-UML_AttributeReference"),
+						Title = "SpecIF:contains",
+						StatementClass = new Key("SC-contains"),
 						StatementSubject = new Key(elementResource.ID, elementResource.Revision),
 						StatementObject = new Key(attributeSpecIfID, 1)
 					};
 
 					result.Add(attributeReferenceStatement);
 
-					// classifier
-					//if(attribute.ClassifierID != 0)
-					//{
-					//	EAAPI.Element attributeClassifier = _repository.GetElementByID(attribute.ClassifierID);
+				} // for
+			} // if(class or component ...
 
-					//	if(attributeClassifier != null)
-					//	{
-					//		ConvertClassifier(attributeClassifier, attributeResource);
-					//	}
-					//}
+			return result;
+		}
+
+		private List<Statement> GetOperationStatements(EAAPI.Element eaElement, Key elementResource)
+		{
+			List<Statement> result = new List<Statement>();
+
+			string type = eaElement.Type;
+
+			if (type == "Class" || type == "Component" || type == "State" || type == "Activity")
+			{
+
+				for (short counter = 0; counter < eaElement.Methods.Count; counter++)
+				{
+					EAAPI.Method method = eaElement.Methods.GetAt(counter) as EAAPI.Method;
+
+					string attributeSpecIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(method.MethodGUID);
+
+					// add statement
+					Statement operationReferenceStatement = new Statement()
+					{
+						Title = "SpecIF:contains",
+						StatementClass = new Key("SC-contains"),
+						StatementSubject = new Key(elementResource.ID, elementResource.Revision),
+						StatementObject = new Key(attributeSpecIfID, 1)
+					};
+
+					result.Add(operationReferenceStatement);
 
 				} // for
 			} // if(class or component ...
+
+			return result;
+		}
+
+		private List<Statement> GetElementTaggedValueStatements(EAAPI.Element eaElement, Key elementResource)
+		{
+			List<Statement> result = new List<Statement>();
+
+			string type = eaElement.Type;
+
+			for (short counter = 0; counter < eaElement.TaggedValues.Count; counter++)
+			{
+				EAAPI.TaggedValue tag = eaElement.TaggedValues.GetAt(counter) as EAAPI.TaggedValue;
+
+				string tagSpecIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID);
+
+				// add statement
+				Statement operationReferenceStatement = new Statement()
+				{
+					Title = "SpecIF:contains",
+					StatementClass = new Key("SC-contains"),
+					StatementSubject = new Key(elementResource.ID, elementResource.Revision),
+					StatementObject = new Key(tagSpecIfID, 1)
+				};
+
+				result.Add(operationReferenceStatement);
+
+			} // for
+			
 
 			return result;
 		}
@@ -651,7 +916,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 							{
 									new LanguageValue
 									{
-										Text = connectorEA.Type
+										Text = "OMG:UML:2.5.1:" + connectorEA.Type
 									}
 							}
 						},
@@ -811,11 +1076,34 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				case "Object":
 				case "Actor":
 				case "Event":
-				case "Tag":
+				case "TaggedValue":
 				case "RunState":
 				case "UseCase":
 
 					result = "RC-UML_ActiveElement";
+				break;
+
+				case "Package":
+
+					result = "RC-UML_Package";
+				break;
+			}
+
+			return result;
+		}
+
+		private string GetUmlDiagramTypeFromEaType(string eaType)
+		{
+			string result = "";
+
+			switch(eaType)
+			{
+				case "Logical":
+					result = "Class Diagram";
+				break;
+
+				default:
+					result = eaType;
 				break;
 			}
 

@@ -10,7 +10,7 @@ namespace MDD4All.SpecIF.DataModels
 {
 	public class Statement : SpecIfBaseElement
 	{
-		[JsonProperty(PropertyName = "class")]
+		[JsonProperty(PropertyName = "class", Order = -97)]
 		[BsonElement("class")]
 		public Key StatementClass { get; set; }
 
