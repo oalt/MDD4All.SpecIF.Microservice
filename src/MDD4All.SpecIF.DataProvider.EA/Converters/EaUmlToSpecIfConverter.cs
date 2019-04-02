@@ -162,11 +162,28 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 				EAAPI.Element element = _repository.GetElementByGuid(eaGUID);
 
-				specIF.Resources.AddRange(ConvertElementTaggedValues(element));
+				List<Resource> tagResources = ConvertElementTaggedValues(element);
 
-				AddAttributes(element, specIF);
+				specIF.Resources.AddRange(tagResources);
 
-				AddOperations(element, specIF);
+				foreach(Resource tagResource in tagResources)
+				{
+					specIF.Statements.Add(GetContainsStatement(eaGUID, EaSpecIfGuidConverter.ConvertSpecIfGuidToEaGuid(tagResource.ID)));
+				}
+
+				List<Resource> attributeResources = AddAttributes(element, specIF);
+
+				foreach (Resource attributeResource in attributeResources)
+				{
+					specIF.Statements.Add(GetContainsStatement(eaGUID, EaSpecIfGuidConverter.ConvertSpecIfGuidToEaGuid(attributeResource.ID)));
+				}
+
+				List<Resource> operationResources = AddOperations(element, specIF);
+
+				foreach (Resource operationResource in operationResources)
+				{
+					specIF.Statements.Add(GetContainsStatement(eaGUID, EaSpecIfGuidConverter.ConvertSpecIfGuidToEaGuid(operationResource.ID)));
+				}
 			}
 
 			if(resource == null) // Is it a diagram GUID?
@@ -195,8 +212,10 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			}
 		}
 
-		private void AddAttributes(EAAPI.Element eaElement, DataModels.SpecIF specIF)
+		private List<Resource> AddAttributes(EAAPI.Element eaElement, DataModels.SpecIF specIF)
 		{
+			List<Resource> result = new List<Resource>();
+
 			for(short counter = 0; counter < eaElement.Attributes.Count; counter++ )
 			{
 				EAAPI.Attribute attribute = eaElement.Attributes.GetAt(counter) as EAAPI.Attribute;
@@ -205,12 +224,17 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				{
 					Resource attributeResource = ConvertAttribute(attribute, eaElement);
 					specIF.Resources.Add(attributeResource);
+					result.Add(attributeResource);
 				}
 			}
+
+			return result;
 		}
 
-		private void AddOperations(EAAPI.Element eaElement, DataModels.SpecIF specIF)
+		private List<Resource> AddOperations(EAAPI.Element eaElement, DataModels.SpecIF specIF)
 		{
+			List<Resource> result = new List<Resource>();
+
 			for (short counter = 0; counter < eaElement.Methods.Count; counter++)
 			{
 				EAAPI.Method operation = eaElement.Methods.GetAt(counter) as EAAPI.Method;
@@ -219,8 +243,24 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				{
 					Resource operationResource = ConvertOperation(operation, eaElement);
 					specIF.Resources.Add(operationResource);
+					result.Add(operationResource);
+
+					for(short parameterCounter = 0; parameterCounter < operation.Parameters.Count; parameterCounter++)
+					{
+						EAAPI.Parameter parameterEA = operation.Parameters.GetAt(parameterCounter) as EAAPI.Parameter;
+
+						Resource operationParameterResource = ConvertOperationParameter(parameterEA, eaElement);
+
+						specIF.Resources.Add(operationParameterResource);
+
+						Statement paramaterConatinmentStatement = GetContainsStatement(operation.MethodGUID, parameterEA.ParameterGUID);
+
+						specIF.Statements.Add(paramaterConatinmentStatement);
+					}
 				}
 			}
+
+			return result;
 		}
 
 		private Resource ConvertOperation(EAAPI.Method operation, EAAPI.Element eaElement)
@@ -300,7 +340,44 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				}
 				);
 
+			string namespc = "";
+			string stereotype = "";
+
+			ParseFullQualifiedName(operation.FQStereotype, out namespc, out stereotype);
+
+			string stereotypeValue = "UML:";
+
+			if (namespc != "EAUML")
+			{
+				stereotypeValue = namespc + ":";
+			}
+
+			stereotypeValue += stereotype;
 			
+			if(operation.ReturnType == "entry")
+			{
+				if(stereotypeValue != "")
+				{
+					stereotypeValue += ",";
+				}
+				stereotypeValue += "entry";
+			}
+			else if(operation.ReturnType == "exit")
+			{
+				if (stereotypeValue != "")
+				{
+					stereotypeValue += ",";
+				}
+				stereotypeValue += "exit";
+			}
+			else if (operation.ReturnType == "do")
+			{
+				if (stereotypeValue != "")
+				{
+					stereotypeValue += ",";
+				}
+				stereotypeValue += "do";
+			}
 
 			operationResource.Properties.Add(
 					new Property()
@@ -313,7 +390,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 							{
 									new LanguageValue
 									{
-										Text = operation.Stereotype
+										Text = stereotypeValue
 									}
 							}
 						},
@@ -323,8 +400,89 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					}
 					);
 
+			operationResource.Properties.Add(GetVisibilityProperty(operation.Visibility, operation.MethodGUID, eaElement.Modified, eaElement.Author));
 
 			return operationResource;
+		}
+
+		private Resource ConvertOperationParameter(EAAPI.Parameter parameter, EAAPI.Element eaElement)
+		{
+			Resource result = new Resource()
+			{
+				ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(parameter.ParameterGUID),
+				ResourceClass = new Key("RC-UML_ActiveElement", 1),
+				ChangedAt = eaElement.Modified,
+				ChangedBy = eaElement.Author,
+				Revision = 1,
+				Title = parameter.Name
+			};
+
+			result.Properties = new List<Property>();
+
+			result.Properties.Add(
+				new Property()
+				{
+					Title = "dcterms:title",
+					PropertyClass = new Key("PC-Name", 1),
+					Value = new Value
+					{
+						LanguageValues = new List<LanguageValue>
+						{
+									new LanguageValue
+									{
+										Text = parameter.Name
+									}
+						}
+					},
+					ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(parameter.ParameterGUID + "_NAME"),
+					ChangedAt = eaElement.Modified,
+					ChangedBy = eaElement.Author
+				}
+				);
+
+			result.Properties.Add(
+				new Property()
+				{
+					Title = "dcterms:description",
+					PropertyClass = new Key("PC-Text", 1),
+					Value = new Value
+					{
+						LanguageValues = new List<LanguageValue>
+						{
+									new LanguageValue
+									{
+										Text = parameter.Notes
+									}
+						}
+					},
+					ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(parameter.ParameterGUID + "_NOTES"),
+					ChangedAt = eaElement.Modified,
+					ChangedBy = eaElement.Author
+				}
+				);
+
+			result.Properties.Add(
+				new Property()
+				{
+					Title = "dcterms:type",
+					PropertyClass = new Key("PC-Type", 1),
+					Value = new Value
+					{
+						LanguageValues = new List<LanguageValue>
+						{
+									new LanguageValue
+									{
+										Text = "OMG:UML:2.5.1:Parameter"
+									}
+						}
+					},
+					ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(parameter.ParameterGUID + "_TYPE"),
+					ChangedAt = eaElement.Modified,
+					ChangedBy = eaElement.Author
+				}
+				);
+
+			return result;
 		}
 
 		public Resource GetUmlElementResource(Key resourceKey)
@@ -503,6 +661,9 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					result.Add(classifierStatement);
 				}
 
+				// sub elements
+				result.AddRange(GetSubelementStatements(element, resourceKey));
+
 				// attributes
 				result.AddRange(GetAttributeStatements(element, resourceKey));
 
@@ -642,6 +803,8 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					}
 					);
 				}
+
+				elementResource.Properties.Add(GetVisibilityProperty(eaElement.Visibility, eaElement.ElementGUID, eaElement.Modified, eaElement.Author));
 				
 				result = elementResource;
 			}
@@ -747,6 +910,8 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 						ChangedBy = eaElement.Author
 					}
 					);
+
+			attributeResource.Properties.Add(GetVisibilityProperty(attribute.Visibility, attribute.AttributeGUID, eaElement.Modified, eaElement.Author));
 
 			return attributeResource;
 		}
@@ -959,6 +1124,54 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				namespc = "";
 				name = fullQualifiedName;
 			}
+		}
+
+		private List<Statement> GetSubelementStatements(EAAPI.Element eaElement, Key elementResource)
+		{
+			List<Statement> result = new List<Statement>();
+
+			string type = eaElement.Type;
+
+			for (short counter = 0; counter < eaElement.Elements.Count; counter++)
+			{
+				EAAPI.Element subElement = eaElement.Elements.GetAt(counter) as EAAPI.Element;
+
+				string subelementSpecIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(subElement.ElementGUID);
+
+				// add UML:AtributeReference statement
+				Statement attributeReferenceStatement = new Statement()
+				{
+					Title = "SpecIF:contains",
+					StatementClass = new Key("SC-contains"),
+					StatementSubject = new Key(elementResource.ID, elementResource.Revision),
+					StatementObject = new Key(subelementSpecIfID, 1)
+				};
+
+				result.Add(attributeReferenceStatement);
+
+			} // for
+
+
+			for (short counter = 0; counter < eaElement.EmbeddedElements.Count; counter++)
+			{
+				EAAPI.Element subElement = eaElement.EmbeddedElements.GetAt(counter) as EAAPI.Element;
+
+				string subElementSpecIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(subElement.ElementGUID);
+
+				// add UML:AtributeReference statement
+				Statement attributeReferenceStatement = new Statement()
+				{
+					Title = "SpecIF:contains",
+					StatementClass = new Key("SC-contains"),
+					StatementSubject = new Key(elementResource.ID, elementResource.Revision),
+					StatementObject = new Key(subElementSpecIfID, 1)
+				};
+
+				result.Add(attributeReferenceStatement);
+
+			} // for
+
+			return result;
 		}
 
 		private List<Statement> GetAttributeStatements(EAAPI.Element eaElement, Key elementResource)
@@ -1233,7 +1446,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					}
 					);
 
-				// TODO access type
+				
 
 				result.Add(umlRelationship);
 				
@@ -1264,6 +1477,76 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					};
 				}
 			}
+
+			return result;
+		}
+
+		private Statement GetContainsStatement(string containerEaID, string containedElementEaID)
+		{
+			Statement result = null;
+
+			string containerSpecIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(containerEaID);
+			string subElementSpecIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(containedElementEaID);
+
+			// SpecIF:contains statement
+			result = new Statement()
+			{
+				Title = "SpecIF:contains",
+				StatementClass = new Key("SC-contains", 1),
+				StatementSubject = new Key(containerSpecIfID, 1),
+				StatementObject = new Key(subElementSpecIfID, 1)
+			};
+
+			return result;
+		}
+
+		private Property GetVisibilityProperty(string visibility, string ID, DateTime changedAt, string changedBy)
+		{
+			Property result = new Property()
+			{
+				ID = ID,
+				Revision = 1,
+				PropertyClass = new Key("PC-UML_VisibilityKind", 1),
+				Title = "UML:VisibilityKind",
+				Value = new Value(),
+				ChangedAt = changedAt,
+				ChangedBy = changedBy
+			};
+
+			LanguageValue languageValue = new LanguageValue()
+			{
+				Text = "V-UML_VisibilityKind-0",
+				Language = "en-EN"
+			};
+
+			switch (visibility.ToLower())
+			{
+				case "public":
+					languageValue.Text = "V-UML_VisibilityKind-0";					
+				break;
+
+				case "private":
+					languageValue.Text = "V-UML_VisibilityKind-1";
+				break;
+
+				case "protected":
+					languageValue.Text = "V-UML_VisibilityKind-2";
+				break;
+
+				case "package":
+					languageValue.Text = "V-UML_VisibilityKind-3";
+				break;
+
+				case "internal":
+					languageValue.Text = "V-UML_VisibilityKind-4";
+				break;
+
+				case "protected internal":
+					languageValue.Text = "V-UML_VisibilityKind-5";
+				break;
+			}
+
+			result.Value.LanguageValues.Add(languageValue);
 
 			return result;
 		}
@@ -1317,6 +1600,27 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				case "Logical":
 					result = "Class Diagram";
 				break;
+
+				case "Object":
+					result = "Object Diagram";
+				break;
+
+				case "Component":
+					result = "Component Diagram";
+				break;
+
+				case "Use Case":
+					result = "Use Case Diagram";
+				break;
+
+				case "Statechart":
+					result = "State Machine Diagram";
+				break;
+
+				case "Activity":
+					result = "Activity Diagram";
+				break;
+				
 
 				default:
 					result = eaType;
