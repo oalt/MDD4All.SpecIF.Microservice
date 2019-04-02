@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace MDD4All.SpecIF.DataModels
 {
-	//[JsonConverter(typeof(KeyConverter))]
+	[JsonConverter(typeof(KeyConverter))]
 	public class Key : SpecIfElement
 	{
 		public Key()

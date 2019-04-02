@@ -12,10 +12,10 @@ namespace MDD4All.SpecIF.DataModels
 	{
 		[JsonProperty(PropertyName = "text")]
 		[BsonElement("text")]
-		public string Text { get; set; }
+		public string Text { get; set; } = "";
 
 		[JsonProperty(PropertyName = "language")]
 		[BsonElement("language")]
-		public string Language { get; set; }
+		public string Language { get; set; } = "en-EN";
 	}
 }

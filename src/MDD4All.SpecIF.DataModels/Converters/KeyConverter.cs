@@ -11,7 +11,7 @@ namespace MDD4All.SpecIF.DataModels.Converters
 	{
 		public override bool CanConvert(Type objectType)
 		{
-			return (objectType == typeof(Key));
+			return (objectType == typeof(Key) || objectType == typeof(string));
 		}
 
 		public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -36,10 +36,36 @@ namespace MDD4All.SpecIF.DataModels.Converters
 
 		public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
 		{
-			Key key = value as Key;
+			//Console.WriteLine("Type = " + value.GetType().ToString());
 
-			if (!string.IsNullOrEmpty(key.ID))
+			//Console.WriteLine("Value = " + value.ToString());
+
+			if (value is Key)
 			{
+				
+				Key key = value as Key;
+
+				//Console.WriteLine("value is key. " + key.ID + " " + key.Revision);
+
+				try
+				{
+
+					JObject keyJObject = new JObject();
+
+					keyJObject.Add("ID", JToken.FromObject(key.ID));
+					keyJObject.Add("Revision", JToken.FromObject(key.Revision));
+
+					keyJObject.WriteTo(writer);
+				}
+				catch(Exception exception)
+				{
+					Console.WriteLine(exception);
+				}
+			}
+			else if (value is string)
+			{
+				Key key = new Key((string)value, 1);
+
 				JToken token = JToken.FromObject(key);
 
 				token.WriteTo(writer);

@@ -72,7 +72,7 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 
 								if (value != null)
 								{
-									result += value.Value;
+									result += value.Title;
 
 									if (counter < values.Length - 1)
 									{
@@ -94,7 +94,7 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 
 							if (value != null)
 							{
-								result = value.Value.LanguageValues?.FirstOrDefault(val => val.Language == language).Text;
+								result = value.Title.LanguageValues?.FirstOrDefault(val => val.Language == language).Text;
 							}
 						}
 
