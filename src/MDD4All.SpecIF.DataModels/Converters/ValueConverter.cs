@@ -27,7 +27,7 @@ namespace MDD4All.SpecIF.DataModels.Converters
 				value.LanguageValues.Add(new LanguageValue()
 				{
 					Text = reader.Value.ToString(),
-					Language = null
+					Language = "en-EN"
 				});
 			}
 			else
