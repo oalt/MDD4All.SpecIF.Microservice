@@ -14,11 +14,11 @@ namespace MDD4All.SpecIF.DataModels
 			Value = new Value();
 		}
 
-		[JsonProperty(PropertyName = "class")]
+		[JsonProperty(PropertyName = "class", Order = -95)]
 		[BsonElement("class")]
 		public Key PropertyClass { get; set; }
 
-		[JsonProperty(PropertyName = "value")]
+		[JsonProperty(PropertyName = "value", Order = -97)]
 		[BsonElement("value")]
 		public Value Value
 		{
