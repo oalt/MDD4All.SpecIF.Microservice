@@ -52,8 +52,8 @@ namespace MDD4All.SpecIF.DataModels.Converters
 
 					JObject keyJObject = new JObject();
 
-					keyJObject.Add("ID", JToken.FromObject(key.ID));
-					keyJObject.Add("Revision", JToken.FromObject(key.Revision));
+					keyJObject.Add("id", JToken.FromObject(key.ID));
+					keyJObject.Add("revision", JToken.FromObject(key.Revision));
 
 					keyJObject.WriteTo(writer);
 				}
