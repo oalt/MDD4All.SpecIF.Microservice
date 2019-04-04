@@ -173,17 +173,17 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 				List<Resource> attributeResources = AddAttributes(element, specIF);
 
-				foreach (Resource attributeResource in attributeResources)
-				{
-					specIF.Statements.Add(GetContainsStatement(eaGUID, EaSpecIfGuidConverter.ConvertSpecIfGuidToEaGuid(attributeResource.ID)));
-				}
+				//foreach (Resource attributeResource in attributeResources)
+				//{
+				//	specIF.Statements.Add(GetContainsStatement(eaGUID, EaSpecIfGuidConverter.ConvertSpecIfGuidToEaGuid(attributeResource.ID)));
+				//}
 
 				List<Resource> operationResources = AddOperations(element, specIF);
 
-				foreach (Resource operationResource in operationResources)
-				{
-					specIF.Statements.Add(GetContainsStatement(eaGUID, EaSpecIfGuidConverter.ConvertSpecIfGuidToEaGuid(operationResource.ID)));
-				}
+				//foreach (Resource operationResource in operationResources)
+				//{
+				//	specIF.Statements.Add(GetContainsStatement(eaGUID, EaSpecIfGuidConverter.ConvertSpecIfGuidToEaGuid(operationResource.ID)));
+				//}
 			}
 
 			if(resource == null) // Is it a diagram GUID?
@@ -208,6 +208,11 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 			foreach (Node childNode in currentNode.Nodes)
 			{
+				specIF.Statements.Add(
+					GetContainsStatement(
+					EaSpecIfGuidConverter.ConvertSpecIfGuidToEaGuid(currentNode.ResourceReference.ID), 
+					EaSpecIfGuidConverter.ConvertSpecIfGuidToEaGuid(childNode.ResourceReference.ID)));
+
 				AddSpecIfDataBasedOnHierarchyRecursively(childNode, specIF);
 			}
 		}
