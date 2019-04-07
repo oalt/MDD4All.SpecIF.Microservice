@@ -15,10 +15,13 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 	{
 		private EAAPI.Repository _repository;
 
+		private Dictionary<string, Resource> _primitiveTypes = new Dictionary<string, Resource>();
 		
 		public EaUmlToSpecIfConverter(EAAPI.Repository repository)
 		{
 			_repository = repository;
+
+			InitializePrimitiveTypes();
 		}
 
 		public Node GetModelHierarchy(EAAPI.Package selectedPackage)
@@ -146,6 +149,11 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 		public void AddSpecIfDataBasedOnHierarchy(DataModels.SpecIF specIF)
 		{
+			foreach(KeyValuePair<string, Resource> keyValuePair in _primitiveTypes)
+			{
+				specIF.Resources.Add(keyValuePair.Value);
+			}
+
 			if (specIF.Hierarchies.Count > 0)
 			{
 				AddSpecIfDataBasedOnHierarchyRecursively(specIF.Hierarchies[0], specIF);
@@ -230,6 +238,31 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					Resource attributeResource = ConvertAttribute(attribute, eaElement);
 					specIF.Resources.Add(attributeResource);
 					result.Add(attributeResource);
+
+					if (attribute.ClassifierID == 0 && !string.IsNullOrEmpty(attribute.Type))
+					{
+						Resource primitiveClassifier = GetPrimitiveTypeBySwTypeName(attribute.Type);
+
+						if (primitiveClassifier != null)
+						{
+							Statement classifierStatement = new Statement()
+							{
+								Title = "rdf:type",
+								StatementClass = new Key("SC-Classifier", 1),
+								StatementSubject = new Key(attributeResource.ID, attributeResource.Revision),
+								StatementObject = new Key(primitiveClassifier.ID, primitiveClassifier.Revision)
+							};
+
+							specIF.Statements.Add(classifierStatement);
+						}
+					}
+					else if (attribute.ClassifierID != 0)
+					{
+						Statement classifierStatement = GetClassifierStatement(attribute.ClassifierID, new Key(attributeResource.ID, attributeResource.Revision));
+
+						specIF.Statements.Add(classifierStatement);
+					}
+					
 				}
 			}
 
@@ -250,7 +283,38 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					specIF.Resources.Add(operationResource);
 					result.Add(operationResource);
 
-					for(short parameterCounter = 0; parameterCounter < operation.Parameters.Count; parameterCounter++)
+					Console.WriteLine("Operation " + operation.Name + " classifierID=" + operation.ClassifierID);
+
+					if (operation.ClassifierID == "0" && !string.IsNullOrEmpty(operation.ReturnType))
+					{
+						Resource primitiveClassifier = GetPrimitiveTypeBySwTypeName(operation.ReturnType);
+
+						if (primitiveClassifier != null)
+						{
+							Statement classifierStatement = new Statement()
+							{
+								Title = "rdf:type",
+								StatementClass = new Key("SC-Classifier", 1),
+								StatementSubject = new Key(operationResource.ID, operationResource.Revision),
+								StatementObject = new Key(primitiveClassifier.ID, primitiveClassifier.Revision)
+							};
+
+							specIF.Statements.Add(classifierStatement);
+						}
+					}
+					else if (operation.ClassifierID != "0")
+					{
+						int classifierID = int.Parse(operation.ClassifierID);
+
+						Console.WriteLine("Operation complex classifier. ID=" + classifierID);
+
+						Statement classifierStatement = GetClassifierStatement(classifierID, new Key(operationResource.ID, operationResource.Revision));
+
+						specIF.Statements.Add(classifierStatement);
+					}
+					
+
+					for (short parameterCounter = 0; parameterCounter < operation.Parameters.Count; parameterCounter++)
 					{
 						EAAPI.Parameter parameterEA = operation.Parameters.GetAt(parameterCounter) as EAAPI.Parameter;
 
@@ -261,6 +325,33 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 						Statement paramaterConatinmentStatement = GetContainsStatement(operation.MethodGUID, parameterEA.ParameterGUID);
 
 						specIF.Statements.Add(paramaterConatinmentStatement);
+
+						if (parameterEA.ClassifierID == "0" && !string.IsNullOrEmpty(parameterEA.Type))
+						{
+							Resource primitiveClassifier = GetPrimitiveTypeBySwTypeName(parameterEA.Type);
+
+							if (primitiveClassifier != null)
+							{
+								Statement classifierStatement = new Statement()
+								{
+									Title = "rdf:type",
+									StatementClass = new Key("SC-Classifier", 1),
+									StatementSubject = new Key(operationParameterResource.ID, operationParameterResource.Revision),
+									StatementObject = new Key(primitiveClassifier.ID, primitiveClassifier.Revision)
+								};
+
+								specIF.Statements.Add(classifierStatement);
+							}
+						}
+						else if (parameterEA.ClassifierID != "0")
+						{
+							int classifierID = int.Parse(parameterEA.ClassifierID);
+
+							Statement classifierStatement = GetClassifierStatement(classifierID, new Key(operationParameterResource.ID, operationParameterResource.Revision));
+
+							specIF.Statements.Add(classifierStatement);
+						}
+						
 					}
 				}
 			}
@@ -1571,6 +1662,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				case "Port":
 				case "ActionPin":
 				case "ActivityParameter":
+				case "PrimitiveType":
 
 					result = "RC-UML_PassiveElement";
 				break;
@@ -1657,6 +1749,169 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					result = "V-UML_ConnectorDirection-3";
 				break;
 
+			}
+
+			return result;
+		}
+
+		private void InitializePrimitiveTypes()
+		{
+			Resource integerResource = CreatePrimitiveTypeResource(
+				EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid("{239A1D1D-046D-4902-87B1-4D86FB6B7D76}"),
+				"Integer",
+				"An instance of Integer is a value in the (infinite) set of integers (…-2, -1, 0, 1, 2…).");
+
+			_primitiveTypes.Add(integerResource.Title, integerResource);
+
+			Resource booleanResource = CreatePrimitiveTypeResource(
+				EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid("{26844644-6F52-40A8-BDA8-43A61276B197}"),
+				"Boolean",
+				"An instance of Boolean is one of the predefined values true and false.");
+
+			_primitiveTypes.Add(booleanResource.Title, booleanResource);
+
+			Resource stringResource = CreatePrimitiveTypeResource(
+				EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid("{4CEEB645-62E8-44B0-A97E-694FF01C25E4}"),
+				"String",
+				@"An instance of String defines a sequence of characters. Character sets may include non-Roman
+alphabets.The semantics of the string itself depends on its purpose; it can be a comment,
+computational language expression, OCL expression, etc.");
+
+			_primitiveTypes.Add(stringResource.Title, stringResource);
+
+			Resource unlimitedNaturalResource = CreatePrimitiveTypeResource(
+				EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid("{C35A5389-2CBF-47FB-B987-A540E71B0BFC}"),
+				"UnlimitedNatural",
+				@"An instance of UnlimitedNatural is a value in the (infinite) set of natural numbers (0, 1, 2…) plus
+unlimited. The value of unlimited is shown using an asterisk (‘*’). UnlimitedNatural values are
+typically used to denote the upper bound of a range, such as a multiplicity; unlimited is used
+whenever the range is specified to have no upper bound.");
+
+			_primitiveTypes.Add(unlimitedNaturalResource.Title, unlimitedNaturalResource);
+
+			Resource realResource = CreatePrimitiveTypeResource(
+				EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid("{ABA6441D-268A-457D-A775-484C7301AF21}"),
+				"Real",
+				@"An instance of Real is a value in the (infinite) set of real numbers. Typically an implementation
+will internally represent Real numbers using a floating point standard such as ISO/IEC/IEEE
+60559:2011 (whose content is identical to the predecessor IEEE 754 standard).");
+
+			_primitiveTypes.Add(realResource.Title, realResource);
+		}
+
+		private Resource CreatePrimitiveTypeResource(string id, 
+													 string title,
+													 string description)
+		{
+			Resource result = new Resource()
+			{
+				ID = id,
+				Revision = 1,
+				Title = title,
+				ResourceClass = new Key(GetResourceClassForElementType("PrimitiveType"), 1),
+				ChangedAt = new DateTime(2019, 4, 7),
+				ChangedBy = "oalt"
+
+			};
+
+			result.Properties = new List<Property>();
+
+			result.Properties.Add(
+				new Property()
+				{
+					Title = "dcterms:title",
+					PropertyClass = new Key("PC-Name", 1),
+					Value = new Value
+					{
+						LanguageValues = new List<LanguageValue>
+						{
+						new LanguageValue
+							{
+								Text = title
+							}
+						}
+					},
+					ID = result.ID + "_NAME",
+					ChangedAt = new DateTime(2019, 4, 7),
+					ChangedBy = "oalt"
+				}
+				);
+
+			result.Properties.Add(
+				new Property()
+				{
+					Title = "dcterms:description",
+					PropertyClass = new Key("PC-Text", 1),
+					Value = new Value
+					{
+						LanguageValues = new List<LanguageValue>
+						{
+							new LanguageValue
+							{
+								Text = description
+							}
+						}
+					},
+					ID = result.ID + "_NOTES",
+					ChangedAt = new DateTime(2019, 4, 7),
+					ChangedBy = "oalt"
+				}
+				);
+
+			result.Properties.Add(
+				new Property()
+				{
+					Title = "dcterms:type",
+					PropertyClass = new Key("PC-Type", 1),
+					Value = new Value
+					{
+						LanguageValues = new List<LanguageValue>
+						{
+							new LanguageValue
+							{
+								Text = "OMG:UML:2.5.1:PrimitiveType"
+							}
+						}
+					},
+					ID = result.ID + "_TYPE",
+					ChangedAt = new DateTime(2019, 4, 7),
+					ChangedBy = "oalt"
+				}
+				);
+
+			return result;
+
+		}
+
+		private Resource GetPrimitiveTypeBySwTypeName(string swTypeName)
+		{
+			Resource result = null;
+
+			switch(swTypeName)
+			{
+				case "int":
+					result = _primitiveTypes["Integer"];
+				break;
+
+				case "bool":
+				case "boolean":
+					result = _primitiveTypes["Boolean"];
+				break;
+
+				case "string":
+				case "String":
+					result = _primitiveTypes["String"];
+				break;
+
+				case "uint":
+				case "uword":
+					result = _primitiveTypes["UnlimitedNatural"];
+				break;
+
+				case "float":
+				case "double":
+					result = _primitiveTypes["Real"];
+				break;
 			}
 
 			return result;
