@@ -41,19 +41,10 @@ namespace MDD4All.SoecIF.DataProvider.EA.Test
 
 					converter = new EaUmlToSpecIfConverter(repository);
 
-					Node node = converter.GetModelHierarchy(rootModelPackage);
-
-					specIF = new SpecIF.DataModels.SpecIF();
-
-					specIF.Title = "UML data extracted from Sparx Enterprise Architect: " + fileName;
-					specIF.Generator = "SpecIFicator";
-
-					specIF.Hierarchies.Add(node);
-
-					converter.AddSpecIfDataBasedOnHierarchy(specIF);
+					specIF = converter.ConvertModelToSpecIF(rootModelPackage);
 						
 
-					SpecIfFileReaderWriter.SaveSpecIfToFile(specIF, "c:/test/TestModel1.specif");
+					SpecIfFileReaderWriter.SaveSpecIfToFile(specIF, @"C:\Users\olli\Documents\work\github\SpecIF-Graph\source\specif\TestModel1.specif");
 
 					Console.WriteLine("Finished");
 				}
