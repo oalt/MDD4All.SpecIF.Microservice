@@ -10,6 +10,10 @@ namespace MDD4All.SpecIF.DataModels
 {
 	public class ResourceClass : SpecIfBaseElement
 	{
+		[JsonProperty(PropertyName = "extends")]
+		[BsonElement("extends")]
+		public Key Extends { get; set; }
+
 		[JsonProperty(PropertyName = "icon")]
 		[BsonElement("icon")]
 		public string Icon { get; set; }

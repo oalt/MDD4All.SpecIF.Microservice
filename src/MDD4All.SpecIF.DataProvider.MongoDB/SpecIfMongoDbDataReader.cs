@@ -47,9 +47,9 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 		{
 			Node result = null;
 
-			if (key.Revision == 0)
+			if (key.Revision == Key.LATEST_REVISION)
 			{
-				int latestRevision = GetLatestHierarchyRevision(key.ID);
+				string latestRevision = GetLatestHierarchyRevision(key.ID);
 				result = _hierarchyMongoDbAccessor.GetItemById(key.ID + "_R_" + latestRevision);
 			}
 			else
@@ -77,7 +77,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
 		}
 
-		public override int GetLatestResourceRevision(string resourceID)
+		public override string GetLatestResourceRevision(string resourceID)
 		{
 			Resource resource = _resourceMongoDbAccessor.GetItemWithLatestRevision(resourceID);
 
@@ -88,9 +88,9 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 		{
 			Resource result = null;
 
-			if (key.Revision == 0)
+			if (key.Revision == Key.LATEST_REVISION)
 			{
-				int latestRevision = GetLatestResourceRevision(key.ID);
+				string latestRevision = GetLatestResourceRevision(key.ID);
 				result = _resourceMongoDbAccessor.GetItemById(key.ID + "_R_" + latestRevision);
 			}
 			else
@@ -104,9 +104,9 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 		{
 			Statement result = null;
 
-			if (key.Revision == 0)
+			if (key.Revision == Key.LATEST_REVISION)
 			{
-				int latestRevision = GetLatestStatementRevision(key.ID);
+				string latestRevision = GetLatestStatementRevision(key.ID);
 				result = _statementMongoDbAccessor.GetItemById(key.ID + "_R_" + latestRevision);
 			}
 			else
@@ -116,14 +116,14 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 			return result;
 		}
 
-		public override int GetLatestHierarchyRevision(string hierarchyID)
+		public override string GetLatestHierarchyRevision(string hierarchyID)
 		{
 			Node hierarchy = _hierarchyMongoDbAccessor.GetItemWithLatestRevision(hierarchyID);
 
 			return hierarchy.Revision;
 		}
 
-		public override int GetLatestStatementRevision(string statementID)
+		public override string GetLatestStatementRevision(string statementID)
 		{
 			Statement statement = _statementMongoDbAccessor.GetItemWithLatestRevision(statementID);
 

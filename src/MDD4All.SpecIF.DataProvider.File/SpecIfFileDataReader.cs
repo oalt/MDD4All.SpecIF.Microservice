@@ -26,7 +26,7 @@ namespace MDD4All.SpecIF.DataProvider.File
 
 			if (hierarchiesWithSameID.Count != 0)
 			{
-				if (key.Revision == 0)
+				if (key.Revision == Key.LATEST_REVISION)
 				{
 					result = hierarchiesWithSameID.OrderByDescending(r => r.Revision).First();
 				}
@@ -47,7 +47,7 @@ namespace MDD4All.SpecIF.DataProvider.File
 
 			if (resourcesWithSameID.Count != 0)
 			{
-				if (key.Revision == 0)
+				if (key.Revision == Key.LATEST_REVISION)
 				{
 					result = resourcesWithSameID.OrderByDescending(r => r.Revision).First();
 				}
@@ -60,23 +60,24 @@ namespace MDD4All.SpecIF.DataProvider.File
 			return result;
 		}
 
-		public override int GetLatestResourceRevision(string resourceID)
+		public override string GetLatestResourceRevision(string resourceID)
 		{
-			int result = 0;
+			string result = Key.FIRST_MAIN_REVISION;
 
-			try
-			{
-				int? latestRevision = _specIfData?.Resources.FindAll(res => res.ID == resourceID).OrderByDescending(r => r.Revision).First().Revision;
+			// TODO
+			//try
+			//{
+			//	string? latestRevision = _specIfData?.Resources.FindAll(res => res.ID == resourceID).OrderByDescending(r => r.Revision).First().Revision;
 
-				if (latestRevision.HasValue)
-				{
-					result = latestRevision.Value;
-				}
-			}
-			catch (Exception)
-			{
-				;
-			}
+			//	if (latestRevision.HasValue)
+			//	{
+			//		result = latestRevision.Value;
+			//	}
+			//}
+			//catch (Exception)
+			//{
+			//	;
+			//}
 
 			return result;
 		}
@@ -89,7 +90,7 @@ namespace MDD4All.SpecIF.DataProvider.File
 
 			if (statementsWithSameID.Count != 0)
 			{
-				if (key.Revision == 0)
+				if (key.Revision == Key.LATEST_REVISION)
 				{
 					result = statementsWithSameID.OrderByDescending(r => r.Revision).First();
 				}
@@ -111,44 +112,44 @@ namespace MDD4All.SpecIF.DataProvider.File
 			return result;
 		}
 
-		public override int GetLatestHierarchyRevision(string hierarchyID)
+		public override string GetLatestHierarchyRevision(string hierarchyID)
 		{
-			int result = 0;
+			string result = Key.FIRST_MAIN_REVISION;
 
-			try
-			{
-				int? latestRevision = _specIfData?.Hierarchies.FindAll(res => res.ID == hierarchyID).OrderByDescending(r => r.Revision).First().Revision;
+			//try
+			//{
+			//	int? latestRevision = _specIfData?.Hierarchies.FindAll(res => res.ID == hierarchyID).OrderByDescending(r => r.Revision).First().Revision;
 
-				if (latestRevision.HasValue)
-				{
-					result = latestRevision.Value;
-				}
-			}
-			catch (Exception)
-			{
-				;
-			}
+			//	if (latestRevision.HasValue)
+			//	{
+			//		result = latestRevision.Value;
+			//	}
+			//}
+			//catch (Exception)
+			//{
+			//	;
+			//}
 
 			return result;
 		}
 
-		public override int GetLatestStatementRevision(string statementID)
+		public override string GetLatestStatementRevision(string statementID)
 		{
-			int result = 0;
+			string result = Key.FIRST_MAIN_REVISION;
 
-			try
-			{
-				int? latestRevision = _specIfData?.Statements.FindAll(res => res.ID == statementID).OrderByDescending(r => r.Revision).First().Revision;
+			//try
+			//{
+			//	int? latestRevision = _specIfData?.Statements.FindAll(res => res.ID == statementID).OrderByDescending(r => r.Revision).First().Revision;
 
-				if (latestRevision.HasValue)
-				{
-					result = latestRevision.Value;
-				}
-			}
-			catch (Exception)
-			{
-				;
-			}
+			//	if (latestRevision.HasValue)
+			//	{
+			//		result = latestRevision.Value;
+			//	}
+			//}
+			//catch (Exception)
+			//{
+			//	;
+			//}
 
 			return result;
 		}

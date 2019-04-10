@@ -16,16 +16,16 @@ namespace MDD4All.SpecIF.DataModels
 		}
 
 		[JsonProperty(PropertyName = "id")]
-		public string ID { get; set; } = Guid.NewGuid().ToString();
+		public string ID { get; set; } = "_" + Guid.NewGuid().ToString();
 
 		[JsonProperty(PropertyName = "title")]
-		public string Title { get; set; } = "";
+		public Value Title { get; set; } = new Value();
 
 		[JsonProperty(PropertyName = "description")]
-		public string Description { get; set; }
+		public Value Description { get; set; }
 
 		[JsonProperty(PropertyName = "specifVersion")]
-		public string SpecifVersion { get; set; } = "0.11.7";
+		public string SpecifVersion { get; set; } = "0.11.8";
 
 		[JsonProperty(PropertyName = "generator")]
 		public string Generator { get; set; }
@@ -103,6 +103,6 @@ namespace MDD4All.SpecIF.DataModels
 		}
 
 		[JsonProperty(PropertyName = "files")]
-		public List<File> Files { get; set; } = new List<File>();
+		public List<File> Files { get; set; }
 	}
 }

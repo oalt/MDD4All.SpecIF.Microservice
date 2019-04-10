@@ -11,6 +11,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
             result = result.Replace("{", "");
             result = result.Replace("}", "");
+			result = "_" + result;
 
             return result;
         }
@@ -18,6 +19,11 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
         public static string ConvertSpecIfGuidToEaGuid(string specIfGuid)
         {
             string result = specIfGuid.Replace('_', '-');
+
+			if(result.StartsWith("_"))
+			{
+				result = result.Substring(1);
+			}
 
             result = "{" + result + "}";
             

@@ -2,11 +2,10 @@
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
 using MDD4All.SpecIF.DataModels.Helpers;
-using MDD4All.SpecIF.DataModels.Service;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
-using System;
+using System.Collections.Generic;
 
 namespace MDD4All.SpecIF.DataModels.BaseTypes
 {
@@ -15,7 +14,7 @@ namespace MDD4All.SpecIF.DataModels.BaseTypes
 		public IdentifiableElement()
 		{
 			ID = SpecIfGuidGenerator.CreateNewSpecIfGUID();
-			Revision = 1;
+			Revision = Key.FIRST_MAIN_REVISION;
 		}
 
 		[JsonIgnore]
@@ -32,14 +31,17 @@ namespace MDD4All.SpecIF.DataModels.BaseTypes
 			}
 		}
 
-		[JsonProperty(PropertyName = "id", Order = -100)]
+		[JsonProperty(PropertyName = "id", Order = -101)]
 		[BsonElement("id")]
 		public string ID { get; set; }
 
-		[JsonProperty(PropertyName = "revision", Order = -99)]
+		[JsonProperty(PropertyName = "revision", Order = -100)]
 		[BsonElement("revision")]
-		public int Revision { get; set; }
+		public string Revision { get; set; }
 
-		
+		[JsonProperty(PropertyName = "replaces", Order = -99)]
+		[BsonElement("replaces")]
+		public List<string> Replaces { get; set; } = new List<string>();
+
 	}
 }

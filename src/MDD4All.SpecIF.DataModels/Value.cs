@@ -14,10 +14,15 @@ namespace MDD4All.SpecIF.DataModels
 	{
 		public Value()
 		{
-			LanguageValues = new List<LanguageValue>();
+			 
+		}
+
+		public Value(string value)
+		{
+			LanguageValues.Add(new LanguageValue(value));
 		}
 
 		[BsonElement("languageValues")]
-		public List<LanguageValue> LanguageValues { get; set; }
+		public List<LanguageValue> LanguageValues { get; set; } = new List<LanguageValue>();
 	}
 }

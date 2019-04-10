@@ -29,7 +29,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
             {
                 result.ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID);
 
-                result.Revision = 1;
+                result.Revision = Key.FIRST_MAIN_REVISION;
 
                 result.ChangedAt = eaElement.Modified;
 
@@ -55,11 +55,11 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
                     }
                 }
 
-                result.Title = name;
+                result.Title = new Value(name);
 
                 Property nameProperty = new Property
                 {
-                    Title = "dcterms:title",
+                    Title = new Value("dcterms:title"),
                     PropertyClass = new Key("AT-Req-Name", 1),
                     Value = new Value
                     {
@@ -80,7 +80,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
                 Property notesProperty = new Property
                 {
-                    Title = "dcterms:description",
+                    Title = new Value("dcterms:description"),
                     PropertyClass = new Key("PC-Text", 1),
                     Value = new Value
                     {
@@ -114,7 +114,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
                     {
                         Property identifierProperty = new Property
                         {
-                            Title = "dcterms:identifier",
+                            Title = new Value("dcterms:identifier"),
                             PropertyClass = new Key("PC-VisibleId", 1),
                             Value = new Value
                             {
@@ -165,7 +165,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
                     {
                         Property statusProperty = new Property
                         {
-                            Title = "SpecIF:Status",
+                            Title = new Value("SpecIF:Status"),
                             PropertyClass = new Key("PC-Status", 1),
                             Value = new Value
                             {
@@ -233,7 +233,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			Resource resource = new Resource();
 
 			resource.ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaPackage.Element.ElementGUID);
-			resource.Title = eaPackage.Name;
+			resource.Title = new Value(eaPackage.Name);
 			resource.ResourceClass = new Key("RC-Folder", 1);
 			resource.Properties = new List<Property>();
 
@@ -246,12 +246,12 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
                 Node childNode = new Node()
                 {
                     ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(childPackage.Element.ElementGUID + "-NODE"),
-                    Revision = 1,
+                    Revision = Key.FIRST_MAIN_REVISION,
                     NodeReferences = new List<Key>(),
                     ResourceReference = new Key()
                     {
                         ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(childPackage.Element.ElementGUID),
-                        Revision = 1
+                        Revision = Key.FIRST_MAIN_REVISION
                     }
                
                 };
@@ -282,13 +282,13 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
                 Node childNode = new Node()
                 {
                     ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(childPackage.Element.ElementGUID + "-NODE"),
-                    Revision = 1,
+                    Revision = Key.FIRST_MAIN_REVISION,
                     NodeReferences = new List<Key>(),
                     ResourceReference = new Key()
                     {
                         ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(childPackage.Element.ElementGUID),
-                        Revision = 1
-                    }
+                        Revision = Key.FIRST_MAIN_REVISION
+					}
 
                 };
 
@@ -322,13 +322,13 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
             Node elementNode = new Node()
             {
                 ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(element.ElementGUID + "-NODE"),
-                Revision = 1,
+                Revision = Key.FIRST_MAIN_REVISION,
                 NodeReferences = new List<Key>(),
                 ResourceReference = new Key()
                 {
                     ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(element.ElementGUID),
-                    Revision = 1
-                }
+                    Revision = Key.FIRST_MAIN_REVISION
+				}
             };
 
             parentNodeList.Add(elementNode);
@@ -351,13 +351,13 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
                 Node embeddedElementNode = new Node()
                 {
                     ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(embeddedElement.ElementGUID + "-NODE"),
-                    Revision = 1,
+                    Revision = Key.FIRST_MAIN_REVISION,
                     NodeReferences = new List<Key>(),
                     ResourceReference = new Key()
                     {
                         ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(embeddedElement.ElementGUID),
-                        Revision = 1
-                    }
+                        Revision = Key.FIRST_MAIN_REVISION
+					}
                 };
 
                 if (elementNode.Nodes == null)

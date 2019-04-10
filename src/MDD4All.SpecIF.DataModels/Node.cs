@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace MDD4All.SpecIF.DataModels
 {
-	public class Node : IdentifiableElement
+	public class Node : SpecIfBaseElement
 	{
 		
 		public Node() : base()
@@ -41,7 +41,7 @@ namespace MDD4All.SpecIF.DataModels
 					_resourceReference = new Key()
 					{
 						ID = resourceJObject["id"].ToString(),
-						Revision = int.Parse(resourceJObject["revision"].ToString())
+						Revision = resourceJObject["revision"].ToString()
 					};
 				}
 				
@@ -60,11 +60,11 @@ namespace MDD4All.SpecIF.DataModels
 			set
 			{
 				_resourceReference.ID = value;
-				_resourceReference.Revision = 0;
+				_resourceReference.Revision = "main/latest";
 			}
 		}
 
-		private Key _resourceReference = new Key() { ID = "", Revision = 0 };
+		private Key _resourceReference = new Key() { ID = "", Revision = "main/latest" };
 
 		[JsonIgnore]
 		[BsonElement("resource")]
@@ -120,9 +120,5 @@ namespace MDD4All.SpecIF.DataModels
 				_nodeReferences = value;
 			}
 		}
-
-		[JsonProperty(PropertyName = "changedAt")]
-		[BsonElement("changedAt")]
-		public DateTime ChangedAt { get; set; }
 	}
 }

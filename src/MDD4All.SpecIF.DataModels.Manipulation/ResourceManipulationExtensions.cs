@@ -5,14 +5,15 @@ using MDD4All.SpecIF.DataModels.Helpers;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using System;
 using System.Diagnostics;
+using System.Linq;
 
 namespace MDD4All.SpecIF.DataModels.Manipulation
 {
     public static class ResourceManipulationExtensions
     {
-		public static string GetTypeName(this Resource resource, ISpecIfMetadataReader dataProvider)
+		public static LanguageValue GetTypeName(this Resource resource, ISpecIfMetadataReader dataProvider)
 		{
-			string result = "";
+			LanguageValue result = new LanguageValue();
 
 			try
 			{
@@ -20,7 +21,7 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 
 				if (resourceType != null)
 				{
-					result = resourceType.Title;
+					result = resourceType.Title.LanguageValues[0];
 				}
 			}
 			catch(Exception exception)
@@ -45,7 +46,9 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 
 			foreach(Property property in resource.Properties)
 			{
-				if(property.Title == propertyTitle)
+				string title = property.Title.LanguageValues.First(v => v.Text == propertyTitle).Text;
+
+				if (title == propertyTitle)
 				{
 					property.Value = value;
 					propertyFound = true;
@@ -69,7 +72,9 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 
 						if(propertyClass != null)
 						{
-							if(propertyClass.Title == propertyTitle)
+							string title = propertyClass.Title.LanguageValues.First(v => v.Text == propertyTitle).Text;
+
+							if (title == propertyTitle)
 							{
 								matchingPropertyClass = propertyClass;
 								matchingPropertyKey = propertyKey;
@@ -103,7 +108,9 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 
 			foreach (Property property in resource.Properties)
 			{
-				if (property.Title == propertyTitle)
+				string title = property.Title.LanguageValues.First(v => v.Text == propertyTitle).Text;
+
+				if (title == propertyTitle)
 				{
 					result = property.GetStringValue(dataProvider);
 					break;

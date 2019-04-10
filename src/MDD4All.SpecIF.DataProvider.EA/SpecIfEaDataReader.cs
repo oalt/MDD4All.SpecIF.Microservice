@@ -73,9 +73,9 @@ namespace MDD4All.SpecIF.DataProvider.EA
             return result;
         }
 
-		public override int GetLatestResourceRevision(string resourceID)
+		public override string GetLatestResourceRevision(string resourceID)
 		{
-			return 1;
+			return Key.FIRST_MAIN_REVISION;
 		}
 
 		public override Resource GetResourceByKey(Key key)
@@ -114,14 +114,14 @@ namespace MDD4All.SpecIF.DataProvider.EA
             throw new NotImplementedException();
         }
 
-		public override int GetLatestHierarchyRevision(string hierarchyID)
+		public override string GetLatestHierarchyRevision(string hierarchyID)
 		{
-			return 1;
+			return Key.FIRST_MAIN_REVISION;
 		}
 
-		public override int GetLatestStatementRevision(string statementID)
+		public override string GetLatestStatementRevision(string statementID)
 		{
-			return 1;
+			return Key.FIRST_MAIN_REVISION;
 		}
 	}
 }

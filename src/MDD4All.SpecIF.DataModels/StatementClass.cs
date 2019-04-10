@@ -10,6 +10,22 @@ namespace MDD4All.SpecIF.DataModels
 {
 	public class StatementClass : SpecIfBaseElement
 	{
+		[JsonProperty(PropertyName = "extends")]
+		[BsonElement("extends")]
+		public Key Extends { get; set; }
+
+		[JsonProperty(PropertyName = "icon")]
+		[BsonElement("icon")]
+		public string Icon { get; set; }
+
+		[JsonProperty(PropertyName = "instantiation")]
+		[BsonElement("instantiation")]
+		public List<string> Instantiation { get; set; }
+
+		[JsonProperty(PropertyName = "propertyClasses")]
+		[BsonElement("propertyClasses")]
+		public List<Key> PropertyClasses { get; set; }
+
 		[JsonProperty(PropertyName = "subjectClasses")]
 		[BsonElement("subjectClasses")]
 		public List<string> SubjectClasses { get; set; }
@@ -18,8 +34,6 @@ namespace MDD4All.SpecIF.DataModels
 		[BsonElement("objectClasses")]
 		public List<string> ObjectClasses { get; set; }
 
-		[JsonProperty(PropertyName = "propertyClasses")]
-		[BsonElement("propertyClasses")]
-		public List<Key> PropertyClasses { get; set; }		
+			
 	}
 }

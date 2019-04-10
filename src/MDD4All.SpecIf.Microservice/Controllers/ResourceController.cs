@@ -24,11 +24,11 @@ namespace MDD4All.SpecIf.Microservice.Controllers
 		[HttpGet("{id}")]
 		public IActionResult Get(string id)
 		{
-			return Get(id, 0);
+			return Get(id, Key.LATEST_REVISION);
 		}
 
 		[HttpGet("{id}/{revision}")]
-		public IActionResult Get(string id, int revision)
+		public IActionResult Get(string id, string revision)
 		{
 			IActionResult result = NotFound();
 
@@ -45,7 +45,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
 		}
 
 		[HttpGet("LatestRevision/{id}")]
-		public int GetLatestRevision(string id)
+		public string GetLatestRevision(string id)
 		{
 			return _specIfDataReader.GetLatestResourceRevision(id);
 		}

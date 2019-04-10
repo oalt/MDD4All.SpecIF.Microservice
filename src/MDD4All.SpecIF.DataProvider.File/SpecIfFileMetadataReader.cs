@@ -37,7 +37,7 @@ namespace MDD4All.SpecIF.DataProvider.File
 
 			if (resourceClassesWithSameID.Count != 0)
 			{
-				if (key.Revision == 0)
+				if (key.Revision == Key.LATEST_REVISION)
 				{
 					result = resourceClassesWithSameID.OrderByDescending(r => r.Revision).First();
 				}
@@ -58,7 +58,7 @@ namespace MDD4All.SpecIF.DataProvider.File
 
 			if (propertyClassesWithSameID.Count != 0)
 			{
-				if (key.Revision == 0)
+				if (key.Revision == Key.LATEST_REVISION)
 				{
 					result = propertyClassesWithSameID.OrderByDescending(r => r.Revision).First();
 				}
@@ -84,7 +84,7 @@ namespace MDD4All.SpecIF.DataProvider.File
 
 			if (statementClassesWithSameID.Count != 0)
 			{
-				if (key.Revision == 0)
+				if (key.Revision == Key.LATEST_REVISION)
 				{
 					result = statementClassesWithSameID.OrderByDescending(r => r.Revision).First();
 				}
@@ -102,17 +102,17 @@ namespace MDD4All.SpecIF.DataProvider.File
 			return _metaData?.ResourceClasses;
 		}
 
-		public override int GetLatestPropertyClassRevision(string propertyClassID)
+		public override string GetLatestPropertyClassRevision(string propertyClassID)
 		{
 			throw new System.NotImplementedException();
 		}
 
-		public override int GetLatestResourceClassRevision(string resourceClassID)
+		public override string GetLatestResourceClassRevision(string resourceClassID)
 		{
 			throw new System.NotImplementedException();
 		}
 
-		public override int GetLatestStatementClassRevision(string statementClassID)
+		public override string GetLatestStatementClassRevision(string statementClassID)
 		{
 			throw new System.NotImplementedException();
 		}

@@ -168,9 +168,9 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			return result;
 		}
 
-		public override int GetLatestPropertyClassRevision(string propertyClassID)
+		public override string GetLatestPropertyClassRevision(string propertyClassID)
 		{
-			int result = 1;
+			string result = Key.FIRST_MAIN_REVISION;
 
 			ISpecIfMetadataReader provider = FindDataProviderForPropertyClass(propertyClassID);
 
@@ -182,9 +182,9 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			return result;
 		}
 
-		public override int GetLatestResourceClassRevision(string resourceClassID)
+		public override string GetLatestResourceClassRevision(string resourceClassID)
 		{
-			int result = 1;
+			string result = Key.FIRST_MAIN_REVISION;
 
 			ISpecIfMetadataReader provider = FindDataProviderForResourceClass(resourceClassID);
 
@@ -196,9 +196,9 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			return result;
 		}
 
-		public override int GetLatestStatementClassRevision(string statementClassID)
+		public override string GetLatestStatementClassRevision(string statementClassID)
 		{
-			int result = 1;
+			string result = Key.FIRST_MAIN_REVISION;
 
 			ISpecIfMetadataReader provider = FindDataProviderForStatementClass(statementClassID);
 
@@ -216,7 +216,7 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 
 			foreach (KeyValuePair<string, ISpecIfMetadataReader> provider in _metadataReaders)
 			{
-				if (provider.Value.GetStatementClassByKey(new Key() { ID = id, Revision = 0 }) != null)
+				if (provider.Value.GetStatementClassByKey(new Key() { ID = id, Revision = Key.LATEST_REVISION }) != null)
 				{
 					result = provider.Value;
 					break;
@@ -232,7 +232,7 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 
 			foreach (KeyValuePair<string, ISpecIfMetadataReader> provider in _metadataReaders)
 			{
-				if (provider.Value.GetPropertyClassByKey(new Key() { ID = id, Revision = 0 }) != null)
+				if (provider.Value.GetPropertyClassByKey(new Key() { ID = id, Revision = Key.LATEST_REVISION }) != null)
 				{
 					result = provider.Value;
 					break;
@@ -248,7 +248,7 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 
 			foreach (KeyValuePair<string, ISpecIfMetadataReader> provider in _metadataReaders)
 			{
-				if (provider.Value.GetResourceClassByKey(new Key() { ID = id, Revision = 0 }) != null)
+				if (provider.Value.GetResourceClassByKey(new Key() { ID = id, Revision = Key.LATEST_REVISION }) != null)
 				{
 					result = provider.Value;
 					break;

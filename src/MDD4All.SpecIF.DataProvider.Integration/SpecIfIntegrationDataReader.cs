@@ -6,7 +6,6 @@ using MDD4All.SpecIF.DataModels.Service;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using MDD4All.SpecIF.DataProvider.WebAPI;
 using MDD4All.SpecIF.ServiceDataProvider;
-using System;
 using System.Collections.Generic;
 
 namespace MDD4All.SpecIF.DataProvider.Integration
@@ -93,9 +92,9 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			return result;
 		}
 
-		public override int GetLatestResourceRevision(string resourceID)
+		public override string GetLatestResourceRevision(string resourceID)
 		{
-			int result = 1;
+			string result = Key.FIRST_MAIN_REVISION;
 
 			ISpecIfDataReader provider = FindDataProviderForResource(resourceID);
 
@@ -147,9 +146,9 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			return result;
 		}
 
-		public override int GetLatestHierarchyRevision(string hierarchyID)
+		public override string GetLatestHierarchyRevision(string hierarchyID)
 		{
-			int result = 1;
+			string result = Key.FIRST_MAIN_REVISION;
 
 			ISpecIfDataReader provider = FindDataProviderForHierarchy(hierarchyID);
 
@@ -161,9 +160,9 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			return result;
 		}
 
-		public override int GetLatestStatementRevision(string statementID)
+		public override string GetLatestStatementRevision(string statementID)
 		{
-			int result = 1;
+			string result = Key.FIRST_MAIN_REVISION;
 
 			ISpecIfDataReader provider = FindDataProviderForStatement(statementID);
 
@@ -181,7 +180,7 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 
 			foreach (KeyValuePair<string, ISpecIfDataReader> provider in _dataReaders)
 			{
-				if (provider.Value.GetStatementByKey(new Key() { ID = statementID, Revision = 0 }) != null)
+				if (provider.Value.GetStatementByKey(new Key() { ID = statementID, Revision = Key.LATEST_REVISION }) != null)
 				{
 					result = provider.Value;
 					break;
@@ -197,7 +196,7 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 
 			foreach (KeyValuePair<string, ISpecIfDataReader> provider in _dataReaders)
 			{
-				if (provider.Value.GetResourceByKey(new Key() { ID = id, Revision = 0 }) != null)
+				if (provider.Value.GetResourceByKey(new Key() { ID = id, Revision = Key.LATEST_REVISION }) != null)
 				{
 					result = provider.Value;
 					break;
@@ -213,7 +212,7 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 
 			foreach (KeyValuePair<string, ISpecIfDataReader> provider in _dataReaders)
 			{
-				if (provider.Value.GetHierarchyByKey(new Key() { ID = id, Revision = 0 }) != null)
+				if (provider.Value.GetHierarchyByKey(new Key() { ID = id, Revision = Key.LATEST_REVISION }) != null)
 				{
 					result = provider.Value;
 					break;

@@ -21,14 +21,14 @@ namespace MDD4All.SpecIF.DataModels.Converters
 			if (reader.ValueType == typeof(string))
 			{
 				result.ID = reader.Value.ToString();
-				result.Revision = 1;
+				result.Revision = "main/1";
 			}
 			else
 			{
 				JObject keyJObject = JObject.Load(reader);
 
 				result.ID = keyJObject["id"].ToString();
-				result.Revision = int.Parse(keyJObject["revision"].ToString());
+				result.Revision = keyJObject["revision"].ToString();
 			}
 			
 			return result;
@@ -64,7 +64,7 @@ namespace MDD4All.SpecIF.DataModels.Converters
 			}
 			else if (value is string)
 			{
-				Key key = new Key((string)value, 1);
+				Key key = new Key((string)value, "main/1");
 
 				JToken token = JToken.FromObject(key);
 

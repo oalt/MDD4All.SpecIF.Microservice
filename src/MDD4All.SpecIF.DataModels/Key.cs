@@ -11,6 +11,9 @@ namespace MDD4All.SpecIF.DataModels
 	[JsonConverter(typeof(KeyConverter))]
 	public class Key : SpecIfElement
 	{
+		public static string LATEST_REVISION = "main/latest";
+		public static string FIRST_MAIN_REVISION = "main/1";
+
 		public Key()
 		{
 		}
@@ -18,13 +21,19 @@ namespace MDD4All.SpecIF.DataModels
 		public Key(string id)
 		{
 			ID = id;
-			Revision = 0;
+			Revision = LATEST_REVISION;
 		}
 
-		public Key(string id, int revision) 
+		public Key(string id, string revision) 
 		{
 			ID = id;
 			Revision = revision;
+		}
+
+		public Key(string id, int revision)
+		{
+			ID = id;
+			Revision = "main/"+ revision;
 		}
 
 		[JsonProperty(PropertyName = "id")]
@@ -33,6 +42,6 @@ namespace MDD4All.SpecIF.DataModels
 
 		[JsonProperty(PropertyName = "revision")]
 		[BsonElement("revision")]
-		public int Revision { get; set; }
+		public string Revision { get; set; }
 	}
 }

@@ -49,21 +49,21 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 			return _dataTypeMongoDbAccessor.GetItemByFilter("{ id : '" + id + "' }");
 		}
 
-		public override int GetLatestPropertyClassRevision(string propertyClassID)
+		public override string GetLatestPropertyClassRevision(string propertyClassID)
 		{
 			PropertyClass propertyClass = _propertyClassMongoDbAccessor.GetItemWithLatestRevision(propertyClassID);
 
 			return propertyClass.Revision;
 		}
 
-		public override int GetLatestResourceClassRevision(string resourceClassID)
+		public override string GetLatestResourceClassRevision(string resourceClassID)
 		{
 			ResourceClass resourceClass = _resourceClassMongoDbAccessor.GetItemWithLatestRevision(resourceClassID);
 
 			return resourceClass.Revision;
 		}
 
-		public override int GetLatestStatementClassRevision(string statementClassID)
+		public override string GetLatestStatementClassRevision(string statementClassID)
 		{
 			StatementClass statementClass = _statementClassMongoDbAccessor.GetItemWithLatestRevision(statementClassID);
 
@@ -74,9 +74,9 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 		{
 			PropertyClass result = null;
 
-			if (key.Revision == 0)
+			if (key.Revision == Key.LATEST_REVISION)
 			{
-				int latestRevision = GetLatestPropertyClassRevision(key.ID);
+				string latestRevision = GetLatestPropertyClassRevision(key.ID);
 				result = _propertyClassMongoDbAccessor.GetItemById(key.ID + "_R_" + latestRevision);
 			}
 			else
@@ -90,9 +90,9 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 		{
 			ResourceClass result = null;
 
-			if (key.Revision == 0)
+			if (key.Revision == Key.LATEST_REVISION)
 			{
-				int latestRevision = GetLatestResourceClassRevision(key.ID);
+				string latestRevision = GetLatestResourceClassRevision(key.ID);
 				result = _resourceClassMongoDbAccessor.GetItemById(key.ID + "_R_" + latestRevision);
 			}
 			else
@@ -106,9 +106,9 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 		{
 			StatementClass result = null;
 
-			if (key.Revision == 0)
+			if (key.Revision == Key.LATEST_REVISION)
 			{
-				int latestRevision = GetLatestStatementClassRevision(key.ID);
+				string latestRevision = GetLatestStatementClassRevision(key.ID);
 				result = _statementClassMongoDbAccessor.GetItemById(key.ID + "_R_" + latestRevision);
 			}
 			else
