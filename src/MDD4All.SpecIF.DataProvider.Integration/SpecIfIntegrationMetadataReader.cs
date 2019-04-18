@@ -168,9 +168,9 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			return result;
 		}
 
-		public override string GetLatestPropertyClassRevision(string propertyClassID)
+		public override Revision GetLatestPropertyClassRevision(string propertyClassID)
 		{
-			string result = Key.FIRST_MAIN_REVISION;
+			Revision result = Key.FIRST_MAIN_REVISION;
 
 			ISpecIfMetadataReader provider = FindDataProviderForPropertyClass(propertyClassID);
 
@@ -182,9 +182,9 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			return result;
 		}
 
-		public override string GetLatestResourceClassRevision(string resourceClassID)
+		public override Revision GetLatestResourceClassRevision(string resourceClassID)
 		{
-			string result = Key.FIRST_MAIN_REVISION;
+			Revision result = Key.FIRST_MAIN_REVISION;
 
 			ISpecIfMetadataReader provider = FindDataProviderForResourceClass(resourceClassID);
 
@@ -196,9 +196,9 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			return result;
 		}
 
-		public override string GetLatestStatementClassRevision(string statementClassID)
+		public override Revision GetLatestStatementClassRevision(string statementClassID)
 		{
-			string result = Key.FIRST_MAIN_REVISION;
+			Revision result = Key.FIRST_MAIN_REVISION;
 
 			ISpecIfMetadataReader provider = FindDataProviderForStatementClass(statementClassID);
 

@@ -4,7 +4,9 @@
 using MDD4All.MongoDB.DataAccess.Generic;
 using MDD4All.SpecIF.DataModels;
 using MDD4All.SpecIF.DataProvider.Contracts;
+using MongoDB.Bson;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MDD4All.SpecIF.DataProvider.MongoDB
 {
@@ -30,7 +32,21 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
 		public override List<Node> GetAllHierarchies()
 		{
-			return new List<Node>(_hierarchyMongoDbAccessor.GetItems());
+			List<Node> result = new List<Node>();
+
+			BsonDocument filter = new BsonDocument()
+			{
+				{  "isHierarchyRoot", true }
+			};
+
+			result = new List<Node>(_hierarchyMongoDbAccessor.GetItemsByFilter(filter.ToJson()));
+
+			foreach(Node rootNode in result)
+			{
+				ResolveNodesRecursively(rootNode);
+			}
+
+			return result;
 		}
 
 		public override byte[] GetFile(string filename)
@@ -49,13 +65,16 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
 			if (key.Revision == Key.LATEST_REVISION)
 			{
-				string latestRevision = GetLatestHierarchyRevision(key.ID);
-				result = _hierarchyMongoDbAccessor.GetItemById(key.ID + "_R_" + latestRevision);
+				Revision latestRevision = GetLatestHierarchyRevision(key.ID);
+				result = _hierarchyMongoDbAccessor.GetItemById(key.ID + "_R_" + latestRevision.StringValue);
 			}
 			else
 			{
-				result = _hierarchyMongoDbAccessor.GetItemById(key.ID + "_R_" + key.Revision);
+				result = _hierarchyMongoDbAccessor.GetItemById(key.ID + "_R_" + key.Revision.StringValue);
 			}
+
+			ResolveNodesRecursively(result);
+
 			return result;
 		}
 
@@ -68,7 +87,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 					parent.Nodes = new List<Node>();
 				}
 
-				Node childNode = _nodeMongoDbAccessor.GetItemById(nodeKey.ID + "_R_" + nodeKey.Revision);
+				Node childNode = _nodeMongoDbAccessor.GetItemById(nodeKey.ID + "_R_" + nodeKey.Revision.StringValue);
 
 				parent.Nodes.Add(childNode);
 
@@ -77,12 +96,14 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
 		}
 
-		public override string GetLatestResourceRevision(string resourceID)
+		public override Revision GetLatestResourceRevision(string resourceID)
 		{
 			Resource resource = _resourceMongoDbAccessor.GetItemWithLatestRevision(resourceID);
 
 			return resource.Revision;
 		}
+
+		
 
 		public override Resource GetResourceByKey(Key key)
 		{
@@ -90,7 +111,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
 			if (key.Revision == Key.LATEST_REVISION)
 			{
-				string latestRevision = GetLatestResourceRevision(key.ID);
+				Revision latestRevision = GetLatestResourceRevision(key.ID);
 				result = _resourceMongoDbAccessor.GetItemById(key.ID + "_R_" + latestRevision);
 			}
 			else
@@ -106,7 +127,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
 			if (key.Revision == Key.LATEST_REVISION)
 			{
-				string latestRevision = GetLatestStatementRevision(key.ID);
+				Revision latestRevision = GetLatestStatementRevision(key.ID);
 				result = _statementMongoDbAccessor.GetItemById(key.ID + "_R_" + latestRevision);
 			}
 			else
@@ -116,19 +137,44 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 			return result;
 		}
 
-		public override string GetLatestHierarchyRevision(string hierarchyID)
+		public override Revision GetLatestHierarchyRevision(string hierarchyID)
 		{
 			Node hierarchy = _hierarchyMongoDbAccessor.GetItemWithLatestRevision(hierarchyID);
 
 			return hierarchy.Revision;
 		}
 
-		public override string GetLatestStatementRevision(string statementID)
+		public override Revision GetLatestStatementRevision(string statementID)
 		{
 			Statement statement = _statementMongoDbAccessor.GetItemWithLatestRevision(statementID);
 
 			return statement.Revision;
 				 
+		}
+
+		public override List<Statement> GetAllStatementsForResource(Key resourceKey)
+		{
+			List<Statement> result = new List<Statement>();
+
+			BsonDocument filter = new BsonDocument()
+			{
+				{ "$or", new BsonArray()
+						 {
+							new BsonDocument()
+							{
+								{ "subject.id", resourceKey.ID }
+							},
+							new BsonDocument()
+							{
+								{ "object.id", resourceKey.ID }
+							}
+						}
+				}
+			};
+
+			result = _statementMongoDbAccessor.GetItemsByFilter(filter.ToJson());
+
+			return result;
 		}
 	}
 }

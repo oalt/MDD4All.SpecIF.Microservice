@@ -79,14 +79,37 @@ namespace MDD4All.MongoDB.DataAccess.Generic
 			return result;
 		}
 
-		public T GetItemWithLatestRevision(string id)
+		public List<T> GetItemsByFilter(string filterJson)
 		{
-			BsonDocument filter = BsonDocument.Parse("{ \"id\" : " + " \"" + id + "\"}");
+			List<T> result = new List<T>();
+			try
+			{
+				BsonDocument filter = BsonDocument.Parse(filterJson);
 
-			return _db.GetCollection<T>(_collectionName).Find(filter).Sort("{ 'revision': -1}").First<T>();
+				result = _db.GetCollection<T>(_collectionName).Find(filter).ToList();
+			}
+			catch (Exception exception)
+			{
+
+			}
+			return result;
 		}
 
-		
+		public T GetItemWithLatestRevision(string id)
+		{
+			BsonDocument filter = new BsonDocument()
+			{
+				{"id", id }
+			};
+
+			List<T> allRevisionItems = _db.GetCollection<T>(_collectionName).Find(filter).ToList();
+
+			IFindFluent<T, T> allRevisions = _db.GetCollection<T>(_collectionName).Find(filter);
+
+			return allRevisions.Sort("{ 'revision.revisionNumber': -1}").First<T>();
+		}
+
+
 
 		public void Add(T item)
 		{

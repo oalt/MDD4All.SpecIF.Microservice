@@ -102,11 +102,12 @@ namespace MDD4All.SpecIF.Converters
 
 			if (_specIF.Hierarchies != null)
 			{
-				MongoDBDataAccessor<DataModels.Node> resourceAccessor = new MongoDBDataAccessor<DataModels.Node>(_connectionString, "specif");
+				MongoDBDataAccessor<DataModels.Node> nodeAccessor = new MongoDBDataAccessor<DataModels.Node>(_connectionString, "specif");
 
-				foreach (DataModels.Node data in _specIF.Hierarchies)
+				foreach (Node data in _specIF.Hierarchies)
 				{
-					resourceAccessor.Add(data);
+					data.IsHierarchyRoot = true;
+					nodeAccessor.Add(data);
 					foreach(Node node in data.Nodes)
 					{
 						AddHierarchyNodesRecusrively(node);

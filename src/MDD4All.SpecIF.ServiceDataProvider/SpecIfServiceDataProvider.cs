@@ -47,32 +47,37 @@ namespace MDD4All.SpecIF.ServiceDataProvider
 
 			ConsulClient consulClient = new ConsulClient(c => c.Address = new Uri(_consulURL));
 
-			Dictionary<string, AgentService> services = consulClient.Agent.Services().Result.Response;
-
-			foreach (KeyValuePair<string, AgentService> service in services)
+			try
 			{
-				bool isSpecIfApi = service.Value.Tags.Any(tag => tag == "SpecIF-Service");
+				Dictionary<string, AgentService> services = consulClient.Agent.Services().Result.Response;
 
-				if (isSpecIfApi)
+				foreach (KeyValuePair<string, AgentService> service in services)
 				{
-					string serviceURL = $"{service.Value.Address}:{service.Value.Port}";
+					bool isSpecIfApi = service.Value.Tags.Any(tag => tag == "SpecIF-Service");
 
-					Task<SpecIfServiceDescription> task = GetServiceDescription(serviceURL);
-
-					task.Wait();
-
-					SpecIfServiceDescription serviceDescription = task.Result;
-
-					if (serviceDescription != null)
+					if (isSpecIfApi)
 					{
+						string serviceURL = $"{service.Value.Address}:{service.Value.Port}";
 
-						//serviceDescription.ServiceURL = serviceURL;
+						Task<SpecIfServiceDescription> task = GetServiceDescription(serviceURL);
 
-						result.Add(serviceDescription);
+						task.Wait();
 
+						SpecIfServiceDescription serviceDescription = task.Result;
+
+						if (serviceDescription != null)
+						{
+
+							//serviceDescription.ServiceURL = serviceURL;
+
+							result.Add(serviceDescription);
+
+						}
 					}
 				}
 			}
+			catch(Exception)
+			{ }
 
 			_serviceDescriptions = result;
 		}

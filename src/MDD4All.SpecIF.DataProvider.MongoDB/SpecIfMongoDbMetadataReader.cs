@@ -49,21 +49,21 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 			return _dataTypeMongoDbAccessor.GetItemByFilter("{ id : '" + id + "' }");
 		}
 
-		public override string GetLatestPropertyClassRevision(string propertyClassID)
+		public override Revision GetLatestPropertyClassRevision(string propertyClassID)
 		{
 			PropertyClass propertyClass = _propertyClassMongoDbAccessor.GetItemWithLatestRevision(propertyClassID);
 
 			return propertyClass.Revision;
 		}
 
-		public override string GetLatestResourceClassRevision(string resourceClassID)
+		public override Revision GetLatestResourceClassRevision(string resourceClassID)
 		{
 			ResourceClass resourceClass = _resourceClassMongoDbAccessor.GetItemWithLatestRevision(resourceClassID);
 
 			return resourceClass.Revision;
 		}
 
-		public override string GetLatestStatementClassRevision(string statementClassID)
+		public override Revision GetLatestStatementClassRevision(string statementClassID)
 		{
 			StatementClass statementClass = _statementClassMongoDbAccessor.GetItemWithLatestRevision(statementClassID);
 
@@ -76,7 +76,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
 			if (key.Revision == Key.LATEST_REVISION)
 			{
-				string latestRevision = GetLatestPropertyClassRevision(key.ID);
+				Revision latestRevision = GetLatestPropertyClassRevision(key.ID);
 				result = _propertyClassMongoDbAccessor.GetItemById(key.ID + "_R_" + latestRevision);
 			}
 			else
@@ -92,7 +92,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
 			if (key.Revision == Key.LATEST_REVISION)
 			{
-				string latestRevision = GetLatestResourceClassRevision(key.ID);
+				Revision latestRevision = GetLatestResourceClassRevision(key.ID);
 				result = _resourceClassMongoDbAccessor.GetItemById(key.ID + "_R_" + latestRevision);
 			}
 			else
@@ -108,7 +108,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
 			if (key.Revision == Key.LATEST_REVISION)
 			{
-				string latestRevision = GetLatestStatementClassRevision(key.ID);
+				Revision latestRevision = GetLatestStatementClassRevision(key.ID);
 				result = _statementClassMongoDbAccessor.GetItemById(key.ID + "_R_" + latestRevision);
 			}
 			else

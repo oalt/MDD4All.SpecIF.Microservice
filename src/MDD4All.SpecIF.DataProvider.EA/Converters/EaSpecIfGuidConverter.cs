@@ -18,14 +18,16 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
         public static string ConvertSpecIfGuidToEaGuid(string specIfGuid)
         {
-            string result = specIfGuid.Replace('_', '-');
+			string result = "";
 
-			if(result.StartsWith("_"))
+			if(specIfGuid.StartsWith("_"))
 			{
-				result = result.Substring(1);
+				result = specIfGuid.Substring(1);
 			}
 
-            result = "{" + result + "}";
+			result = result.Replace('_', '-');
+
+			result = "{" + result + "}";
             
             return result;
         }

@@ -37,11 +37,11 @@ namespace MDD4All.SpecIF.DataModels.BaseTypes
 
 		[JsonProperty(PropertyName = "revision", Order = -100)]
 		[BsonElement("revision")]
-		public string Revision { get; set; }
+		public Revision Revision { get; set; }
 
 		[JsonProperty(PropertyName = "replaces", Order = -99)]
 		[BsonElement("replaces")]
-		public List<string> Replaces { get; set; } = new List<string>();
+		public List<Revision> Replaces { get; set; } = new List<Revision>();
 
 	}
 }

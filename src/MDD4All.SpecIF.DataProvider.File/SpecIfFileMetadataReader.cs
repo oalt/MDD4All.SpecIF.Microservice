@@ -102,17 +102,17 @@ namespace MDD4All.SpecIF.DataProvider.File
 			return _metaData?.ResourceClasses;
 		}
 
-		public override string GetLatestPropertyClassRevision(string propertyClassID)
+		public override Revision GetLatestPropertyClassRevision(string propertyClassID)
 		{
 			throw new System.NotImplementedException();
 		}
 
-		public override string GetLatestResourceClassRevision(string resourceClassID)
+		public override Revision GetLatestResourceClassRevision(string resourceClassID)
 		{
 			throw new System.NotImplementedException();
 		}
 
-		public override string GetLatestStatementClassRevision(string statementClassID)
+		public override Revision GetLatestStatementClassRevision(string statementClassID)
 		{
 			throw new System.NotImplementedException();
 		}

@@ -15,7 +15,28 @@ namespace MDD4All.SpecIF.DataProvider.File
 
 		public override List<Node> GetAllHierarchies()
 		{
-			return _specIfData?.Hierarchies;
+			List<Node> result = new List<Node>();
+
+			List<Node> allHierarchiyNodes = _specIfData?.Hierarchies;
+
+			foreach (Node node in allHierarchiyNodes)
+			{
+				bool predecessorFound = false;
+				foreach (Node n in allHierarchiyNodes)
+				{
+					if (n.ResourceReference.ID == node.ID && n.ResourceReference.Revision == node.Revision)
+					{
+						predecessorFound = true;
+						break;
+					}
+				}
+				if (predecessorFound == false)
+				{
+					result.Add(node);
+				}
+			}
+
+			return result;
 		}
 
 		public override Node GetHierarchyByKey(Key key)
@@ -60,9 +81,9 @@ namespace MDD4All.SpecIF.DataProvider.File
 			return result;
 		}
 
-		public override string GetLatestResourceRevision(string resourceID)
+		public override Revision GetLatestResourceRevision(string resourceID)
 		{
-			string result = Key.FIRST_MAIN_REVISION;
+			Revision result = Key.FIRST_MAIN_REVISION;
 
 			// TODO
 			//try
@@ -112,9 +133,9 @@ namespace MDD4All.SpecIF.DataProvider.File
 			return result;
 		}
 
-		public override string GetLatestHierarchyRevision(string hierarchyID)
+		public override Revision GetLatestHierarchyRevision(string hierarchyID)
 		{
-			string result = Key.FIRST_MAIN_REVISION;
+			Revision result = Key.FIRST_MAIN_REVISION;
 
 			//try
 			//{
@@ -133,9 +154,9 @@ namespace MDD4All.SpecIF.DataProvider.File
 			return result;
 		}
 
-		public override string GetLatestStatementRevision(string statementID)
+		public override Revision GetLatestStatementRevision(string statementID)
 		{
-			string result = Key.FIRST_MAIN_REVISION;
+			Revision result = Key.FIRST_MAIN_REVISION;
 
 			//try
 			//{
@@ -152,6 +173,11 @@ namespace MDD4All.SpecIF.DataProvider.File
 			//}
 
 			return result;
+		}
+
+		public override List<Statement> GetAllStatementsForResource(Key resourceKey)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

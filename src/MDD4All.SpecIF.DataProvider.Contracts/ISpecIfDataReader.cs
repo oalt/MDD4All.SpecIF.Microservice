@@ -10,17 +10,19 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 	{
 		Resource GetResourceByKey(Key key);
 
-		string GetLatestResourceRevision(string resourceID);
+		Revision GetLatestResourceRevision(string resourceID);
 
 		List<Node> GetAllHierarchies();
 
 		Node GetHierarchyByKey(Key key);
 
-		string GetLatestHierarchyRevision(string hierarchyID);
+		Revision GetLatestHierarchyRevision(string hierarchyID);
 
 		Statement GetStatementByKey(Key key);
 
-		string GetLatestStatementRevision(string statementID);
+		Revision GetLatestStatementRevision(string statementID);
+
+		List<Statement> GetAllStatementsForResource(Key resourceKey);
 
 		byte[] GetFile(string filename);
 	}

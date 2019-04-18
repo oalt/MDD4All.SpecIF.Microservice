@@ -31,7 +31,7 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 			ResourceClass resourceType = _metadataReader.GetResourceClassByKey(resourceTypeID);
 
 			result.ID = SpecIfGuidGenerator.CreateNewSpecIfGUID();
-			result.Revision = "main/1";
+			result.Revision = Key.FIRST_MAIN_REVISION;
 			result.Properties = new List<Property>();
 
 			result.ResourceClass = resourceTypeID;

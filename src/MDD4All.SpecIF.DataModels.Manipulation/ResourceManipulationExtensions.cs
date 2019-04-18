@@ -26,7 +26,7 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 			}
 			catch(Exception exception)
 			{
-				Debug.WriteLine("Error with getTypeName() " + resource.ResourceClass + exception);
+				Debug.WriteLine("Error with getTypeName() " + exception);
 			}
 			return result;
 		}
@@ -72,7 +72,7 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 
 						if(propertyClass != null)
 						{
-							string title = propertyClass.Title.LanguageValues.First(v => v.Text == propertyTitle).Text;
+							string title = propertyClass.Title.LanguageValues[0].Text;
 
 							if (title == propertyTitle)
 							{
@@ -108,7 +108,7 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 
 			foreach (Property property in resource.Properties)
 			{
-				string title = property.Title.LanguageValues.First(v => v.Text == propertyTitle).Text;
+				string title = property.Title.LanguageValues[0].Text;
 
 				if (title == propertyTitle)
 				{
@@ -118,6 +118,21 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 			}
 
 			return result;
+		}
+
+		public static void SetResourceTitle(this Resource resource, string title)
+		{
+			if(resource.Title.LanguageValues.Count > 0)
+			{
+				foreach(LanguageValue languageValue in resource.Title.LanguageValues)
+				{
+					languageValue.Text = title;
+				}
+			}
+			else
+			{
+				resource.Title.LanguageValues.Add(new LanguageValue(title));
+			}
 		}
 	}
 }

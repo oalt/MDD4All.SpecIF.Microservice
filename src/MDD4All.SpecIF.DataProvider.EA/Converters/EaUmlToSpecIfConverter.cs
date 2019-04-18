@@ -73,11 +73,12 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 		private void GetModelHierarchyRecursively(EAAPI.Package currentPackage, Node currentNode)
 		{
-			Console.WriteLine("Package :" + currentPackage.Name);
+			Console.WriteLine("Package: " + currentPackage.Name);
 
 			string packageID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(currentPackage.Element.ElementGUID);
 
 			currentNode.ResourceReference = new Key(packageID, 1);
+			currentNode.Description = new Value("Package: " + currentPackage.Name);
 
 			AddElement(currentPackage.Element);
 
@@ -86,13 +87,17 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			{
 				EAAPI.Package childPackage = currentPackage.Packages.GetAt(packageCounter) as EAAPI.Package;
 
-				Console.WriteLine("Recursive call :" + childPackage.Name);
+				Console.WriteLine("Recursive call: " + childPackage.Name);
 
 				
 				Statement containsStatement = GetContainsStatement(currentPackage.Element.ElementGUID, childPackage.Element.ElementGUID);
 				_statements.Add(containsStatement.ID, containsStatement);
 
-				Node childNode = new Node();
+				string specIfElementID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(childPackage.Element.ElementGUID);
+
+				Node childNode = new Node()
+				{
+				};
 				currentNode.Nodes.Add(childNode);
 
 				GetModelHierarchyRecursively(childPackage, childNode);
@@ -112,7 +117,8 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 				Node node = new Node()
 				{
-					ResourceReference = new Key(specIfElementID, 1)
+					ResourceReference = new Key(specIfElementID, 1),
+					Description = new Value("Diagram: " + diagram.Name)
 				};
 
 				currentNode.Nodes.Add(node);
@@ -122,6 +128,8 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			for (short elementCounter = 0; elementCounter < currentPackage.Elements.Count; elementCounter++)
 			{
 				EAAPI.Element element = currentPackage.Elements.GetAt(elementCounter) as EAAPI.Element;
+
+				Console.WriteLine("Element: " + element.Name);
 
 				AddElement(element);
 				Statement containsStatement = GetContainsStatement(currentPackage.Element.ElementGUID, element.ElementGUID);
@@ -137,7 +145,8 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 			Node node = new Node()
 			{
-				ResourceReference = new Key(specIfElementID, 1)
+				ResourceReference = new Key(specIfElementID, 1),
+				Description = new Value("Element: " + currentElement.Name)
 			};
 
 			currentNode.Nodes.Add(node);
@@ -173,16 +182,19 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					AddElement(subElement);
 					Statement containsStatement = GetContainsStatement(currentElement.ElementGUID, subElement.ElementGUID);
 					_statements.Add(containsStatement.ID, containsStatement);
-				}
 
-				// recursive call
-				GetElementHierarchyRecursively(subElement, node);
+					// recursive call
+					GetElementHierarchyRecursively(subElement, node);
+				}
+				
 			}
 
 			// embedded elements
 			for (short embeddedElementCounter = 0; embeddedElementCounter < currentElement.EmbeddedElements.Count; embeddedElementCounter++)
 			{
 				EAAPI.Element embeddedElement = currentElement.EmbeddedElements.GetAt(embeddedElementCounter) as EAAPI.Element;
+
+				Console.WriteLine("Embedded element: " + embeddedElement.Name);
 
 				AddElement(embeddedElement);
 				Statement containsStatement = GetContainsStatement(currentElement.ElementGUID, embeddedElement.ElementGUID);
@@ -192,7 +204,8 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 				Node embeddedElementNode = new Node()
 				{
-					ResourceReference = new Key(specIfEmbeddedElementID, 1)
+					ResourceReference = new Key(specIfEmbeddedElementID, 1),
+					Description = new Value("Embedded element: " + embeddedElement.Name)
 				};
 
 				node.Nodes.Add(embeddedElementNode);
@@ -516,11 +529,15 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 			ParseFullQualifiedName(operation.FQStereotype, out namespc, out stereotype);
 
-			string stereotypeValue = "UML:";
+			string stereotypeValue = "";
 
-			if (namespc != "EAUML")
+			if (namespc != "EAUML" && !string.IsNullOrWhiteSpace(namespc))
 			{
 				stereotypeValue = namespc + ":";
+			}
+			else if(namespc == "EAUML" && stereotype != "")
+			{
+				stereotypeValue = "UML:";
 			}
 
 			stereotypeValue += stereotype;
@@ -1025,13 +1042,34 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 							{
 								LanguageValues = new List<LanguageValue>
 								{
-							new LanguageValue
-							{
-								Text = diagramXHTML + "\r\n<p>" + diagram.Notes + "</p>"
-							}
+									new LanguageValue
+									{
+										Text = diagram.Notes
+									}
 								}
 							},
 							ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID + "_NOTES"),
+							ChangedAt = diagram.ModifiedDate,
+							ChangedBy = diagram.Author
+						}
+						);
+
+					result.Properties.Add(
+						new Property()
+						{
+							Title = new Value("SpecIF:Diagram"),
+							PropertyClass = new Key("PC-Diagram", 1),
+							Value = new Value
+							{
+								LanguageValues = new List<LanguageValue>
+								{
+									new LanguageValue
+									{
+										Text = diagramXHTML
+									}
+								}
+							},
+							ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID + "_DIAGRAM"),
 							ChangedAt = diagram.ModifiedDate,
 							ChangedBy = diagram.Author
 						}

@@ -94,7 +94,12 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 
 							if (value != null)
 							{
-								result = value.Title.LanguageValues?.FirstOrDefault(val => val.Language == language).Text;
+								result = value.Title.LanguageValues?.FirstOrDefault(val => val.Language == language)?.Text;
+
+								if(result == null && value.Title.LanguageValues.Count > 0)
+								{
+									result = value.Title.LanguageValues[0].Text;
+								}
 							}
 						}
 

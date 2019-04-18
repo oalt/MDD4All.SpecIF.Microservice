@@ -20,16 +20,16 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 
 		PropertyClass GetPropertyClassByKey(Key key);
 
-		string GetLatestPropertyClassRevision(string propertyClassID);
+		Revision GetLatestPropertyClassRevision(string propertyClassID);
 
 		List<ResourceClass> GetAllResourceClasses();
 
 		ResourceClass GetResourceClassByKey(Key key);
 
-		string GetLatestResourceClassRevision(string resourceClassID);
+		Revision GetLatestResourceClassRevision(string resourceClassID);
 
 		StatementClass GetStatementClassByKey(Key key);
 
-		string GetLatestStatementClassRevision(string statementClassID);
+		Revision GetLatestStatementClassRevision(string statementClassID);
 	}
 }

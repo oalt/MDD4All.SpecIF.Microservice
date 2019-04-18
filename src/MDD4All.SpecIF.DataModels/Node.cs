@@ -41,7 +41,7 @@ namespace MDD4All.SpecIF.DataModels
 					_resourceReference = new Key()
 					{
 						ID = resourceJObject["id"].ToString(),
-						Revision = resourceJObject["revision"].ToString()
+						Revision = new Revision(resourceJObject["revision"].ToString())
 					};
 				}
 				
@@ -60,11 +60,11 @@ namespace MDD4All.SpecIF.DataModels
 			set
 			{
 				_resourceReference.ID = value;
-				_resourceReference.Revision = "main/latest";
+				_resourceReference.Revision = Key.LATEST_REVISION;
 			}
 		}
 
-		private Key _resourceReference = new Key() { ID = "", Revision = "main/latest" };
+		private Key _resourceReference = new Key() { ID = "", Revision = Key.LATEST_REVISION };
 
 		[JsonIgnore]
 		[BsonElement("resource")]
@@ -80,6 +80,10 @@ namespace MDD4All.SpecIF.DataModels
 				_resourceReference = value;				
 			}
 		}
+
+		[JsonIgnore]
+		[BsonElement("isHierarchyRoot")]
+		public bool IsHierarchyRoot { get; set; } = false;
 
 		[JsonProperty(PropertyName = "nodes")]
 		[BsonIgnore]

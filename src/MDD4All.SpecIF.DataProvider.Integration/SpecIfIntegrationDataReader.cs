@@ -92,9 +92,9 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			return result;
 		}
 
-		public override string GetLatestResourceRevision(string resourceID)
+		public override Revision GetLatestResourceRevision(string resourceID)
 		{
-			string result = Key.FIRST_MAIN_REVISION;
+			Revision result = Key.FIRST_MAIN_REVISION;
 
 			ISpecIfDataReader provider = FindDataProviderForResource(resourceID);
 
@@ -146,9 +146,9 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			return result;
 		}
 
-		public override string GetLatestHierarchyRevision(string hierarchyID)
+		public override Revision GetLatestHierarchyRevision(string hierarchyID)
 		{
-			string result = Key.FIRST_MAIN_REVISION;
+			Revision result = Key.FIRST_MAIN_REVISION;
 
 			ISpecIfDataReader provider = FindDataProviderForHierarchy(hierarchyID);
 
@@ -160,9 +160,9 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			return result;
 		}
 
-		public override string GetLatestStatementRevision(string statementID)
+		public override Revision GetLatestStatementRevision(string statementID)
 		{
-			string result = Key.FIRST_MAIN_REVISION;
+			Revision result = Key.FIRST_MAIN_REVISION;
 
 			ISpecIfDataReader provider = FindDataProviderForStatement(statementID);
 
@@ -220,6 +220,11 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			}
 
 			return result;
+		}
+
+		public override List<Statement> GetAllStatementsForResource(Key resourceKey)
+		{
+			throw new System.NotImplementedException();
 		}
 	}
 }
