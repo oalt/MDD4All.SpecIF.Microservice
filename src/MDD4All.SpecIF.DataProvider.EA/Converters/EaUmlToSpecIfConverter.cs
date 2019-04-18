@@ -330,7 +330,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 							Statement classifierStatement = new Statement()
 							{
 								Title = new Value("rdf:type"),
-								StatementClass = new Key("SC-Classifier", 1),
+								Class = new Key("SC-Classifier", 1),
 								StatementSubject = new Key(attributeResource.ID, attributeResource.Revision),
 								StatementObject = new Key(primitiveClassifier.ID, primitiveClassifier.Revision)
 							};
@@ -375,7 +375,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 							Statement classifierStatement = new Statement()
 							{
 								Title = new Value("rdf:type"),
-								StatementClass = new Key("SC-Classifier", 1),
+								Class = new Key("SC-Classifier", 1),
 								StatementSubject = new Key(operationResource.ID, operationResource.Revision),
 								StatementObject = new Key(primitiveClassifier.ID, primitiveClassifier.Revision)
 							};
@@ -415,7 +415,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 								Statement classifierStatement = new Statement()
 								{
 									Title = new Value("rdf:type"),
-									StatementClass = new Key("SC-Classifier", 1),
+									Class = new Key("SC-Classifier", 1),
 									StatementSubject = new Key(operationParameterResource.ID, operationParameterResource.Revision),
 									StatementObject = new Key(primitiveClassifier.ID, primitiveClassifier.Revision)
 								};
@@ -452,7 +452,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			Resource operationResource = new Resource()
 			{
 				ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID),
-				ResourceClass = new Key("RC-UML_ActiveElement", 1),
+				Class = new Key("RC-UML_ActiveElement", 1),
 				ChangedAt = eaElement.Modified,
 				ChangedBy = eaElement.Author,
 				Revision = Key.FIRST_MAIN_REVISION,
@@ -598,7 +598,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			Resource result = new Resource()
 			{
 				ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(parameter.ParameterGUID),
-				ResourceClass = new Key("RC-UML_ActiveElement", 1),
+				Class = new Key("RC-UML_ActiveElement", 1),
 				ChangedAt = eaElement.Modified,
 				ChangedBy = eaElement.Author,
 				Revision = Key.FIRST_MAIN_REVISION,
@@ -686,7 +686,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				Resource elementResource = new Resource()
 				{
 					ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID),
-					ResourceClass = new Key(resourceClass, 1),
+					Class = new Key(resourceClass, 1),
 					ChangedAt = eaElement.Modified,
 					ChangedBy = eaElement.Author,
 					Revision = Key.FIRST_MAIN_REVISION,
@@ -829,7 +829,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				Resource tagResource = new Resource()
 				{
 					ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID),
-					ResourceClass = new Key("RC-UML_ActiveElement", 1),
+					Class = new Key("RC-UML_ActiveElement", 1),
 					ChangedAt = eaElement.Modified,
 					ChangedBy = eaElement.Author,
 					Revision = Key.FIRST_MAIN_REVISION,
@@ -1003,7 +1003,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					result = new Resource()
 					{
 						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID),
-						ResourceClass = new Key("RC-Diagram", 1),
+						Class = new Key("RC-Diagram", 1),
 						ChangedAt = diagram.ModifiedDate,
 						ChangedBy = diagram.Author,
 						Revision = Key.FIRST_MAIN_REVISION,
@@ -1108,7 +1108,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			Resource attributeResource = new Resource()
 			{
 				ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(attribute.AttributeGUID),
-				ResourceClass = new Key("RC-UML_ActiveElement", 1),
+				Class = new Key("RC-UML_ActiveElement", 1),
 				ChangedAt = eaElement.Modified,
 				ChangedBy = eaElement.Author,
 				Revision = Key.FIRST_MAIN_REVISION,
@@ -1227,7 +1227,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					ID = connectorID,
 					Revision = Key.FIRST_MAIN_REVISION,
 					Title = new Value("UML:Relationship"),
-					StatementClass = new Key("SC-UML_Relationship"),
+					Class = new Key("SC-UML_Relationship"),
 					StatementSubject = new Key(sourceID, 1),
 					StatementObject = new Key(targetID, 1)
 				};
@@ -1390,7 +1390,125 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 				result.Add(umlRelationship);
 
+				// connector constraints
+				for(short constraintCounter = 0; constraintCounter < connectorEA.Constraints.Count; constraintCounter++)
+				{
+					EAAPI.ConnectorConstraint connectorConstraintEA = connectorEA.Constraints.GetAt(constraintCounter) as EAAPI.ConnectorConstraint;
+
+					if(connectorConstraintEA != null)
+					{
+						Resource connectorConstraint = ConvertConnectorConstraint(connectorEA, connectorConstraintEA, constraintCounter + 1);
+
+						if (!_resources.ContainsKey(connectorConstraint.ID))
+						{
+							_resources.Add(connectorConstraint.ID, connectorConstraint);
+
+							Statement constraintContainsStatement = GetContainsStatementFromSpecIfID(umlRelationship.ID, connectorConstraint.ID);
+
+							_statements.Add(constraintContainsStatement.ID, constraintContainsStatement);
+							
+						}
+
+						
+
+					}
+				}
+
+
 			}
+
+			return result;
+		}
+
+		private Resource ConvertConnectorConstraint(EAAPI.Connector connector, EAAPI.ConnectorConstraint connectorConstraint, int index)
+		{
+			Resource result = new Resource()
+			{
+				ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(connector.ConnectorGUID + "_CONSTRAINT_" + index),
+				Class = new Key("RC-UML_ActiveElement", 1),
+				Revision = Key.FIRST_MAIN_REVISION,
+				Title = new Value(connectorConstraint.Name)
+			};
+
+			result.Properties = new List<Property>();
+
+			result.Properties.Add(
+				new Property()
+				{
+					Title = new Value("dcterms:title"),
+					PropertyClass = new Key("PC-Name", 1),
+					Value = new Value
+					{
+						LanguageValues = new List<LanguageValue>
+						{
+									new LanguageValue
+									{
+										Text = connectorConstraint.Name
+									}
+						}
+					},
+					ID = result.ID + "_NAME"
+					
+				}
+				);
+
+			result.Properties.Add(
+				new Property()
+				{
+					Title = new Value("dcterms:type"),
+					PropertyClass = new Key("PC-Type", 1),
+					Value = new Value
+					{
+						LanguageValues = new List<LanguageValue>
+						{
+									new LanguageValue
+									{
+										Text = "OMG:UML:2.5.1:Constraint"
+									}
+						}
+					},
+					ID = result.ID + "_TYPE"
+					
+				}
+				);
+
+			result.Properties.Add(
+					new Property()
+					{
+						Title = new Value("SpecIF:Stereotype"),
+						PropertyClass = new Key("PC-Stereotype", 1),
+						Value = new Value
+						{
+							LanguageValues = new List<LanguageValue>
+							{
+									new LanguageValue
+									{
+										Text = connectorConstraint.Type
+									}
+							}
+						},
+						ID = result.ID + "_STEREOTYPE"
+					}
+					);
+
+			result.Properties.Add(
+					new Property()
+					{
+						Title = new Value("rdf:value"),
+						PropertyClass = new Key("PC-Value", 1),
+						Value = new Value
+						{
+							LanguageValues = new List<LanguageValue>
+							{
+									new LanguageValue
+									{
+										Text = connectorConstraint.Notes
+									}
+							}
+						},
+						ID = result.ID + "_VALUE"
+					}
+					);
 
 			return result;
 		}
@@ -1411,7 +1529,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					result = new Statement()
 					{
 						Title = new Value("rdf:type"),
-						StatementClass = new Key("SC-Classifier", 1),
+						Class = new Key("SC-Classifier", 1),
 						StatementSubject = new Key(classifiedResource.ID, classifiedResource.Revision),
 						StatementObject = new Key(classifierSpecIfID, 1)
 					};
@@ -1429,12 +1547,23 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			string subElementSpecIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(containedElementEaID);
 
 			// SpecIF:contains statement
+			result = GetContainsStatementFromSpecIfID(containerSpecIfID, subElementSpecIfID);
+
+			return result;
+		}
+
+		private Statement GetContainsStatementFromSpecIfID(string subjectID, string objectID)
+		{
+			Statement result = null;
+
+			
+			// SpecIF:contains statement
 			result = new Statement()
 			{
 				Title = new Value("SpecIF:contains"),
-				StatementClass = new Key("SC-contains", 1),
-				StatementSubject = new Key(containerSpecIfID, 1),
-				StatementObject = new Key(subElementSpecIfID, 1)
+				Class = new Key("SC-contains", 1),
+				StatementSubject = new Key(subjectID, 1),
+				StatementObject = new Key(objectID, 1)
 			};
 
 			return result;
@@ -1456,7 +1585,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				Statement attributeReferenceStatement = new Statement()
 				{
 					Title = new Value("SpecIF:contains"),
-					StatementClass = new Key("SC-contains"),
+					Class = new Key("SC-contains"),
 					StatementSubject = new Key(elementResource.ID, elementResource.Revision),
 					StatementObject = new Key(subelementSpecIfID, 1)
 				};
@@ -1476,7 +1605,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				Statement attributeReferenceStatement = new Statement()
 				{
 					Title = new Value("SpecIF:contains"),
-					StatementClass = new Key("SC-contains"),
+					Class = new Key("SC-contains"),
 					StatementSubject = new Key(elementResource.ID, elementResource.Revision),
 					StatementObject = new Key(subElementSpecIfID, 1)
 				};
@@ -1759,7 +1888,7 @@ will internally represent Real numbers using a floating point standard such as I
 				ID = id,
 				Revision = Key.FIRST_MAIN_REVISION,
 				Title = new Value(title),
-				ResourceClass = new Key(GetResourceClassForElementType("PrimitiveType"), 1),
+				Class = new Key(GetResourceClassForElementType("PrimitiveType"), 1),
 				ChangedAt = new DateTime(2019, 4, 7),
 				ChangedBy = "oalt"
 

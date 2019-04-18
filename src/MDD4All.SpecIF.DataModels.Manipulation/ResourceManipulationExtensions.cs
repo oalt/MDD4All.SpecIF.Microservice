@@ -17,7 +17,7 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 
 			try
 			{
-				ResourceClass resourceType = dataProvider.GetResourceClassByKey(resource.ResourceClass);
+				ResourceClass resourceType = dataProvider.GetResourceClassByKey(resource.Class);
 
 				if (resourceType != null)
 				{
@@ -35,7 +35,7 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 		{
 			ResourceClass result = null;
 
-			result = dataProvider.GetResourceClassByKey(resource.ResourceClass);
+			result = dataProvider.GetResourceClassByKey(resource.Class);
 			
 			return result;
 		}
@@ -58,7 +58,7 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 
 			if(!propertyFound)
 			{
-				ResourceClass resourceType = dataProvider.GetResourceClassByKey(resource.ResourceClass);
+				ResourceClass resourceType = dataProvider.GetResourceClassByKey(resource.Class);
 
 				if(resourceType != null)
 				{
@@ -106,14 +106,17 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 		{
 			string result = "";
 
-			foreach (Property property in resource.Properties)
+			if (resource != null && resource.Properties != null)
 			{
-				string title = property.Title.LanguageValues[0].Text;
-
-				if (title == propertyTitle)
+				foreach (Property property in resource.Properties)
 				{
-					result = property.GetStringValue(dataProvider);
-					break;
+					string title = property.Title.LanguageValues[0].Text;
+
+					if (title == propertyTitle)
+					{
+						result = property.GetStringValue(dataProvider);
+						break;
+					}
 				}
 			}
 

@@ -35,7 +35,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
                 result.ChangedBy = eaElement.Author;
 
-                result.ResourceClass = new Key("RC-Requirement", 1);
+                result.Class = new Key("RC-Requirement", 1);
 
                 result.Properties = new List<Property>();
 
@@ -106,7 +106,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
                 if (eaElement.Type == "Requirement")
                 {
-                    result.ResourceClass = new Key("RC-Requirement", 1);
+                    result.Class = new Key("RC-Requirement", 1);
 
                     string identifier = eaElement.GetTaggedValueString("Identifier");
 
@@ -189,27 +189,27 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
                 }
                 else if (eaElement.Type == "Package")
                 {
-                    result.ResourceClass = new Key("RC-Folder", 1);
+                    result.Class = new Key("RC-Folder", 1);
                 }
                 else if (eaElement.Type == "Object")
                 {
                     if (stereotype == "agent" || stereotype == "human agent")
                     {
-                        result.ResourceClass = new Key("RC-Actor", 1);
+                        result.Class = new Key("RC-Actor", 1);
                     }
                     else if (stereotype == "storage")
                     {
-                        result.ResourceClass = new Key("RC-State", 1);
+                        result.Class = new Key("RC-State", 1);
                     }
                     else if (stereotype == "heading")
                     {
-                        result.ResourceClass = new Key("RC-Folder", 1);
+                        result.Class = new Key("RC-Folder", 1);
                     }
 
                 }
                 else if (eaElement.Type == "Actor")
                 {
-                    result.ResourceClass = new Key("RC-Actor", 1);
+                    result.Class = new Key("RC-Actor", 1);
                 }
                 else if (eaElement.Type == "Port")
                 {
@@ -234,7 +234,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 			resource.ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaPackage.Element.ElementGUID);
 			resource.Title = new Value(eaPackage.Name);
-			resource.ResourceClass = new Key("RC-Folder", 1);
+			resource.Class = new Key("RC-Folder", 1);
 			resource.Properties = new List<Property>();
 
             result.Nodes = new List<Node>();

@@ -34,7 +34,7 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 			result.Revision = Key.FIRST_MAIN_REVISION;
 			result.Properties = new List<Property>();
 
-			result.ResourceClass = resourceTypeID;
+			result.Class = resourceTypeID;
 
 			foreach (Key propertyClassReference in resourceType.PropertyClasses)
 			{

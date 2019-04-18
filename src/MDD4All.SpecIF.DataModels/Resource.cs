@@ -15,7 +15,7 @@ namespace MDD4All.SpecIF.DataModels
 	{
 		[JsonProperty(PropertyName = "class", Order = -97)]
 		[BsonElement("class")]
-		public Key ResourceClass { get; set; }
+		public Key Class { get; set; }
 
 		[JsonProperty(PropertyName = "properties")]
 		[BsonElement("properties")]
