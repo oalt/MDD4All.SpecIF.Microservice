@@ -24,7 +24,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
 		[HttpGet("{id}")]
 		public IActionResult Get(string id)
 		{
-			return Get(id, Key.LATEST_REVISION);
+			return Get(id, Key.LATEST_REVISION.StringValue);
 		}
 
 		[HttpGet("{id}/{revision}")]
@@ -34,7 +34,9 @@ namespace MDD4All.SpecIf.Microservice.Controllers
 
 			if (!string.IsNullOrEmpty(id))
 			{
-				Resource resource = _specIfDataReader.GetResourceByKey(new Key() { ID = id, Revision = revision });
+				Revision revisionObject = new Revision(revision);
+
+				Resource resource = _specIfDataReader.GetResourceByKey(new Key() { ID = id, Revision = revisionObject });
 				if (resource != null)
 				{
 					result = new ObjectResult(resource);
@@ -45,7 +47,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
 		}
 
 		[HttpGet("LatestRevision/{id}")]
-		public string GetLatestRevision(string id)
+		public Revision GetLatestRevision(string id)
 		{
 			return _specIfDataReader.GetLatestResourceRevision(id);
 		}
