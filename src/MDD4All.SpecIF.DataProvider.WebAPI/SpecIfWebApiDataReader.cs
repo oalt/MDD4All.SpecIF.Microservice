@@ -142,5 +142,10 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 		{
 			throw new NotImplementedException();
 		}
+
+		public override List<Node> GetContainingHierarchyRoots(Key resourceKey)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

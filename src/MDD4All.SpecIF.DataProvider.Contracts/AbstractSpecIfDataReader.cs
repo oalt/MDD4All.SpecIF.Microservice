@@ -13,6 +13,7 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 
 		public abstract List<Node> GetAllHierarchies();
 		public abstract List<Statement> GetAllStatementsForResource(Key resourceKey);
+		public abstract List<Node> GetContainingHierarchyRoots(Key resourceKey);
 		public abstract byte[] GetFile(string filename);
 		public abstract Node GetHierarchyByKey(Key key);
 		public abstract Revision GetLatestHierarchyRevision(string hierarchyID);

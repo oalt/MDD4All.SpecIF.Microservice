@@ -176,5 +176,73 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
 			return result;
 		}
+
+		public override List<Node> GetContainingHierarchyRoots(Key resourceKey)
+		{
+			List<Node> result = new List<Node>();
+
+			BsonDocument filter = new BsonDocument()
+			{
+				{ "resource.id" , resourceKey.ID  },
+				{ "resource.revision.branch", resourceKey.Revision.BranchName },
+				{ "resource.revision.revisionNumber", resourceKey.Revision.RevsionNumber }
+			};
+
+			List<Node> searchResult = _hierarchyMongoDbAccessor.GetItemsByFilter(filter.ToJson());
+
+			if(searchResult != null)
+			{
+				List<Node> rootNodes = new List<Node>();
+
+				foreach(Node node in searchResult)
+				{
+					FindRootNode(node, rootNodes);
+				}
+
+				if(rootNodes != null)
+				{
+					foreach(Node rootNode in rootNodes)
+					{
+						result.Add(rootNode);
+					}
+				}
+			}
+
+			return result; 
+		}
+
+		private void FindRootNode(Node currentNode, List<Node> result)
+		{
+			if(!currentNode.IsHierarchyRoot)
+			{
+				BsonDocument filter = new BsonDocument()
+				{
+					
+					{ "nodes.id" , currentNode.ID },
+							
+					{ "nodes.revision.branch", currentNode.Revision.BranchName },
+														
+					{ "nodes.revision.revisionNumber", currentNode.Revision.RevsionNumber }
+							
+					
+				};
+
+
+				List<Node> searchResult = _hierarchyMongoDbAccessor.GetItemsByFilter(filter.ToJson());
+
+				if (searchResult != null)
+				{
+					foreach(Node node in searchResult)
+					{
+						FindRootNode(node, result);
+					}
+				}
+
+			}
+			else
+			{
+				result.Add(currentNode);
+			}
+		}
 	}
 }

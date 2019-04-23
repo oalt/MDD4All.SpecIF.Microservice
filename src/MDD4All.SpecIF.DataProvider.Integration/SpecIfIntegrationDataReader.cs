@@ -226,5 +226,10 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 		{
 			throw new System.NotImplementedException();
 		}
+
+		public override List<Node> GetContainingHierarchyRoots(Key resourceKey)
+		{
+			throw new System.NotImplementedException();
+		}
 	}
 }

@@ -24,6 +24,8 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 
 		List<Statement> GetAllStatementsForResource(Key resourceKey);
 
+		List<Node> GetContainingHierarchyRoots(Key resourceKey);
+
 		byte[] GetFile(string filename);
 	}
 }

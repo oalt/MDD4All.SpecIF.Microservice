@@ -128,5 +128,10 @@ namespace MDD4All.SpecIF.DataProvider.EA
 		{
 			throw new NotImplementedException();
 		}
+
+		public override List<Node> GetContainingHierarchyRoots(Key resourceKey)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
