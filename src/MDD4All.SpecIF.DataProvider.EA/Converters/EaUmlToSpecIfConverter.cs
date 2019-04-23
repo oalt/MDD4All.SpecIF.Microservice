@@ -441,6 +441,43 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 		{
 			Resource diagramResource = ConvertDiagram(diagram);
 			_resources.Add(diagramResource.ID, diagramResource);
+
+			AddShowsStatements(diagram);
+		}
+
+		private void AddShowsStatements(EAAPI.Diagram diagram)
+		{
+			string diagramSpecIfGUID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID);
+
+			for (short counter = 0; counter < diagram.DiagramObjects.Count; counter++)
+			{
+				EAAPI.DiagramObject diagramObject = diagram.DiagramObjects.GetAt(counter) as EAAPI.DiagramObject;
+
+				EAAPI.Element elementOnDiagram = _repository.GetElementByID(diagramObject.ElementID);
+
+				if (elementOnDiagram != null)
+				{
+					string elementSpecIfGuid = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(elementOnDiagram.ElementGUID);
+
+					Statement statement = GetShowsStatementFromSpecIfID(diagramSpecIfGUID, elementSpecIfGuid);
+					_statements.Add(statement.ID, statement);
+				}
+			}
+
+			for (short counter = 0; counter < diagram.DiagramLinks.Count; counter++)
+			{
+				EAAPI.DiagramLink link = diagram.DiagramLinks.GetAt(counter) as EAAPI.DiagramLink;
+
+				EAAPI.Connector connectorOnDiagram = _repository.GetConnectorByID(link.ConnectorID);
+
+				if (connectorOnDiagram != null)
+				{
+					string connectorSpecIfGuid = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(connectorOnDiagram.ConnectorGUID);
+
+					Statement statement = GetShowsStatementFromSpecIfID(diagramSpecIfGUID, connectorSpecIfGuid);
+					_statements.Add(statement.ID, statement);
+				}
+			}
 		}
 
 		#endregion
@@ -1311,6 +1348,41 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					}
 					);
 
+				string namespc = "";
+				string stereotype = "";
+
+				ParseFullQualifiedName(connectorEA.FQStereotype, out namespc, out stereotype);
+
+				string stereotypeValue = "";
+
+				if (namespc != "")
+				{
+					stereotypeValue = namespc + ":" + stereotype;
+				}
+				else
+				{
+					stereotypeValue = stereotype;
+				}
+
+				umlRelationship.Properties.Add(
+					new Property()
+					{
+						Title = new Value("SpecIF:Stereotype"),
+						PropertyClass = new Key("PC-Stereotype", 1),
+						Value = new Value
+						{
+							LanguageValues = new List<LanguageValue>
+							{
+								new LanguageValue
+								{
+									Text = stereotypeValue
+								}
+							}
+						},
+						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(connectorID + "_STEREOTYPE"),
+					}
+					);
+
 				umlRelationship.Properties.Add(
 					new Property()
 					{
@@ -1562,6 +1634,23 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			{
 				Title = new Value("SpecIF:contains"),
 				Class = new Key("SC-contains", 1),
+				StatementSubject = new Key(subjectID, 1),
+				StatementObject = new Key(objectID, 1)
+			};
+
+			return result;
+		}
+
+		private Statement GetShowsStatementFromSpecIfID(string subjectID, string objectID)
+		{
+			Statement result = null;
+
+
+			// SpecIF:shows statement
+			result = new Statement()
+			{
+				Title = new Value("SpecIF:shows"),
+				Class = new Key("SC-shows", 1),
 				StatementSubject = new Key(subjectID, 1),
 				StatementObject = new Key(objectID, 1)
 			};
