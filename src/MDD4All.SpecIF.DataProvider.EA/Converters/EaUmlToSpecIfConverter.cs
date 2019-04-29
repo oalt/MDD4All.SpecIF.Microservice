@@ -1425,7 +1425,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					new Property()
 					{
 						Title = new Value("UML:ConnectorSourceMultiplicity"),
-						PropertyClass = new Key("PC-UML_ConnectorSourceMultipilcity", 1),
+						PropertyClass = new Key("PC-UML_ConnectorSourceMultiplicity", 1),
 						Value = new Value
 						{
 							LanguageValues = new List<LanguageValue>
@@ -1443,7 +1443,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					new Property()
 					{
 						Title = new Value("UML:ConnectorTargetMultiplicity"),
-						PropertyClass = new Key("PC-UML_ConnectorTargetMultipilcity", 1),
+						PropertyClass = new Key("PC-UML_ConnectorTargetMultiplicity", 1),
 						Value = new Value
 						{
 							LanguageValues = new List<LanguageValue>
