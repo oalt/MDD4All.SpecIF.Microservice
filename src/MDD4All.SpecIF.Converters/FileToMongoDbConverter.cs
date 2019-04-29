@@ -4,21 +4,23 @@
 using MDD4All.MongoDB.DataAccess.Generic;
 using MDD4All.SpecIF.DataModels;
 using Newtonsoft.Json;
+using System;
 using System.IO;
 
 namespace MDD4All.SpecIF.Converters
 {
 	public class FileToMongoDbConverter
 	{
+		private string _filename = "";
 		private DataModels.SpecIF _specIF;
 		private string _connectionString;
 
 		private MongoDBDataAccessor<DataModels.Node> _nodeAccessor;
 		
 
-		public FileToMongoDbConverter(string filename, string connectionString)
+		public FileToMongoDbConverter(string filename, string connectionString = "mongodb://localhost:27017")
 		{
-			_specIF = ReadDataFromSpecIfFile(filename);
+			_filename = filename;
 			_connectionString = connectionString;
 
 			_nodeAccessor = new MongoDBDataAccessor<Node>(_connectionString, "specif");		
@@ -36,130 +38,189 @@ namespace MDD4All.SpecIF.Converters
 		/// <summary>
 		/// Start the conversion process.
 		/// </summary>
-		public void ConvertFileToDB()
+		public void ConvertFileToDB(bool overrideExistingData = false)
 		{
-			if (_specIF.DataTypes != null)
+			_specIF = ReadDataFromSpecIfFile(_filename);
+
+			if (_specIF != null)
 			{
-				MongoDBDataAccessor<DataModels.DataType> dataTypeAccessor = new MongoDBDataAccessor<DataModels.DataType>(_connectionString, "specif");
-
-				foreach (DataModels.DataType dataType in _specIF.DataTypes)
+				if (_specIF.DataTypes != null)
 				{
-					dataTypeAccessor.Add(dataType);
-				}
-			}
-			
-			if(_specIF.PropertyClasses != null)
-			{
-				MongoDBDataAccessor<DataModels.PropertyClass> propertyClassAccessor = new MongoDBDataAccessor<DataModels.PropertyClass>(_connectionString, "specif");
+					MongoDBDataAccessor<DataModels.DataType> dataTypeAccessor = new MongoDBDataAccessor<DataModels.DataType>(_connectionString, "specif");
 
-				foreach (PropertyClass propertyClass in _specIF.PropertyClasses)
-				{
-					propertyClassAccessor.Add(propertyClass);
-				}
-			}
-
-			if (_specIF.ResourceClasses != null)
-			{
-				MongoDBDataAccessor<DataModels.ResourceClass> resourceTypeAccessor = new MongoDBDataAccessor<DataModels.ResourceClass>(_connectionString, "specif");
-
-				foreach (DataModels.ResourceClass resourceClass in _specIF.ResourceClasses)
-				{
-					resourceTypeAccessor.Add(resourceClass);
-
-					
-				}
-			}
-
-			//if (_specIF.HierarchyClasses != null)
-			//{
-			//	MongoDBDataAccessor<DataModels.HierarchyClass> hierarchyTypeAccessor = new MongoDBDataAccessor<DataModels.HierarchyClass>(_connectionString, "specif");
-
-			//	foreach (DataModels.HierarchyClass hierarchyType in _specIF.HierarchyClasses)
-			//	{
-			//		hierarchyTypeAccessor.Add(hierarchyType);
-			//	}
-			//}
-
-			if (_specIF.StatementClasses != null)
-			{
-				MongoDBDataAccessor<DataModels.StatementClass> statementClassAccessor = new MongoDBDataAccessor<DataModels.StatementClass>(_connectionString, "specif");
-
-				foreach (DataModels.StatementClass statementClass in _specIF.StatementClasses)
-				{
-					statementClassAccessor.Add(statementClass);
-				}
-			}
-
-			if (_specIF.Resources != null)
-			{
-				MongoDBDataAccessor<DataModels.Resource> resourceAccessor = new MongoDBDataAccessor<DataModels.Resource>(_connectionString, "specif");
-
-				foreach (DataModels.Resource resource in _specIF.Resources)
-				{
-					resourceAccessor.Add(resource);
-				}
-			}
-
-			if (_specIF.Hierarchies != null)
-			{
-				MongoDBDataAccessor<DataModels.Node> nodeAccessor = new MongoDBDataAccessor<DataModels.Node>(_connectionString, "specif");
-
-				foreach (Node data in _specIF.Hierarchies)
-				{
-					data.IsHierarchyRoot = true;
-					nodeAccessor.Add(data);
-					foreach(Node node in data.Nodes)
+					foreach (DataModels.DataType dataType in _specIF.DataTypes)
 					{
-						AddHierarchyNodesRecusrively(node);
+						if (!overrideExistingData)
+						{
+							dataTypeAccessor.Add(dataType);
+						}
+						else
+						{
+							dataTypeAccessor.Update(dataType, dataType.Id);
+						}
 					}
 				}
-			}
 
-			if (_specIF.Statements != null)
-			{
-				MongoDBDataAccessor<DataModels.Statement> statementAccessor = new MongoDBDataAccessor<DataModels.Statement>(_connectionString, "specif");
-
-				foreach (DataModels.Statement data in _specIF.Statements)
+				if (_specIF.PropertyClasses != null)
 				{
-					statementAccessor.Add(data);
-					
+					MongoDBDataAccessor<DataModels.PropertyClass> propertyClassAccessor = new MongoDBDataAccessor<DataModels.PropertyClass>(_connectionString, "specif");
+
+					foreach (PropertyClass propertyClass in _specIF.PropertyClasses)
+					{
+						if (!overrideExistingData)
+						{
+							propertyClassAccessor.Add(propertyClass);
+						}
+						else
+						{
+							propertyClassAccessor.Update(propertyClass, propertyClass.Id);
+						}
+					}
 				}
-			}
 
-			if(_specIF.Files != null)
-			{
-				MongoDBDataAccessor<DataModels.File> fileAccessor = new MongoDBDataAccessor<DataModels.File>(_connectionString, "specif");
-
-				foreach (DataModels.File data in _specIF.Files)
+				if (_specIF.ResourceClasses != null)
 				{
-					fileAccessor.Add(data);
+					MongoDBDataAccessor<DataModels.ResourceClass> resourceClassAccessor = new MongoDBDataAccessor<DataModels.ResourceClass>(_connectionString, "specif");
+
+					foreach (DataModels.ResourceClass resourceClass in _specIF.ResourceClasses)
+					{
+						if (!overrideExistingData)
+						{
+							resourceClassAccessor.Add(resourceClass);
+						}
+						else
+						{
+							resourceClassAccessor.Update(resourceClass, resourceClass.Id);
+						}
+
+
+
+					}
+				}
+
+				if (_specIF.StatementClasses != null)
+				{
+					MongoDBDataAccessor<DataModels.StatementClass> statementClassAccessor = new MongoDBDataAccessor<DataModels.StatementClass>(_connectionString, "specif");
+
+					foreach (DataModels.StatementClass statementClass in _specIF.StatementClasses)
+					{
+						if (!overrideExistingData)
+						{
+							statementClassAccessor.Add(statementClass);
+						}
+						else
+						{
+							statementClassAccessor.Update(statementClass, statementClass.Id);
+						}
+					}
+				}
+
+				if (_specIF.Resources != null)
+				{
+					MongoDBDataAccessor<DataModels.Resource> resourceAccessor = new MongoDBDataAccessor<DataModels.Resource>(_connectionString, "specif");
+
+					foreach (DataModels.Resource resource in _specIF.Resources)
+					{
+						if (!overrideExistingData)
+						{
+							resourceAccessor.Add(resource);
+						}
+						else
+						{
+							resourceAccessor.Update(resource, resource.Id);
+						}
+					}
+				}
+
+				if (_specIF.Hierarchies != null)
+				{
+					MongoDBDataAccessor<DataModels.Node> nodeAccessor = new MongoDBDataAccessor<DataModels.Node>(_connectionString, "specif");
+
+					foreach (Node data in _specIF.Hierarchies)
+					{
+						data.IsHierarchyRoot = true;
+						nodeAccessor.Add(data);
+						foreach (Node node in data.Nodes)
+						{
+							AddHierarchyNodesRecusrively(node, overrideExistingData);
+						}
+					}
+				}
+
+				if (_specIF.Statements != null)
+				{
+					MongoDBDataAccessor<DataModels.Statement> statementAccessor = new MongoDBDataAccessor<DataModels.Statement>(_connectionString, "specif");
+
+					foreach (DataModels.Statement data in _specIF.Statements)
+					{
+						if (!overrideExistingData)
+						{
+							statementAccessor.Add(data);
+						}
+						else
+						{
+							statementAccessor.Update(data, data.Id);
+						}
+					}
+				}
+
+				if (_specIF.Files != null)
+				{
+					MongoDBDataAccessor<DataModels.File> fileAccessor = new MongoDBDataAccessor<DataModels.File>(_connectionString, "specif");
+
+					foreach (DataModels.File data in _specIF.Files)
+					{
+						if (!overrideExistingData)
+						{
+							fileAccessor.Add(data);
+						}
+						else
+						{
+							fileAccessor.Update(data, data.Id);
+						}
+					}
 				}
 			}
 		}
 
 		
 
-		private void AddHierarchyNodesRecusrively(Node node)
+		private void AddHierarchyNodesRecusrively(Node node, bool overrideExistingData)
 		{
-			_nodeAccessor.Add(node);
+			if (!overrideExistingData)
+			{
+				_nodeAccessor.Add(node);
+			}
+			else
+			{
+				_nodeAccessor.Update(node, node.Id);
+			}
+
 			foreach(Node childNode in node.Nodes)
 			{
-				AddHierarchyNodesRecusrively(childNode);
+				AddHierarchyNodesRecusrively(childNode, overrideExistingData);
 			}
 
 		}
 
 		private DataModels.SpecIF ReadDataFromSpecIfFile(string path)
 		{
-			DataModels.SpecIF result;
+			DataModels.SpecIF result = null;
 
-			StreamReader file = new StreamReader(path);
+			try
+			{
+				StreamReader file = new StreamReader(path);
 
-			JsonSerializer serializer = new JsonSerializer();
+				JsonSerializer serializer = new JsonSerializer();
 
-			result = (DataModels.SpecIF)serializer.Deserialize(file, typeof(DataModels.SpecIF));
+				result = (DataModels.SpecIF)serializer.Deserialize(file, typeof(DataModels.SpecIF));
 
-			file.Close();
+				file.Close();
+			}
+			catch(Exception)
+			{
+
+			}
 
 			return result;
 		}

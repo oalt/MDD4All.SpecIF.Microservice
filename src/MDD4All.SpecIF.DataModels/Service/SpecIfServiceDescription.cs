@@ -24,5 +24,9 @@ namespace MDD4All.SpecIF.DataModels.Service
 		public bool DataRead { get; set; }
 
 		public bool DataWrite { get; set; }
+
+		public string ServiceNativeAccess { get; set; }
+
+		public string ServiceKind { get; set; }
 	}
 }

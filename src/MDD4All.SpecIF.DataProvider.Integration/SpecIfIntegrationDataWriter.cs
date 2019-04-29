@@ -152,5 +152,10 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 
 			return result;
 		}
+
+		public override void UpdateStatement(Statement statement)
+		{
+			FindDataProviderForStatement(statement).UpdateStatement(statement);
+		}
 	}
 }

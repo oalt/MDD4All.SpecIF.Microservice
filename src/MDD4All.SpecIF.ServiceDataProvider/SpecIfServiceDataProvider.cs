@@ -16,13 +16,13 @@ namespace MDD4All.SpecIF.ServiceDataProvider
 {
 	public class SpecIfServiceDataProvider : ISpecIfServiceDescriptionProvider
 	{
-		private string _consulURL = "http://localhost:8500";
+		private string _consulURL;
 
 		private HttpClient _httpClient = new HttpClient();
 
 		private List<SpecIfServiceDescription> _serviceDescriptions = new List<SpecIfServiceDescription>();
 
-		public SpecIfServiceDataProvider(string consulURL)
+		public SpecIfServiceDataProvider(string consulURL = "http://localhost:8500")
 		{
 			_consulURL = consulURL;
 

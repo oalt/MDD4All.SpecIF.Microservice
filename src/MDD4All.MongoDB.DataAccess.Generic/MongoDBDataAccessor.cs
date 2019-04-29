@@ -120,7 +120,7 @@ namespace MDD4All.MongoDB.DataAccess.Generic
 			}
 			catch(Exception ex)
 			{
-
+				Console.WriteLine(ex);
 			}
 		}
 

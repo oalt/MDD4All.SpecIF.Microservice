@@ -13,6 +13,13 @@ namespace MDD4All.SpecIF.DataModels.Service
 
 		string ServiceDescription { get; set; }
 
+		/// <summary>
+		/// For example the address of the MongoDB server
+		/// </summary>
+		string ServiceNativeAccess { get; set; }
+
+		string ServiceKind { get; set; }
+
 		string IconURL { get; set; }
 
 		string ID { get; set; }

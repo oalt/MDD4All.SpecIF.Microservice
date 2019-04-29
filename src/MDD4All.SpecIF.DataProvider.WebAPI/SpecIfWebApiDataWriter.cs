@@ -68,6 +68,11 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 			PutDataAsync(_connectionURL + "/Resource", resource).Wait();
 		}
 
+		public override void UpdateStatement(Statement statement)
+		{
+			throw new NotImplementedException();
+		}
+
 		private async Task<HttpResponseMessage> PostDataAsync<T>(string url, T data)
 		{
 			StringContent stringContent = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");

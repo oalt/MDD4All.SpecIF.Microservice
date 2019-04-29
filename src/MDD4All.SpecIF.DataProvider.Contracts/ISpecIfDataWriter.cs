@@ -19,6 +19,8 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 
 		void AddStatement(Statement statement);
 
+		void UpdateStatement(Statement statement);
+
 		void AddNode(Node newNode);
 
 		void UpdateNode(Node nodeToUpdate);

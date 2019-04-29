@@ -87,5 +87,10 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 		{
 			_resourceMongoDbAccessor.Update(resource, resource.Id);
 		}
+
+		public override void UpdateStatement(Statement statement)
+		{
+			_statementMongoDbAccessor.Update(statement, statement.Id);
+		}
 	}
 }

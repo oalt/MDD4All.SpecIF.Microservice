@@ -100,5 +100,6 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 		public abstract void UpdateHierarchy(Node hierarchyToUpdate);
 		public abstract void UpdateNode(Node nodeToUpdate);
 		public abstract void UpdateResource(Resource resource);
+		public abstract void UpdateStatement(Statement statement);
 	}
 }

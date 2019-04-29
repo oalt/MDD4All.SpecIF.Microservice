@@ -2,6 +2,8 @@
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
 using Newtonsoft.Json;
+using System;
+using System.Diagnostics;
 using System.IO;
 
 
@@ -11,15 +13,23 @@ namespace MDD4All.SpecIF.DataProvider.File
 	{
 		public static DataModels.SpecIF ReadDataFromSpecIfFile(string path)
 		{
-			DataModels.SpecIF result;
+			DataModels.SpecIF result = null;
 
-			StreamReader file = new StreamReader(path);
+			try
+			{
 
-			JsonSerializer serializer = new JsonSerializer();
+				StreamReader file = new StreamReader(path);
 
-			result = (DataModels.SpecIF)serializer.Deserialize(file, typeof(DataModels.SpecIF));
+				JsonSerializer serializer = new JsonSerializer();
 
-			file.Close();
+				result = (DataModels.SpecIF)serializer.Deserialize(file, typeof(DataModels.SpecIF));
+
+				file.Close();
+			}
+			catch(Exception exception)
+			{
+				Debug.WriteLine(exception);
+			}
 
 			return result;
 		}

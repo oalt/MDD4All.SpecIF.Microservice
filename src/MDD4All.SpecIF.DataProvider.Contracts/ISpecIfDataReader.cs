@@ -7,7 +7,8 @@ using System.Collections.Generic;
 namespace MDD4All.SpecIF.DataProvider.Contracts
 {
 	public interface ISpecIfDataReader : ISpecIfDataProviderBase
-	{
+	{ 
+
 		Resource GetResourceByKey(Key key);
 
 		Revision GetLatestResourceRevision(string resourceID);

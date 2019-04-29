@@ -98,7 +98,8 @@ namespace MDD4All.SpecIF.DataProvider.File
 
 		public override void AddHierarchy(Node hierarchy)
 		{
-			throw new NotImplementedException();
+			_specIfData?.Hierarchies.Add(hierarchy);
+			SpecIfFileReaderWriter.SaveSpecIfToFile(_specIfData, _path);
 		}
 
 		public override void UpdateHierarchy(Node hierarchyToUpdate)
@@ -137,6 +138,21 @@ namespace MDD4All.SpecIF.DataProvider.File
 				SpecIfFileReaderWriter.SaveSpecIfToFile(_specIfData, _path);
 			}
 
+		}
+
+		public override void UpdateStatement(Statement statement)
+		{
+			Statement existingStatement = _specIfData?.Statements.Find(st => st.ID == statement.ID && st.Revision.StringValue == statement.Revision.StringValue);
+
+			if(existingStatement != null)
+			{
+				existingStatement = statement;
+			}
+			else
+			{
+				AddStatement(statement);
+			}
+			SpecIfFileReaderWriter.SaveSpecIfToFile(_specIfData, _path);
 		}
 	}
 }
