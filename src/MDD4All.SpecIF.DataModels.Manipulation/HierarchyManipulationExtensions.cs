@@ -9,26 +9,33 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 {
     public static class HierarchyManipulationExtensions
     {
-		public static Node GetNodeById(this Node hierarchy, string id)
+		public static Node GetNodeByKey(this Node hierarchy, Key key)
 		{
 			Node result = null;
 
-			foreach(Node rootNode in hierarchy.Nodes)
+			if (hierarchy.ID == key.ID && hierarchy.Revision.StringValue == key.Revision.StringValue)
 			{
-				FindNodeRecursively(rootNode, id, ref result);
-				if(result != null)
+				result = hierarchy;
+			}
+			else
+			{
+				foreach (Node rootNode in hierarchy.Nodes)
 				{
-					break;
-				}
+					FindNodeRecursively(rootNode, key, ref result);
+					if (result != null)
+					{
+						break;
+					}
 
+				}
 			}
 
 			return result;
 		}
 
-		private static void FindNodeRecursively(Node node, string id, ref Node result)
+		private static void FindNodeRecursively(Node node, Key key, ref Node result)
 		{
-			if(node.ID == id)
+			if(node.ID == key.ID && node.Revision.StringValue == key.Revision.StringValue)
 			{
 				result = node;
 			}
@@ -38,7 +45,7 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 				{
 					foreach (Node child in node.Nodes)
 					{
-						FindNodeRecursively(child, id, ref result);
+						FindNodeRecursively(child, key, ref result);
 					}
 				}
 			}

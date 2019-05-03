@@ -54,5 +54,14 @@ namespace MDD4All.SpecIF.DataModels
 		[JsonProperty(PropertyName = "revision")]
 		[BsonElement("revision")]
 		public Revision Revision { get; set; } = new Revision();
+
+		public override string ToString()
+		{
+			string result = "";
+
+			result += ID + "_" + Revision.StringValue;
+
+			return result;
+		}
 	}
 }

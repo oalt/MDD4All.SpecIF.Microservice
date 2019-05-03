@@ -90,7 +90,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 		{
 			ResourceClass result = null;
 
-			if (key.Revision == Key.LATEST_REVISION)
+			if (key.Revision.StringValue == Key.LATEST_REVISION.StringValue)
 			{
 				Revision latestRevision = GetLatestResourceClassRevision(key.ID);
 				result = _resourceClassMongoDbAccessor.GetItemById(key.ID + "_R_" + latestRevision);
