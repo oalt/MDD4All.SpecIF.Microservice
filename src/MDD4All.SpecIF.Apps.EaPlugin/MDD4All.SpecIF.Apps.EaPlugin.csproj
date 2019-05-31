@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C8C1DC9D-389A-4FCF-A932-E2E355A0AD04}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MDD4All.SpecIF.Apps.EaPlugin</RootNamespace>
+    <AssemblyName>MDD4All.SpecIF.Apps.EaPlugin</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RegisterForComInterop>true</RegisterForComInterop>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="GalaSoft.MvvmLight, Version=5.3.0.19038, Culture=neutral, PublicKeyToken=0e453835af4ee6ce, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmLightLibs.5.3.0.0\lib\net40\GalaSoft.MvvmLight.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="GalaSoft.MvvmLight.Extras, Version=5.3.0.19026, Culture=neutral, PublicKeyToken=f46ff315b1088208, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmLightLibs.5.3.0.0\lib\net40\GalaSoft.MvvmLight.Extras.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Interop.EA">
+      <HintPath>..\libs\Interop.EA.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="MDD4All.EnterpriseArchitect.Manipulations, Version=2.1.0.26, Culture=neutral, PublicKeyToken=7775311d0fab0175, processorArchitecture=MSIL">
+      <HintPath>..\packages\MDD4All.EnterpriseArchitect.Manipulations.2.1.0.26\lib\net40\MDD4All.EnterpriseArchitect.Manipulations.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MongoDB.Bson, Version=2.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MongoDB.Bson.2.8.0\lib\net452\MongoDB.Bson.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Common, Version=4.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Drawing.Common.4.5.1\lib\net461\System.Drawing.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmLightLibs.5.3.0.0\lib\net40\System.Windows.Interactivity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SpecIfPlugin.cs" />
+    <Compile Include="ViewModels\MainViewModel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="_Registry\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MDD4All.SpecIF.DataModels.Manipulation\MDD4All.SpecIF.DataModels.Manipulation.csproj">
+      <Project>{061251c4-ed5c-4815-8963-0b6c7fedc77c}</Project>
+      <Name>MDD4All.SpecIF.DataModels.Manipulation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MDD4All.SpecIF.DataModels\MDD4All.SpecIF.DataModels.csproj">
+      <Project>{c85c9648-0c50-4ffc-9eb1-584ad2eda85f}</Project>
+      <Name>MDD4All.SpecIF.DataModels</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.Contracts\MDD4All.SpecIF.DataProvider.Contracts.csproj">
+      <Project>{4174d427-c31a-44c0-a4ba-9873fb40a1ec}</Project>
+      <Name>MDD4All.SpecIF.DataProvider.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.EA\MDD4All.SpecIF.DataProvider.EA.csproj">
+      <Project>{b2723cf2-cfc2-494f-b221-b1af42575342}</Project>
+      <Name>MDD4All.SpecIF.DataProvider.EA</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.File\MDD4All.SpecIF.DataProvider.File.csproj">
+      <Project>{e7729686-625a-4802-84b7-de8964df0a3e}</Project>
+      <Name>MDD4All.SpecIF.DataProvider.File</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
