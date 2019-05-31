@@ -83,9 +83,7 @@
     <Compile Include="SpecIfPlugin.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="_Registry\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\MDD4All.SpecIF.DataModels.Manipulation\MDD4All.SpecIF.DataModels.Manipulation.csproj">
       <Project>{061251c4-ed5c-4815-8963-0b6c7fedc77c}</Project>
@@ -110,6 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="_Registry\RegisterAddin.reg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
