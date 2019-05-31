@@ -848,7 +848,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			string elementType = eaElement.Type;
 
 
-			string resourceClass = GetResourceClassForElementType(elementType);
+			string resourceClass = GetResourceClassForElementType(elementType, eaElement.Stereotype);
 
 			Resource elementResource = new Resource()
 			{
