@@ -92,7 +92,7 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 							string enumId = property.Value.LanguageValues[0].Text;
 							EnumValue value = enumDataType.Values.Find(val => val.ID == enumId);
 
-							if (value != null)
+							if (value != null && value.Title != null)
 							{
 								result = value.Title.LanguageValues?.FirstOrDefault(val => val.Language == language)?.Text;
 

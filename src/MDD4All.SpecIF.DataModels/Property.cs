@@ -4,6 +4,8 @@
 using MDD4All.SpecIF.DataModels.BaseTypes;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 
 namespace MDD4All.SpecIF.DataModels
 {
@@ -13,6 +15,28 @@ namespace MDD4All.SpecIF.DataModels
 		{
 			Value = new Value();
 		}
+
+        public Property(string title, string classID, string value, string id, DateTime changedAt, string changedBy)
+        {
+            Title = new Value(title);
+
+            PropertyClass = new Key(classID, 1);
+            Value = new Value
+            {
+                LanguageValues = new List<LanguageValue>
+                {
+                    new LanguageValue
+                    {
+                        Text = value
+                    }
+                }
+            };
+
+            ID = id;
+
+            ChangedAt = changedAt;
+            ChangedBy = changedBy;
+        }
 
 		[JsonProperty(PropertyName = "class", Order = -95)]
 		[BsonElement("class")]
