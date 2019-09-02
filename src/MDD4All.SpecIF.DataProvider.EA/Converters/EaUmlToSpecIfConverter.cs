@@ -1222,7 +1222,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 						// Convert byte[] to Base64 String
 						string base64String = Convert.ToBase64String(imageBytes);
 
-						diagramXHTML += "<p><img src=\"data:image/png;base64," + base64String + "\" /></p>";
+						diagramXHTML += "<p><img style=\"max-width:100%\" src=\"data:image/png;base64," + base64String + "\" /></p>";
 
 					}
 				}
