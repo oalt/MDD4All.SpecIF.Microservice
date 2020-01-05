@@ -73,10 +73,10 @@ namespace MDD4All.SpecIF.DataProvider.EA
             return result;
         }
 
-		public override Revision GetLatestResourceRevision(string resourceID)
-		{
-			return Key.FIRST_MAIN_REVISION;
-		}
+		//public override Revision GetLatestResourceRevision(string resourceID)
+		//{
+		//	return Key.FIRST_MAIN_REVISION;
+		//}
 
 		public override Resource GetResourceByKey(Key key)
         {
@@ -133,5 +133,35 @@ namespace MDD4All.SpecIF.DataProvider.EA
 		{
 			throw new NotImplementedException();
 		}
-	}
+
+        public override List<Node> GetAllHierarchyRootNodes()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override List<Resource> GetAllResourceRevisions(string resourceID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override List<Statement> GetAllStatementRevisions(string statementID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override List<Statement> GetAllStatements()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override List<Node> GetChildNodes(Key parentNodeKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Revision GetLatestResourceRevisionForBranch(string resourceID, string branchName)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

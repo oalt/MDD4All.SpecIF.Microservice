@@ -91,24 +91,24 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			return result;
 		}
 
-		public override DataType GetDataTypeById(string id)
-		{
-			DataType result = null;
+		//public override DataType GetDataTypeById(string id)
+		//{
+		//	DataType result = null;
 
-			foreach (KeyValuePair<string, ISpecIfMetadataReader> reader in _metadataReaders)
-			{
-				DataType dataType = reader.Value.GetDataTypeById(id);
+		//	foreach (KeyValuePair<string, ISpecIfMetadataReader> reader in _metadataReaders)
+		//	{
+		//		DataType dataType = reader.Value.GetDataTypeById(id);
 
-				if(dataType != null)
-				{
-					result = dataType;
-					break;
-				}
+		//		if(dataType != null)
+		//		{
+		//			result = dataType;
+		//			break;
+		//		}
 
-			}
+		//	}
 
-			return result;
-		}
+		//	return result;
+		//}
 
 
 		public override ResourceClass GetResourceClassByKey(Key key)
@@ -258,5 +258,34 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			return result;
 		}
 
-	}
+        public override DataType GetDataTypeByKey(Key key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override List<StatementClass> GetAllStatementClasses()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override List<DataType> GetAllDataTypeRevisions(string dataTypeID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override List<PropertyClass> GetAllPropertyClassRevisions(string propertyClassID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override List<ResourceClass> GetAllResourceClassRevisions(string resourceClassID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override List<StatementClass> GetAllStatementClassRevisions(string statementClassID)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

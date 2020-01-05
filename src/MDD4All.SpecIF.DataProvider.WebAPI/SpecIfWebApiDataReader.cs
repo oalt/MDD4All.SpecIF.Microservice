@@ -64,13 +64,13 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 			return task.Result;
 		}
 
-		public override Revision GetLatestResourceRevision(string resourceID)
-		{
-			Task<Revision> task = GetLatestRevisionAsync<Resource>(resourceID, "SpecIF/Resource/");
-			task.Wait();
+		//public override Revision GetLatestResourceRevision(string resourceID)
+		//{
+		//	Task<Revision> task = GetLatestRevisionAsync<Resource>(resourceID, "SpecIF/Resource/");
+		//	task.Wait();
 
-			return task.Result;
-		}
+		//	return task.Result;
+		//}
 
 		public override Revision GetLatestStatementRevision(string statementID)
 		{
@@ -147,5 +147,35 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 		{
 			throw new NotImplementedException();
 		}
-	}
+
+        public override List<Node> GetAllHierarchyRootNodes()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override List<Resource> GetAllResourceRevisions(string resourceID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override List<Statement> GetAllStatementRevisions(string statementID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override List<Statement> GetAllStatements()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override List<Node> GetChildNodes(Key parentNodeKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Revision GetLatestResourceRevisionForBranch(string resourceID, string branchName)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

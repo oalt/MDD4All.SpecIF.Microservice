@@ -2,6 +2,7 @@
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
 using MDD4All.SpecIF.DataModels;
+using MDD4All.SpecIF.DataModels.BaseTypes;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using Newtonsoft.Json;
 using System;
@@ -28,12 +29,17 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 			PostDataAsync(_connectionURL + "/Hierarchy", hierarchy).Wait();
 		}
 
-		public override void AddNode(Node newNode)
-		{
-			PostDataAsync(_connectionURL + "/Node", newNode).Wait();
-		}
+		//public override void AddNode(Node newNode)
+		//{
+		//	PostDataAsync(_connectionURL + "/Node", newNode).Wait();
+		//}
 
-		public override void AddResource(Resource resource)
+        public override void AddNode(string parentNodeID, Node newNode)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void AddResource(Resource resource)
 		{
 			PostDataAsync(_connectionURL + "/Resource", resource).Wait();
 		}
@@ -48,32 +54,57 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 			//throw new NotImplementedException();
 		}
 
-		public override void SaveIdentificators()
+        public override Node SaveHierarchy(Node hierarchyToUpdate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SaveIdentificators()
 		{
 			//throw new NotImplementedException();
 		}
 
-		public override void UpdateHierarchy(Node hierarchyToUpdate)
-		{
-			PutDataAsync(_connectionURL + "/Hierarchy", hierarchyToUpdate).Wait();
-		}
+        public override Node SaveNode(Node nodeToUpdate)
+        {
+            throw new NotImplementedException();
+        }
 
-		public override void UpdateNode(Node nodeToUpdate)
-		{
-			PutDataAsync(_connectionURL + "/Node", nodeToUpdate).Wait();
-		}
+        public override Resource SaveResource(Resource resource)
+        {
+            throw new NotImplementedException();
+        }
 
-		public override void UpdateResource(Resource resource)
-		{
-			PutDataAsync(_connectionURL + "/Resource", resource).Wait();
-		}
+        public override Statement SaveStatement(Statement statement)
+        {
+            throw new NotImplementedException();
+        }
 
-		public override void UpdateStatement(Statement statement)
-		{
-			throw new NotImplementedException();
-		}
+  //      public override void UpdateHierarchy(Node hierarchyToUpdate)
+		//{
+		//	PutDataAsync(_connectionURL + "/Hierarchy", hierarchyToUpdate).Wait();
+		//}
 
-		private async Task<HttpResponseMessage> PostDataAsync<T>(string url, T data)
+		//public override void UpdateNode(Node nodeToUpdate)
+		//{
+		//	PutDataAsync(_connectionURL + "/Node", nodeToUpdate).Wait();
+		//}
+
+		//public override void UpdateResource(Resource resource)
+		//{
+		//	PutDataAsync(_connectionURL + "/Resource", resource).Wait();
+		//}
+
+		//public override void UpdateStatement(Statement statement)
+		//{
+		//	throw new NotImplementedException();
+		//}
+
+        protected override IdentifiableElement GetItemWithLatestRevisionInBranch<T>(string id, string branch)
+        {
+            throw new NotImplementedException();
+        }
+
+        private async Task<HttpResponseMessage> PostDataAsync<T>(string url, T data)
 		{
 			StringContent stringContent = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
 			return await _httpClient.PostAsync(url, stringContent);

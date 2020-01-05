@@ -92,19 +92,19 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			return result;
 		}
 
-		public override Revision GetLatestResourceRevision(string resourceID)
-		{
-			Revision result = Key.FIRST_MAIN_REVISION;
+		//public override Revision GetLatestResourceRevision(string resourceID)
+		//{
+		//	Revision result = Key.FIRST_MAIN_REVISION;
 
-			ISpecIfDataReader provider = FindDataProviderForResource(resourceID);
+		//	ISpecIfDataReader provider = FindDataProviderForResource(resourceID);
 
-			if (provider != null)
-			{
-				result = provider.GetLatestResourceRevision(resourceID);
-			}
+		//	if (provider != null)
+		//	{
+		//		result = provider.GetLatestResourceRevision(resourceID);
+		//	}
 
-			return result;
-		}
+		//	return result;
+		//}
 
 		
 
@@ -231,5 +231,35 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 		{
 			throw new System.NotImplementedException();
 		}
-	}
+
+        public override List<Node> GetAllHierarchyRootNodes()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override List<Resource> GetAllResourceRevisions(string resourceID)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override List<Statement> GetAllStatementRevisions(string statementID)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override List<Statement> GetAllStatements()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override List<Node> GetChildNodes(Key parentNodeKey)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override Revision GetLatestResourceRevisionForBranch(string resourceID, string branchName)
+        {
+            throw new System.NotImplementedException();
+        }
+    }
 }

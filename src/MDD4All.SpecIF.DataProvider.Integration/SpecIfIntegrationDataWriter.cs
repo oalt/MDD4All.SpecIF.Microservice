@@ -2,6 +2,7 @@
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
 using MDD4All.SpecIF.DataModels;
+using MDD4All.SpecIF.DataModels.BaseTypes;
 using MDD4All.SpecIF.DataModels.Service;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using MDD4All.SpecIF.DataProvider.WebAPI;
@@ -59,10 +60,10 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			FindDataWriterForHierarchy(hierarchy).AddHierarchy(hierarchy);
 		}
 
-		public override void AddNode(Node newNode)
-		{
-			FindDataProviderForNode(newNode).AddNode(newNode);
-		}
+		//public override void AddNode(Node newNode)
+		//{
+		//	FindDataProviderForNode(newNode).AddNode(newNode);
+		//}
 
 		public override void AddResource(Resource resource)
 		{
@@ -74,35 +75,35 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			FindDataProviderForStatement(statement).AddStatement(statement);
 		}
 
-		public override void UpdateHierarchy(Node hierarchyToUpdate)
-		{
-			ISpecIfDataWriter writer = FindDataWriterForHierarchy(hierarchyToUpdate);
+		//public override void UpdateHierarchy(Node hierarchyToUpdate)
+		//{
+		//	ISpecIfDataWriter writer = FindDataWriterForHierarchy(hierarchyToUpdate);
 
-			if (writer != null)
-			{
-				writer.UpdateHierarchy(hierarchyToUpdate);
-			}
-		}
+		//	if (writer != null)
+		//	{
+		//		writer.UpdateHierarchy(hierarchyToUpdate);
+		//	}
+		//}
 
-		public override void UpdateNode(Node nodeToUpdate)
-		{
-			ISpecIfDataWriter provider = FindDataProviderForNode(nodeToUpdate);
+		//public override void UpdateNode(Node nodeToUpdate)
+		//{
+		//	ISpecIfDataWriter provider = FindDataProviderForNode(nodeToUpdate);
 
-			if (provider != null)
-			{
-				provider.UpdateNode(nodeToUpdate);
-			}
-		}
+		//	if (provider != null)
+		//	{
+		//		provider.UpdateNode(nodeToUpdate);
+		//	}
+		//}
 
-		public override void UpdateResource(Resource resource)
-		{
-			ISpecIfDataWriter provider = FindDataProviderForResource(resource);
+		//public override void UpdateResource(Resource resource)
+		//{
+		//	ISpecIfDataWriter provider = FindDataProviderForResource(resource);
 
-			if (provider != null)
-			{
-				provider.UpdateResource(resource);
-			}
-		}
+		//	if (provider != null)
+		//	{
+		//		provider.UpdateResource(resource);
+		//	}
+		//}
 
 		public override void InitializeIdentificators()
 		{
@@ -153,9 +154,39 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			return result;
 		}
 
-		public override void UpdateStatement(Statement statement)
-		{
-			FindDataProviderForStatement(statement).UpdateStatement(statement);
-		}
-	}
+		//public override void UpdateStatement(Statement statement)
+		//{
+		//	FindDataProviderForStatement(statement).UpdateStatement(statement);
+		//}
+
+        public override Node SaveHierarchy(Node hierarchyToUpdate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Node SaveNode(Node nodeToUpdate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Resource SaveResource(Resource resource)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Statement SaveStatement(Statement statement)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override IdentifiableElement GetItemWithLatestRevisionInBranch<T>(string id, string branch)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void AddNode(string parentNodeID, Node newNode)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

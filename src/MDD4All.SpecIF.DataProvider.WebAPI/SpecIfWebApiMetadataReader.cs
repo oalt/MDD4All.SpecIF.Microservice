@@ -50,13 +50,7 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 			return task.Result;
 		}
 
-		public override DataType GetDataTypeById(string id)
-		{
-			Task<DataType> task = GetDataById<DataType>(id, "/SpecIF/DataType");
-			task.Wait();
-
-			return task.Result;
-		}
+		
 
 
 		public override ResourceClass GetResourceClassByKey(Key key)
@@ -158,5 +152,39 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 
 			return result;
 		}
-	}
+
+        public override DataType GetDataTypeByKey(Key key)
+        {
+
+            Task<DataType> task = GetDataById<DataType>(key.ID, "/SpecIF/DataType");
+            task.Wait();
+
+            return task.Result;
+        }
+
+        public override List<StatementClass> GetAllStatementClasses()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override List<DataType> GetAllDataTypeRevisions(string dataTypeID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override List<PropertyClass> GetAllPropertyClassRevisions(string propertyClassID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override List<ResourceClass> GetAllResourceClassRevisions(string resourceClassID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override List<StatementClass> GetAllStatementClassRevisions(string statementClassID)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
