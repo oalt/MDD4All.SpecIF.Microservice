@@ -12,12 +12,17 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 		public ISpecIfServiceDescription DataSourceDescription { get; set; }
 
 		public abstract List<Node> GetAllHierarchies();
-		public abstract List<Statement> GetAllStatementsForResource(Key resourceKey);
-		public abstract List<Node> GetContainingHierarchyRoots(Key resourceKey);
+        public abstract List<Node> GetAllHierarchyRootNodes();
+        public abstract List<Resource> GetAllResourceRevisions(string resourceID);
+        public abstract List<Statement> GetAllStatementRevisions(string statementID);
+        public abstract List<Statement> GetAllStatements();
+        public abstract List<Statement> GetAllStatementsForResource(Key resourceKey);
+        public abstract List<Node> GetChildNodes(Key parentNodeKey);
+        public abstract List<Node> GetContainingHierarchyRoots(Key resourceKey);
 		public abstract byte[] GetFile(string filename);
 		public abstract Node GetHierarchyByKey(Key key);
 		public abstract Revision GetLatestHierarchyRevision(string hierarchyID);
-		public abstract Revision GetLatestResourceRevision(string resourceID);
+		public abstract Revision GetLatestResourceRevisionForBranch(string resourceID, string branchName);
 		public abstract Revision GetLatestStatementRevision(string statementID);
 		public abstract Resource GetResourceByKey(Key key);
 		public abstract Statement GetStatementByKey(Key key);

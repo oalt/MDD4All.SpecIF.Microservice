@@ -17,6 +17,9 @@ namespace MDD4All.SpecIF.DataModels.BaseTypes
 			Revision = Key.FIRST_MAIN_REVISION;
 		}
 
+        /// <summary>
+        /// ID used in MongoDB
+        /// </summary>
 		[JsonIgnore]
 		[BsonId]
 		[BsonRepresentation(BsonType.String)]
@@ -31,6 +34,9 @@ namespace MDD4All.SpecIF.DataModels.BaseTypes
 			}
 		}
 
+        /// <summary>
+        /// ID used in JSON
+        /// </summary>
 		[JsonProperty(PropertyName = "id", Order = -101)]
 		[BsonElement("id")]
 		public string ID { get; set; }

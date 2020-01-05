@@ -11,7 +11,7 @@ namespace MDD4All.SpecIF.DataModels
 	{
 		[JsonProperty(PropertyName = "dataType")]
 		[BsonElement("dataType")]
-		public string DataType { get; set; }
+		public Key DataType { get; set; }
 
 		[JsonProperty(PropertyName = "multiple")]
 		[BsonElement("multiple")]

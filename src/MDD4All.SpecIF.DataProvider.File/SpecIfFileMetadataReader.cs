@@ -23,9 +23,9 @@ namespace MDD4All.SpecIF.DataProvider.File
 			return _metaData?.DataTypes;
 		}
 
-		public override DataType GetDataTypeById(string id)
+		public override DataType GetDataTypeByKey(Key key)
 		{
-			return _metaData?.DataTypes.FirstOrDefault(dataType => dataType.ID == id);
+			return _metaData?.DataTypes.FirstOrDefault(dataType => dataType.ID == key.ID);
 		}
 
 		
@@ -117,6 +117,29 @@ namespace MDD4All.SpecIF.DataProvider.File
 			throw new System.NotImplementedException();
 		}
 
-	
-	}
+        public override List<StatementClass> GetAllStatementClasses()
+        {
+            return _metaData?.StatementClasses;
+        }
+
+        public override List<DataType> GetAllDataTypeRevisions(string dataTypeID)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override List<PropertyClass> GetAllPropertyClassRevisions(string propertyClassID)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override List<ResourceClass> GetAllResourceClassRevisions(string resourceClassID)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override List<StatementClass> GetAllStatementClassRevisions(string statementClassID)
+        {
+            throw new System.NotImplementedException();
+        }
+    }
 }

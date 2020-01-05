@@ -97,19 +97,46 @@ namespace MDD4All.MongoDB.DataAccess.Generic
 
 		public T GetItemWithLatestRevision(string id)
 		{
-			BsonDocument filter = new BsonDocument()
+            T result = default(T);
+
+            BsonDocument filter = new BsonDocument()
 			{
-				{"id", id }
+				{"id", id },
+
 			};
 
-			List<T> allRevisionItems = _db.GetCollection<T>(_collectionName).Find(filter).ToList();
+			//List<T> allRevisionItems = _db.GetCollection<T>(_collectionName).Find(filter).ToList();
 
 			IFindFluent<T, T> allRevisions = _db.GetCollection<T>(_collectionName).Find(filter);
 
-			return allRevisions.Sort("{ 'revision.revisionNumber': -1}").First<T>();
+            if (allRevisions.CountDocuments() > 0)
+            {
+                result = allRevisions.Sort("{ 'revision.revisionNumber': -1}").First<T>();
+            }
+            return result;
 		}
 
+        public T GetItemWithLatestRevisionInBranch(string id, string branch = "main")
+        {
+            T result = default(T);
 
+            BsonDocument filter = new BsonDocument()
+            {
+                { "id", id },
+                { "revision.branch", branch }
+            };
+
+            IFindFluent<T, T> allRevisions = _db.GetCollection<T>(_collectionName).Find(filter);
+
+            if (allRevisions.CountDocuments() > 0)
+            {
+                result = allRevisions.Sort("{ 'revision.revisionNumber': -1}").First<T>();
+            }
+
+            return result;
+        }
+
+        
 
 		public void Add(T item)
 		{

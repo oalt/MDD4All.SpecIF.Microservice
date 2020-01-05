@@ -15,7 +15,18 @@ namespace MDD4All.SpecIF.DataModels
 
 		public Revision(string revisionString)
 		{
-			StringValue = revisionString;
+            if (revisionString.Contains("/"))
+            {
+                StringValue = revisionString;
+            }
+            else
+            {
+                int parsedRevisionNumber = 1;
+                if(int.TryParse(revisionString, out parsedRevisionNumber))
+                {
+                    RevsionNumber = parsedRevisionNumber;
+                }
+            }
 		}
 
 		[JsonIgnore]

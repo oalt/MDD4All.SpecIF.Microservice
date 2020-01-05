@@ -10,15 +10,19 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 	{
 		List<DataType> GetAllDataTypes();
 
-		DataType GetDataTypeById(string id);
+		DataType GetDataTypeByKey(Key key);
+        
+        List<DataType> GetAllDataTypeRevisions(string dataTypeID);
 
-		List<string> GetDataTypeTypes();
+        List<string> GetDataTypeTypes();
 
-		List<EnumValue> GetEnumOptions(string dataTypeID);
+        List<EnumValue> GetEnumOptions(string dataTypeID);
 
 		List<PropertyClass> GetAllPropertyClasses();
 
 		PropertyClass GetPropertyClassByKey(Key key);
+
+        List<PropertyClass> GetAllPropertyClassRevisions(string propertyClassID);
 
 		Revision GetLatestPropertyClassRevision(string propertyClassID);
 
@@ -26,10 +30,16 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 
 		ResourceClass GetResourceClassByKey(Key key);
 
+        List<ResourceClass> GetAllResourceClassRevisions(string resourceClassID);
+
 		Revision GetLatestResourceClassRevision(string resourceClassID);
+
+        List<StatementClass> GetAllStatementClasses();
 
 		StatementClass GetStatementClassByKey(Key key);
 
-		Revision GetLatestStatementClassRevision(string statementClassID);
+        List<StatementClass> GetAllStatementClassRevisions(string statementClassID);
+
+        Revision GetLatestStatementClassRevision(string statementClassID);
 	}
 }

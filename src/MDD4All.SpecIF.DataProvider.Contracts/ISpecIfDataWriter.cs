@@ -11,19 +11,19 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 
 		void AddResource(Resource resource);
 
-		void UpdateResource(Resource resource);
+		Resource SaveResource(Resource resource);
 
 		void AddHierarchy(Node hierarchy);
 
-		void UpdateHierarchy(Node hierarchyToUpdate);
+		Node SaveHierarchy(Node hierarchyToUpdate);
 
 		void AddStatement(Statement statement);
 
-		void UpdateStatement(Statement statement);
+		Statement SaveStatement(Statement statement);
 
-		void AddNode(Node newNode);
+		void AddNode(string parentNodeID, Node newNode);
 
-		void UpdateNode(Node nodeToUpdate);
+		Node SaveNode(Node nodeToUpdate);
 
 		long GetNextSpecIfIdentifier(string prefix);
 

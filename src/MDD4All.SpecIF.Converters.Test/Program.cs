@@ -11,30 +11,44 @@ namespace MDD4All.SpecIF.Converters.Test
 {
     class Program
     {
+
+        private const string CONNECTION_STRING = "mongodb://localhost:27017";
+
+        //private const string CONNECTION_STRING = "mongodb+srv://admin:2IkHZ77ZuuP0e6NN@specifcluster-ausx9.azure.mongodb.net/test?retryWrites=true";
+
+
         static void Main(string[] args)
         {
 			List<FileInfo> files = new List<FileInfo>();
 
 			DirectoryInfo directoryInfo = new DirectoryInfo(@"c:\Users\olli\Documents\work\github\GfSESpecIF\classDefinitions");
 
-			FileInfo[] baseFiles = directoryInfo.GetFiles("*.specif");
+            foreach(DirectoryInfo subDirectoryInfo in directoryInfo.GetDirectories())
+            {
+                FileInfo[] baseFiles = subDirectoryInfo.GetFiles("*.specif");
 
-			files.AddRange(baseFiles);
+                //files.AddRange(baseFiles);
+            }
+
+			
 
 			DirectoryInfo umlDirectoryInfo = new DirectoryInfo(@"c:\Users\olli\Documents\work\github\SpecIFSysML\classDefinitions");
 
 			FileInfo[] umlFiles = umlDirectoryInfo.GetFiles("*.specif");
 
-			files.AddRange(umlFiles);
+			//files.AddRange(umlFiles);
 
 			FileInfo umlData = new FileInfo(@"C:\Users\olli\Documents\work\github\SpecIF-Graph\source\specif\TestModel1.specif");
 
-			files.Add(umlData);
+            //files.Add(umlData);
 
-			SpecIfMongoDbMetadataReader mongoDbMetadataReader = new SpecIfMongoDbMetadataReader("mongodb://localhost:27017");
+            FileInfo vocabularyData = new FileInfo(@"c:\specif\GeneratedVocabulary.specif");
+            files.Add(vocabularyData);
 
-			SpecIfMongoDbDataWriter mongoDbDataWriter = new SpecIfMongoDbDataWriter("mongodb://localhost:27017", mongoDbMetadataReader);
-			SpecIfMongoDbMetadataWriter mongoDbMetadataWriter = new SpecIfMongoDbMetadataWriter("mongodb://localhost:27017");
+			SpecIfMongoDbMetadataReader mongoDbMetadataReader = new SpecIfMongoDbMetadataReader(CONNECTION_STRING);
+
+			SpecIfMongoDbDataWriter mongoDbDataWriter = new SpecIfMongoDbDataWriter(CONNECTION_STRING, mongoDbMetadataReader);
+			SpecIfMongoDbMetadataWriter mongoDbMetadataWriter = new SpecIfMongoDbMetadataWriter(CONNECTION_STRING);
 
 			foreach (FileInfo file in files)
 			{

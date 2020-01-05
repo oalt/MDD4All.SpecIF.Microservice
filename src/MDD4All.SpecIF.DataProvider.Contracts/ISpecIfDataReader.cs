@@ -11,17 +11,27 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 
 		Resource GetResourceByKey(Key key);
 
-		Revision GetLatestResourceRevision(string resourceID);
+        List<Resource> GetAllResourceRevisions(string resourceID);
+
+		Revision GetLatestResourceRevisionForBranch(string resourceID, string branchName);
 
 		List<Node> GetAllHierarchies();
 
+        List<Node> GetAllHierarchyRootNodes();
+
 		Node GetHierarchyByKey(Key key);
+
+        List<Node> GetChildNodes(Key parentNodeKey);
 
 		Revision GetLatestHierarchyRevision(string hierarchyID);
 
 		Statement GetStatementByKey(Key key);
 
-		Revision GetLatestStatementRevision(string statementID);
+        List<Statement> GetAllStatementRevisions(string statementID);
+
+        Revision GetLatestStatementRevision(string statementID);
+
+        List<Statement> GetAllStatements();
 
 		List<Statement> GetAllStatementsForResource(Key resourceKey);
 

@@ -18,6 +18,6 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 			node.Nodes.Add(childNode);
 		}
 
-
+        
     }
 }

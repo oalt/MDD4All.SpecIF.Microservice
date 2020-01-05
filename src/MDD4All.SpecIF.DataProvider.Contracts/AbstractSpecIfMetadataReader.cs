@@ -15,7 +15,7 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 		{
 			List<EnumValue> result = new List<EnumValue>();
 
-			DataType dataType = GetDataTypeById(dataTypeID);
+			DataType dataType = GetDataTypeByKey(new Key(dataTypeID, 0));
 
 			if (dataType != null && dataType.Values != null)
 			{
@@ -41,12 +41,17 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 		public abstract List<DataType> GetAllDataTypes();
 		public abstract List<PropertyClass> GetAllPropertyClasses();
 		public abstract List<ResourceClass> GetAllResourceClasses();
-		public abstract DataType GetDataTypeById(string id);
+		public abstract DataType GetDataTypeByKey(Key key);
 		public abstract PropertyClass GetPropertyClassByKey(Key key);
 		public abstract ResourceClass GetResourceClassByKey(Key key);
 		public abstract StatementClass GetStatementClassByKey(Key key);
 		public abstract Revision GetLatestPropertyClassRevision(string propertyClassID);
 		public abstract Revision GetLatestResourceClassRevision(string resourceClassID);
 		public abstract Revision GetLatestStatementClassRevision(string statementClassID);
-	}
+        public abstract List<StatementClass> GetAllStatementClasses();
+        public abstract List<DataType> GetAllDataTypeRevisions(string dataTypeID);
+        public abstract List<PropertyClass> GetAllPropertyClassRevisions(string propertyClassID);
+        public abstract List<ResourceClass> GetAllResourceClassRevisions(string resourceClassID);
+        public abstract List<StatementClass> GetAllStatementClassRevisions(string statementClassID);
+    }
 }

@@ -27,6 +27,24 @@ namespace MDD4All.SpecIF.DataModels.Converters
 				result.RevsionNumber = int.Parse(reader.Value.ToString());
 				result.BranchName = "main";
 			}
+            //else if(objectType == typeof(Revision))
+            //{
+            //    // Load JObject from stream
+            //    JObject jObject = JObject.Load(reader);
+
+                
+            //    //Create a new reader for this jObject, and set all properties to match the original reader.
+            //    JsonReader jObjectReader = jObject.CreateReader();
+            //    jObjectReader.Culture = reader.Culture;
+            //    jObjectReader.DateParseHandling = reader.DateParseHandling;
+            //    jObjectReader.DateTimeZoneHandling = reader.DateTimeZoneHandling;
+            //    jObjectReader.FloatParseHandling = reader.FloatParseHandling;
+
+            //    // Populate the object properties
+            //    serializer.Populate(jObjectReader, result);
+
+            
+            //}
 
 			return result;
 		}

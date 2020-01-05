@@ -16,7 +16,7 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 
 			if (propertyClass != null)
 			{
-				DataType dataType = dataProvider.GetDataTypeById(propertyClass.DataType);
+				DataType dataType = dataProvider.GetDataTypeByKey(propertyClass.DataType);
 				result = dataType.Type;
 			}
 			return result;
@@ -30,7 +30,7 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 
 			if (propertyClass != null)
 			{
-				DataType dataType = dataProvider.GetDataTypeById(propertyClass.DataType);
+				DataType dataType = dataProvider.GetDataTypeByKey(propertyClass.DataType);
 				result = dataType;
 			}
 			return result;

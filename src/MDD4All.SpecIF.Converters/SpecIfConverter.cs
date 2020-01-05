@@ -97,7 +97,7 @@ namespace MDD4All.SpecIF.Converters
 					}
 					else
 					{
-						targetDataWriter.UpdateResource(resource);
+						targetDataWriter.SaveResource(resource);
 					}
 				}
 			}
@@ -112,7 +112,7 @@ namespace MDD4All.SpecIF.Converters
 					}
 					else
 					{
-						targetDataWriter.UpdateStatement(statement);
+						targetDataWriter.SaveStatement(statement);
 					}
 				}
 			}
@@ -151,11 +151,11 @@ namespace MDD4All.SpecIF.Converters
 		{
 			if (!overrideExistingData)
 			{
-				dataWriter.AddNode(node);
+				dataWriter.SaveNode(node);
 			}
 			else
 			{
-				dataWriter.UpdateNode(node);
+				dataWriter.SaveNode(node);
 			}
 
 			foreach (Node childNode in node.Nodes)

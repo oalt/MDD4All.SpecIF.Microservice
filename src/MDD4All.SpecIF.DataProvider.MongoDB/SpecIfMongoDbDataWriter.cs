@@ -3,8 +3,11 @@
  */
 using MDD4All.MongoDB.DataAccess.Generic;
 using MDD4All.SpecIF.DataModels;
+using MDD4All.SpecIF.DataModels.BaseTypes;
+using MDD4All.SpecIF.DataModels.Helpers;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using MDD4All.SpecIF.DataProvider.Contracts.DataModels;
+using System;
 using System.Collections.Generic;
 
 namespace MDD4All.SpecIF.DataProvider.MongoDB
@@ -36,22 +39,54 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 			InitializeIdentificators();
 		}
 
-		public override void AddNode(Node newNode)
+        public override void AddNode(string parentNodeId, Node newNode)
 		{
-			_nodeMongoDbAccessor.Add(newNode);
-		}
+            Node parentNode = _nodeMongoDbAccessor.GetItemWithLatestRevision(parentNodeId);
 
-		public override void UpdateNode(Node nodeToUpdate)
+            if (parentNode != null)
+            {
+                newNode.Revision = Key.FIRST_MAIN_REVISION;
+
+                if (string.IsNullOrEmpty(newNode.ID))
+                {
+                    newNode.ID = SpecIfGuidGenerator.CreateNewSpecIfGUID();
+                }
+                
+                _nodeMongoDbAccessor.Add(newNode);
+
+                parentNode.NodeReferences.Add(new Key(newNode.ID, newNode.Revision));
+
+                SaveNode(parentNode);
+            }
+            
+
+        }
+
+        public override Node SaveNode(Node nodeToUpdate)
 		{
+            Node result = null;
+
+            Node existingNode = _nodeMongoDbAccessor.GetItemById(nodeToUpdate.ID + "_R_" + nodeToUpdate.Revision);
+
+            if (existingNode != null)
+            {
+                if(existingNode.IsHierarchyRoot)
+                {
+                    nodeToUpdate.IsHierarchyRoot = true;
+                }
+            }
+
 			_nodeMongoDbAccessor.Update(nodeToUpdate, nodeToUpdate.Id);
+
+            return result;
 		}
 
-		public override void AddResource(Resource resource)
+        public override void AddResource(Resource resource)
 		{
-			_resourceMongoDbAccessor.Add(resource);
-		}
+            _resourceMongoDbAccessor.Add(resource);
+        }
 
-		public override void AddStatement(Statement statement)
+        public override void AddStatement(Statement statement)
 		{
 			_statementMongoDbAccessor.Add(statement);
 		}
@@ -73,24 +108,74 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 			}
 		}
 
-		public override void AddHierarchy(Node hierarchy)
+        public override void AddHierarchy(Node hierarchy)
 		{
+            hierarchy.IsHierarchyRoot = true;
+
 			_hierarchyMongoDbAccessor.Add(hierarchy);
 		}
 
-		public override void UpdateHierarchy(Node hierarchyToUpdate)
+		public override Node SaveHierarchy(Node hierarchyToUpdate)
 		{
-			_hierarchyMongoDbAccessor.Update(hierarchyToUpdate, hierarchyToUpdate.Id);
-		}
+            //_hierarchyMongoDbAccessor.Update(hierarchyToUpdate, hierarchyToUpdate.Id);
+            Node result = null;
 
-		public override void UpdateResource(Resource resource)
-		{
-			_resourceMongoDbAccessor.Update(resource, resource.Id);
-		}
+            return result;
+        }
 
-		public override void UpdateStatement(Statement statement)
+		public override Resource SaveResource(Resource resource)
 		{
-			_statementMongoDbAccessor.Update(statement, statement.Id);
-		}
-	}
+            Resource result = null;
+
+            Resource newResource = UpdateVersionInfo<Resource>(resource) as Resource;
+
+            if (newResource != null)
+            {
+                AddResource(newResource);
+                result = newResource;
+            }
+            else
+            {
+                result = null;
+            }
+
+            return result;
+
+        }
+
+        public override Statement SaveStatement(Statement statement)
+		{
+            Statement result = null;
+
+            Statement newStatement = UpdateVersionInfo<Statement>(statement) as Statement;
+
+            if (newStatement != null)
+            {
+                AddStatement(newStatement);
+                result = newStatement;
+            }
+            else
+            {
+                result = null;
+            }
+
+            return result;
+        }
+
+        protected override IdentifiableElement GetItemWithLatestRevisionInBranch<T>(string id, string branch)
+        {
+            IdentifiableElement result = null;
+
+            if(typeof(T) == typeof(Resource))
+            {
+                result = _resourceMongoDbAccessor.GetItemWithLatestRevisionInBranch(id, branch);
+            }
+            else if(typeof(T) == typeof(Statement))
+            {
+                result = _statementMongoDbAccessor.GetItemWithLatestRevisionInBranch(id, branch);
+            }
+
+            return result;
+        }
+    }
 }

@@ -2,6 +2,7 @@
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
 using MDD4All.SpecIF.DataModels;
+using MDD4All.SpecIF.DataModels.BaseTypes;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using MDD4All.SpecIF.DataProvider.Contracts.DataModels;
 using Newtonsoft.Json;
@@ -74,46 +75,43 @@ namespace MDD4All.SpecIF.DataProvider.File
 			writer.Close();
 		}
 
-		public override void AddStatement(Statement statement)
+        public override void AddStatement(Statement statement)
 		{
 			_specIfData?.Statements.Add(statement);
 			SpecIfFileReaderWriter.SaveSpecIfToFile(_specIfData, _path);
 		}
 
-		public override void AddResource(Resource resource)
+        public override void AddResource(Resource resource)
 		{
 			_specIfData?.Resources.Add(resource);
 			SpecIfFileReaderWriter.SaveSpecIfToFile(_specIfData, _path);
 		}
 
-		public override void AddNode(Node newNode)
+        public override void AddNode(string parentNodeId, Node newNode)
 		{
 			throw new NotImplementedException();
 		}
 
-		public override void UpdateNode(Node nodeToUpdate)
+		public override Node SaveNode(Node nodeToUpdate)
 		{
 			throw new NotImplementedException();
 		}
 
-		public override void AddHierarchy(Node hierarchy)
+        public override void AddHierarchy(Node hierarchy)
 		{
 			_specIfData?.Hierarchies.Add(hierarchy);
 			SpecIfFileReaderWriter.SaveSpecIfToFile(_specIfData, _path);
 		}
 
-		public override void UpdateHierarchy(Node hierarchyToUpdate)
+		public override Resource SaveResource(Resource resource)
 		{
 			throw new NotImplementedException();
 		}
 
-		public override void UpdateResource(Resource resource)
+		public override Node SaveHierarchy(Node hierarchy)
 		{
-			throw new NotImplementedException();
-		}
+            Node result = null;
 
-		public void SaveHierarchy(Node hierarchy)
-		{
 			string id = hierarchy.ID;
 
 			int index = -1;
@@ -138,9 +136,10 @@ namespace MDD4All.SpecIF.DataProvider.File
 				SpecIfFileReaderWriter.SaveSpecIfToFile(_specIfData, _path);
 			}
 
+            return result;
 		}
 
-		public override void UpdateStatement(Statement statement)
+		public override Statement SaveStatement(Statement statement)
 		{
 			Statement existingStatement = _specIfData?.Statements.Find(st => st.ID == statement.ID && st.Revision.StringValue == statement.Revision.StringValue);
 
@@ -153,6 +152,13 @@ namespace MDD4All.SpecIF.DataProvider.File
 				AddStatement(statement);
 			}
 			SpecIfFileReaderWriter.SaveSpecIfToFile(_specIfData, _path);
+
+            return statement;
 		}
-	}
+
+        protected override IdentifiableElement GetItemWithLatestRevisionInBranch<T>(string id, string branch)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
