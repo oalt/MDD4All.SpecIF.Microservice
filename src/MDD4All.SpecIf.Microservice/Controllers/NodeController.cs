@@ -126,10 +126,38 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// <param name="newParentId">The id of the new parent.</param>
         /// <param name="position">The desired node position.</param>
         [HttpPut("move/{nodeId}/to/{newParentId}/position/{position}")]
-        [SwaggerOperation(OperationId = "{FC0EF587-8E82-41B6-9149-4EF87EE21E6F}")]
-        public void MoveNode(string nodeId, string newParentId, string position)
+        public ActionResult MoveNode(string nodeId, string newParentId, string position)
         {
-            throw new NotImplementedException();
+            ActionResult result = new OkResult();
+
+            if (!string.IsNullOrEmpty(nodeId) && !string.IsNullOrEmpty(newParentId) && !string.IsNullOrEmpty(position))
+            {
+
+                int index = -1;
+
+                if (int.TryParse(position, out index))
+                {
+                    try
+                    {
+                        _specIfDataWriter.MoveNode(nodeId, newParentId, index);
+                    }
+                    catch (Exception exception)
+                    {
+                        result = new BadRequestResult();
+                    }
+                }
+                else
+                {
+                    result = new BadRequestResult();
+                }
+            }
+            else
+            {
+                result = new BadRequestResult();
+            }
+                
+
+            return result;            
         }
     }
 }

@@ -83,7 +83,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 			return result;
 		}
 
-        private Node GetNodeByKey(Key key)
+        public override Node GetNodeByKey(Key key)
         {
             Node result = null;
 
@@ -344,6 +344,33 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
             else
             {
                 result = null;
+            }
+
+            return result;
+        }
+
+        public override Node GetParentNode(Key childNodeKey)
+        {
+            Node result = null;
+
+            BsonDocument filter = new BsonDocument()
+                {
+
+                    { "nodes.id" , childNodeKey.ID },
+
+                    { "nodes.revision.branch", childNodeKey.Revision.BranchName },
+
+                    { "nodes.revision.revisionNumber", childNodeKey.Revision.RevsionNumber }
+
+
+                };
+
+
+            List<Node> searchResult = _nodeMongoDbAccessor.GetItemsByFilter(filter.ToJson());
+
+            if(searchResult != null && searchResult.Count == 1)
+            {
+                result = searchResult[0];
             }
 
             return result;

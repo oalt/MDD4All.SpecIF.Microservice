@@ -21,7 +21,8 @@ namespace MDD4All.SpecIF.DataProvider.File
 
 		private string _path;
 
-		public SpecIfFileDataWriter(string path, ISpecIfMetadataReader metadataReader) : base(metadataReader)
+		public SpecIfFileDataWriter(string path, ISpecIfMetadataReader metadataReader, 
+            ISpecIfDataReader dataReader) : base(metadataReader, dataReader)
 		{
 			_path = path;
 			if (path == null)
@@ -157,6 +158,11 @@ namespace MDD4All.SpecIF.DataProvider.File
 		}
 
         protected override IdentifiableElement GetItemWithLatestRevisionInBranch<T>(string id, string branch)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void MoveNode(string nodeID, string newParentID, int position)
         {
             throw new NotImplementedException();
         }

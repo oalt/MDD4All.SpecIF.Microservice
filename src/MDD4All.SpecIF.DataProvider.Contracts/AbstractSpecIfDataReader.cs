@@ -24,7 +24,9 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 		public abstract Revision GetLatestHierarchyRevision(string hierarchyID);
 		public abstract Revision GetLatestResourceRevisionForBranch(string resourceID, string branchName);
 		public abstract Revision GetLatestStatementRevision(string statementID);
-		public abstract Resource GetResourceByKey(Key key);
+        public abstract Node GetNodeByKey(Key key);
+        public abstract Node GetParentNode(Key childNode);
+        public abstract Resource GetResourceByKey(Key key);
 		public abstract Statement GetStatementByKey(Key key);
 	}
 }

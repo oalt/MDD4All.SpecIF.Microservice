@@ -25,7 +25,8 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
 		private MongoDBDataAccessor<SpecIfIdentifier> _identifierMongoDbAccessor;
 
-		public SpecIfMongoDbDataWriter(string connectionString, ISpecIfMetadataReader metadataReader) : base(metadataReader)
+		public SpecIfMongoDbDataWriter(string connectionString, ISpecIfMetadataReader metadataReader, 
+            ISpecIfDataReader dataReader) : base(metadataReader, dataReader)
 		{
 			_resourceMongoDbAccessor = new MongoDBDataAccessor<Resource>(connectionString, DATABASE_NAME);
 
@@ -80,6 +81,75 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
             return result;
 		}
+
+        public override void MoveNode(string nodeID, string newParentID, int position)
+        {
+            try
+            {
+                Node nodeToMove = _dataReader.GetNodeByKey(new Key { ID = nodeID, Revision = Key.FIRST_MAIN_REVISION });
+
+                Node oldParent = _dataReader.GetParentNode(new Key { ID = nodeID, Revision = Key.FIRST_MAIN_REVISION });
+
+                Node newParent = _dataReader.GetNodeByKey(new Key { ID = newParentID, Revision = Key.FIRST_MAIN_REVISION });
+
+                int oldIndex = -1;
+
+                for (int counter = 0; counter < oldParent.NodeReferences.Count; counter++)
+                {
+                    Key childNode = oldParent.NodeReferences[counter];
+
+                    if (childNode.ID == nodeID)
+                    {
+                        oldIndex = counter;
+                        break;
+                    }
+                }
+
+                if (oldIndex != -1)
+                {
+                    if (oldParent.Id != newParent.Id)
+                    {
+                        oldParent.NodeReferences.RemoveAt(oldIndex);
+
+                        if (position > newParent.NodeReferences.Count)
+                        {
+                            newParent.NodeReferences.Add(new Key(nodeToMove.ID, nodeToMove.Revision));
+                        }
+                        else
+                        {
+                            newParent.NodeReferences.Insert(position, new Key(nodeToMove.ID, nodeToMove.Revision));
+                        }
+
+                        SaveNode(oldParent);
+                        SaveNode(newParent);
+                    }
+                    else // old parent == new parent
+                    {
+                        oldParent.NodeReferences.RemoveAt(oldIndex);
+
+                        if (position > oldParent.NodeReferences.Count)
+                        {
+                            oldParent.NodeReferences.Add(new Key(nodeToMove.ID, nodeToMove.Revision));
+                        }
+                        else
+                        {
+                            oldParent.NodeReferences.Insert(position, new Key(nodeToMove.ID, nodeToMove.Revision));
+                        }
+
+                        SaveNode(oldParent);
+                    }
+                }
+                else
+                {
+                    throw new Exception("Child node not found");
+                }
+
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+        }
 
         public override void AddResource(Resource resource)
 		{

@@ -23,6 +23,10 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 
         List<Node> GetChildNodes(Key parentNodeKey);
 
+        Node GetNodeByKey(Key key);
+
+        Node GetParentNode(Key childNode);
+
 		Revision GetLatestHierarchyRevision(string hierarchyID);
 
 		Statement GetStatementByKey(Key key);

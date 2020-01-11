@@ -18,11 +18,14 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 
 		protected ISpecIfMetadataReader _metadataReader;
 
+        protected ISpecIfDataReader _dataReader;
+
 		public ISpecIfServiceDescription DataSourceDescription { get; set; }
 
-		public AbstractSpecIfDataWriter(ISpecIfMetadataReader metadataReader)
+		public AbstractSpecIfDataWriter(ISpecIfMetadataReader metadataReader, ISpecIfDataReader dataReader)
 		{
 			_metadataReader = metadataReader;
+            _dataReader = dataReader;
 		}
 
 		public Resource CreateResource(Key resourceTypeID)
@@ -159,6 +162,8 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
             return result;
         }
 
+        
+
         public abstract void InitializeIdentificators();
         public abstract void SaveIdentificators();
         public abstract Node SaveHierarchy(Node hierarchyToUpdate);
@@ -171,5 +176,6 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
         public abstract void AddStatement(Statement statement);
         protected abstract IdentifiableElement GetItemWithLatestRevisionInBranch<T>(string id, string branch);
         public abstract void AddNode(string parentNodeID, Node newNode);
+        public abstract void MoveNode(string nodeID, string newParentID, int position);
     }
 }

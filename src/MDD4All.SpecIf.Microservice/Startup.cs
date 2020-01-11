@@ -121,7 +121,8 @@ namespace MDD4All.SpecIf.Microservice
 				{
 					services.AddScoped<ISpecIfMetadataReader>(dataProvider => new SpecIfMongoDbMetadataReader(dataConnection));
 					services.AddScoped<ISpecIfDataReader>(dataProvider => new SpecIfMongoDbDataReader(dataConnection));
-					services.AddScoped<ISpecIfDataWriter>(dataProvider => new SpecIfMongoDbDataWriter(dataConnection, new SpecIfMongoDbMetadataReader(dataConnection)));
+					services.AddScoped<ISpecIfDataWriter>(dataProvider => new SpecIfMongoDbDataWriter(dataConnection, new SpecIfMongoDbMetadataReader(dataConnection),
+                        new SpecIfMongoDbDataReader(dataConnection)));
 
 					string serviceAddress = "http://localhost";
 					int port = 888;
