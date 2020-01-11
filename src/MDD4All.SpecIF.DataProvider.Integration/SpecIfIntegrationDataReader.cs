@@ -261,5 +261,15 @@ namespace MDD4All.SpecIF.DataProvider.Integration
         {
             throw new System.NotImplementedException();
         }
+
+        public override Node GetNodeByKey(Key key)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override Node GetParentNode(Key childNode)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

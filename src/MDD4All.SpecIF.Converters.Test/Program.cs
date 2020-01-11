@@ -46,8 +46,8 @@ namespace MDD4All.SpecIF.Converters.Test
             files.Add(vocabularyData);
 
 			SpecIfMongoDbMetadataReader mongoDbMetadataReader = new SpecIfMongoDbMetadataReader(CONNECTION_STRING);
-
-			SpecIfMongoDbDataWriter mongoDbDataWriter = new SpecIfMongoDbDataWriter(CONNECTION_STRING, mongoDbMetadataReader);
+            SpecIfMongoDbDataReader mongoDbDataReader = new SpecIfMongoDbDataReader(CONNECTION_STRING);
+            SpecIfMongoDbDataWriter mongoDbDataWriter = new SpecIfMongoDbDataWriter(CONNECTION_STRING, mongoDbMetadataReader, mongoDbDataReader);
 			SpecIfMongoDbMetadataWriter mongoDbMetadataWriter = new SpecIfMongoDbMetadataWriter(CONNECTION_STRING);
 
 			foreach (FileInfo file in files)

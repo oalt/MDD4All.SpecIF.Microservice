@@ -19,7 +19,8 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 
 		private HttpClient _httpClient = new HttpClient();
 
-		public SpecIfWebApiDataWriter(string webApiConnectionURL, ISpecIfMetadataReader metadataReader) : base(metadataReader)
+		public SpecIfWebApiDataWriter(string webApiConnectionURL, ISpecIfMetadataReader metadataReader, ISpecIfDataReader dataReader) : 
+            base(metadataReader, dataReader)
 		{
 			_connectionURL = webApiConnectionURL;
 		}
@@ -53,6 +54,11 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 		{
 			//throw new NotImplementedException();
 		}
+
+        public override void MoveNode(string nodeID, string newParentID, int position)
+        {
+            throw new NotImplementedException();
+        }
 
         public override Node SaveHierarchy(Node hierarchyToUpdate)
         {

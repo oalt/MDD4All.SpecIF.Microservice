@@ -22,7 +22,8 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 		// just for demo
 		private List<ISpecIfDataWriter> _demoDataWriterList = new List<ISpecIfDataWriter>();
 
-		public SpecIfIntegrationDataWriter(SpecIfServiceDataProvider specIfServiceDataProvider, SpecIfIntegrationMetadataReader metadataReader) : base(metadataReader)
+		public SpecIfIntegrationDataWriter(SpecIfServiceDataProvider specIfServiceDataProvider, SpecIfIntegrationMetadataReader metadataReader,
+                                           SpecIfIntegrationDataReader dataReader) : base(metadataReader, dataReader)
 		{
 			_descriptionProvider = specIfServiceDataProvider;
 			InitializeWriters();
@@ -36,7 +37,9 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			{
 				if (serviceDescription.DataRead == true)
 				{
-					SpecIfWebApiDataWriter dataWriter = new SpecIfWebApiDataWriter(serviceDescription.ServiceAddress + ":" + serviceDescription.ServicePort, _metadataReader);
+					SpecIfWebApiDataWriter dataWriter = new SpecIfWebApiDataWriter(serviceDescription.ServiceAddress + ":" + serviceDescription.ServicePort, 
+                                                                                   _metadataReader,
+                                                                                   _dataReader);
 
 					dataWriter.DataSourceDescription = serviceDescription;
 
@@ -185,6 +188,11 @@ namespace MDD4All.SpecIF.DataProvider.Integration
         }
 
         public override void AddNode(string parentNodeID, Node newNode)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void MoveNode(string nodeID, string newParentID, int position)
         {
             throw new NotImplementedException();
         }

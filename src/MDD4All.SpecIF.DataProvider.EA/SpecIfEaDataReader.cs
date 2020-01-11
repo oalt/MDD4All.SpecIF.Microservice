@@ -163,5 +163,15 @@ namespace MDD4All.SpecIF.DataProvider.EA
         {
             throw new NotImplementedException();
         }
+
+        public override Node GetNodeByKey(Key key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Node GetParentNode(Key childNode)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
