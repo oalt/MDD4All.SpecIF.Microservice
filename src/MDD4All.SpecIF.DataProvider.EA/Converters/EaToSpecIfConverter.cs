@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using EAAPI = EA;
 using MDD4All.EnterpriseArchitect.Manipulations;
+using MDD4All.SpecIF.DataModels.Helpers;
 
 namespace MDD4All.SpecIF.DataProvider.EA.Converters
 {
@@ -29,13 +30,13 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
             {
                 result.ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID);
 
-                result.Revision = Key.FIRST_MAIN_REVISION;
+                result.Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID();
 
                 result.ChangedAt = eaElement.Modified;
 
                 result.ChangedBy = eaElement.Author;
 
-                result.Class = new Key("RC-Requirement", 1);
+                result.Class = new Key("RC-Requirement", "1");
 
                 result.Properties = new List<Property>();
 
@@ -60,7 +61,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
                 Property nameProperty = new Property
                 {
                     Title = new Value("dcterms:title"),
-                    PropertyClass = new Key("AT-Req-Name", 1),
+                    PropertyClass = new Key("AT-Req-Name", "1"),
                     Value = new Value
                     {
                         LanguageValues = new List<LanguageValue>
@@ -81,7 +82,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
                 Property notesProperty = new Property
                 {
                     Title = new Value("dcterms:description"),
-                    PropertyClass = new Key("PC-Text", 1),
+                    PropertyClass = new Key("PC-Text", "1"),
                     Value = new Value
                     {
                         LanguageValues = new List<LanguageValue>
@@ -106,7 +107,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
                 if (eaElement.Type == "Requirement")
                 {
-                    result.Class = new Key("RC-Requirement", 1);
+                    result.Class = new Key("RC-Requirement", "1");
 
                     string identifier = eaElement.GetTaggedValueString("Identifier");
 
@@ -115,7 +116,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
                         Property identifierProperty = new Property
                         {
                             Title = new Value("dcterms:identifier"),
-                            PropertyClass = new Key("PC-VisibleId", 1),
+                            PropertyClass = new Key("PC-VisibleId", "1"),
                             Value = new Value
                             {
                                 LanguageValues = new List<LanguageValue>
@@ -166,7 +167,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
                         Property statusProperty = new Property
                         {
                             Title = new Value("SpecIF:Status"),
-                            PropertyClass = new Key("PC-Status", 1),
+                            PropertyClass = new Key("PC-Status", "1"),
                             Value = new Value
                             {
                                 LanguageValues = new List<LanguageValue>
@@ -189,27 +190,27 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
                 }
                 else if (eaElement.Type == "Package")
                 {
-                    result.Class = new Key("RC-Folder", 1);
+                    result.Class = new Key("RC-Folder", "1");
                 }
                 else if (eaElement.Type == "Object")
                 {
                     if (stereotype == "agent" || stereotype == "human agent")
                     {
-                        result.Class = new Key("RC-Actor", 1);
+                        result.Class = new Key("RC-Actor", "1");
                     }
                     else if (stereotype == "storage")
                     {
-                        result.Class = new Key("RC-State", 1);
+                        result.Class = new Key("RC-State", "1");
                     }
                     else if (stereotype == "heading")
                     {
-                        result.Class = new Key("RC-Folder", 1);
+                        result.Class = new Key("RC-Folder", "1");
                     }
 
                 }
                 else if (eaElement.Type == "Actor")
                 {
-                    result.Class = new Key("RC-Actor", 1);
+                    result.Class = new Key("RC-Actor", "1");
                 }
                 else if (eaElement.Type == "Port")
                 {
@@ -234,7 +235,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 			resource.ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaPackage.Element.ElementGUID);
 			resource.Title = new Value(eaPackage.Name);
-			resource.Class = new Key("RC-Folder", 1);
+			resource.Class = new Key("RC-Folder", "1");
 			resource.Properties = new List<Property>();
 
             result.Nodes = new List<Node>();
@@ -246,12 +247,12 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
                 Node childNode = new Node()
                 {
                     ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(childPackage.Element.ElementGUID + "-NODE"),
-                    Revision = Key.FIRST_MAIN_REVISION,
+                    Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID(),
                     NodeReferences = new List<Key>(),
                     ResourceReference = new Key()
                     {
                         ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(childPackage.Element.ElementGUID),
-                        Revision = Key.FIRST_MAIN_REVISION
+                        Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID()
                     }
                
                 };
@@ -282,12 +283,12 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
                 Node childNode = new Node()
                 {
                     ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(childPackage.Element.ElementGUID + "-NODE"),
-                    Revision = Key.FIRST_MAIN_REVISION,
+                    Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID(),
                     NodeReferences = new List<Key>(),
                     ResourceReference = new Key()
                     {
                         ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(childPackage.Element.ElementGUID),
-                        Revision = Key.FIRST_MAIN_REVISION
+                        Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID()
 					}
 
                 };
@@ -322,12 +323,12 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
             Node elementNode = new Node()
             {
                 ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(element.ElementGUID + "-NODE"),
-                Revision = Key.FIRST_MAIN_REVISION,
+                Revision = "1",
                 NodeReferences = new List<Key>(),
                 ResourceReference = new Key()
                 {
                     ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(element.ElementGUID),
-                    Revision = Key.FIRST_MAIN_REVISION
+                    Revision = "1"
 				}
             };
 
@@ -351,12 +352,12 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
                 Node embeddedElementNode = new Node()
                 {
                     ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(embeddedElement.ElementGUID + "-NODE"),
-                    Revision = Key.FIRST_MAIN_REVISION,
+                    Revision = "1",
                     NodeReferences = new List<Key>(),
                     ResourceReference = new Key()
                     {
                         ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(embeddedElement.ElementGUID),
-                        Revision = Key.FIRST_MAIN_REVISION
+                        Revision = "1"
 					}
                 };
 

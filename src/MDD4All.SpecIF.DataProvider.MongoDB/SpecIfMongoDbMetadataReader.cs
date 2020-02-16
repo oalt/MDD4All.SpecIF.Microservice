@@ -131,15 +131,9 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 		{
             DataType result = null;
 
-            if (key.Revision.StringValue == Key.LATEST_REVISION.StringValue)
-            {
-                Revision latestRevision = GetLatestResourceClassRevision(key.ID);
-                result = _dataTypeMongoDbAccessor.GetItemById(key.ID + "_R_" + latestRevision);
-            }
-            else
-            {
-                result = _dataTypeMongoDbAccessor.GetItemById(key.ID + "_R_" + key.Revision);
-            }
+            
+            result = _dataTypeMongoDbAccessor.GetItemById(key.ID + "_R_" + key.Revision);
+            
             return result;
 		}
 
@@ -151,7 +145,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
             if(propertyClass != null)
             {
-                result = propertyClass.Revision;
+                //result = propertyClass.Revision;
             }
 
 			return result;
@@ -165,7 +159,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
             if(resourceClass != null)
             {
-                result = resourceClass.Revision;
+                //result = resourceClass.Revision;
             }
 
 			return result;
@@ -179,7 +173,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
             if(statementClass != null)
             {
-                result = statementClass.Revision;
+                //result = statementClass.Revision;
             }
 
 			return result;
@@ -189,15 +183,9 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 		{
 			PropertyClass result = null;
 
-			if (key.Revision == Key.LATEST_REVISION)
-			{
-				Revision latestRevision = GetLatestPropertyClassRevision(key.ID);
-				result = _propertyClassMongoDbAccessor.GetItemById(key.ID + "_R_" + latestRevision);
-			}
-			else
-			{
-				result = _propertyClassMongoDbAccessor.GetItemById(key.ID + "_R_" + key.Revision);
-			}
+			
+			result = _propertyClassMongoDbAccessor.GetItemById(key.ID + "_R_" + key.Revision);
+			
 			return result;
 		}
 
@@ -205,15 +193,9 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 		{
 			ResourceClass result = null;
 
-			if (key.Revision.StringValue == Key.LATEST_REVISION.StringValue)
-			{
-				Revision latestRevision = GetLatestResourceClassRevision(key.ID);
-				result = _resourceClassMongoDbAccessor.GetItemById(key.ID + "_R_" + latestRevision);
-			}
-			else
-			{
-				result = _resourceClassMongoDbAccessor.GetItemById(key.ID + "_R_" + key.Revision);
-			}
+			
+			result = _resourceClassMongoDbAccessor.GetItemById(key.ID + "_R_" + key.Revision);
+			
 			return result;
 		}
 
@@ -221,18 +203,9 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 		{
 			StatementClass result = null;
 
-            if (key.Revision == Key.LATEST_REVISION)
-            {
-                Revision latestRevision = GetLatestStatementClassRevision(key.ID);
-                if (latestRevision != null)
-                {
-                    result = _statementClassMongoDbAccessor.GetItemById(key.ID + "_R_" + latestRevision);
-                }
-            }
-            else
-            {
-                result = _statementClassMongoDbAccessor.GetItemById(key.ID + "_R_" + key.Revision);
-            }
+            
+            result = _statementClassMongoDbAccessor.GetItemById(key.ID + "_R_" + key.Revision);
+            
 
 			return result;
 		}

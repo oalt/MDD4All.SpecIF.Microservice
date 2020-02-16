@@ -14,7 +14,7 @@ namespace MDD4All.SpecIF.DataModels.BaseTypes
 		public IdentifiableElement()
 		{
 			ID = SpecIfGuidGenerator.CreateNewSpecIfGUID();
-			Revision = Key.FIRST_MAIN_REVISION;
+			Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID();
 		}
 
         /// <summary>
@@ -41,13 +41,13 @@ namespace MDD4All.SpecIF.DataModels.BaseTypes
 		[BsonElement("id")]
 		public string ID { get; set; }
 
-		[JsonProperty(PropertyName = "revision", Order = -100)]
+		[JsonProperty(PropertyName = "revision", Order = -92)]
 		[BsonElement("revision")]
-		public Revision Revision { get; set; }
+		public string Revision { get; set; }
 
-		[JsonProperty(PropertyName = "replaces", Order = -99)]
+		[JsonProperty(PropertyName = "replaces", Order = -91)]
 		[BsonElement("replaces")]
-		public List<Revision> Replaces { get; set; } = new List<Revision>();
+		public List<string> Replaces { get; set; } = new List<string>();
 
 	}
 }

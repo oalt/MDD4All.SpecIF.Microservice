@@ -27,7 +27,7 @@ namespace MDD4All.SpecIF.Converters.Test
             {
                 FileInfo[] baseFiles = subDirectoryInfo.GetFiles("*.specif");
 
-                //files.AddRange(baseFiles);
+                files.AddRange(baseFiles);
             }
 
 			
@@ -43,7 +43,7 @@ namespace MDD4All.SpecIF.Converters.Test
             //files.Add(umlData);
 
             FileInfo vocabularyData = new FileInfo(@"c:\specif\GeneratedVocabulary.specif");
-            files.Add(vocabularyData);
+            //files.Add(vocabularyData);
 
 			SpecIfMongoDbMetadataReader mongoDbMetadataReader = new SpecIfMongoDbMetadataReader(CONNECTION_STRING);
             SpecIfMongoDbDataReader mongoDbDataReader = new SpecIfMongoDbDataReader(CONNECTION_STRING);
@@ -52,17 +52,27 @@ namespace MDD4All.SpecIF.Converters.Test
 
 			foreach (FileInfo file in files)
 			{
-				//FileToMongoDbConverter converter = new FileToMongoDbConverter(file.FullName, "mongodb://localhost:27017");
-				//converter.ConvertFileToDB();
+                //FileToMongoDbConverter converter = new FileToMongoDbConverter(file.FullName, "mongodb://localhost:27017");
+                //converter.ConvertFileToDB();
 
-				DataModels.SpecIF specIF = SpecIfFileReaderWriter.ReadDataFromSpecIfFile(file.FullName);
+                Console.WriteLine("Processing " + file.FullName);
 
-				if (specIF != null)
-				{
-					SpecIfConverter converter = new SpecIfConverter();
-					converter.ConvertAll(specIF, mongoDbDataWriter, mongoDbMetadataWriter, true);
-				}
-			}
+                //MetadataConverterForSpecIfOneRelease converter = new MetadataConverterForSpecIfOneRelease(file);
+
+                DataModels.SpecIF specIF = SpecIfFileReaderWriter.ReadDataFromSpecIfFile(file.FullName);
+
+                if (specIF != null)
+                {
+                    SpecIfConverter converter = new SpecIfConverter();
+                    converter.ConvertAll(specIF, mongoDbDataWriter, mongoDbMetadataWriter, true);
+                }
+                else
+                {
+                    Console.WriteLine("SpecIF is null!!");
+                }
+            }
+            Console.ReadLine();
 		}
+
     }
 }

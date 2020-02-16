@@ -13,7 +13,7 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 		{
 			Node result = null;
 
-			if (hierarchy.ID == key.ID && hierarchy.Revision.StringValue == key.Revision.StringValue)
+			if (hierarchy.ID == key.ID && hierarchy.Revision == key.Revision)
 			{
 				result = hierarchy;
 			}
@@ -35,7 +35,7 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 
 		private static void FindNodeRecursively(Node node, Key key, ref Node result)
 		{
-			if(node.ID == key.ID && node.Revision.StringValue == key.Revision.StringValue)
+			if(node.ID == key.ID && node.Revision == key.Revision)
 			{
 				result = node;
 			}

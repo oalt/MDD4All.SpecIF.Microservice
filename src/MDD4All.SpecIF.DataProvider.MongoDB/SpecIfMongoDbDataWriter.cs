@@ -46,7 +46,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
             if (parentNode != null)
             {
-                newNode.Revision = Key.FIRST_MAIN_REVISION;
+                newNode.Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID();
 
                 if (string.IsNullOrEmpty(newNode.ID))
                 {
@@ -86,11 +86,11 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
         {
             try
             {
-                Node nodeToMove = _dataReader.GetNodeByKey(new Key { ID = nodeID, Revision = Key.FIRST_MAIN_REVISION });
+                Node nodeToMove = _dataReader.GetNodeByKey(new Key { ID = nodeID, Revision = null });
 
-                Node oldParent = _dataReader.GetParentNode(new Key { ID = nodeID, Revision = Key.FIRST_MAIN_REVISION });
+                Node oldParent = _dataReader.GetParentNode(new Key { ID = nodeID, Revision = null });
 
-                Node newParent = _dataReader.GetNodeByKey(new Key { ID = newParentID, Revision = Key.FIRST_MAIN_REVISION });
+                Node newParent = _dataReader.GetNodeByKey(new Key { ID = newParentID, Revision = null });
 
                 int oldIndex = -1;
 

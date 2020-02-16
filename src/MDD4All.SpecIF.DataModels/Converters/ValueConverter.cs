@@ -24,11 +24,7 @@ namespace MDD4All.SpecIF.DataModels.Converters
 
 			if (reader.ValueType == typeof(string))
 			{
-				value.LanguageValues.Add(new LanguageValue()
-				{
-					Text = reader.Value.ToString(),
-					Language = "en-EN"
-				});
+                value.SimpleValue = reader.Value.ToString();
 			}
 			else
 			{
@@ -45,36 +41,45 @@ namespace MDD4All.SpecIF.DataModels.Converters
 		{
 			Value val = value as Value;
 
-			if (val.LanguageValues != null)
-			{
-				if (val.LanguageValues.Count == 1 && val.LanguageValues[0].Language == null)
-				{
-					JToken token = JToken.FromObject(val.LanguageValues[0].Text);
+            if (val.SimpleValue != null)
+            {
+                JToken token = JToken.FromObject(val.SimpleValue);
 
-					token.WriteTo(writer);
-				}
-				else
-				{
-					
+                token.WriteTo(writer);
+            }
+            else
+            {
 
-					JArray array = new JArray();
+                if (val.LanguageValues != null)
+                {
+                    if (val.LanguageValues.Count == 1 && val.LanguageValues[0].Language == null)
+                    {
+                        JToken token = JToken.FromObject(val.LanguageValues[0].Text);
 
-					foreach(LanguageValue languageValue in val.LanguageValues)
-					{
-						array.Add(JToken.FromObject(languageValue));
-					}
+                        token.WriteTo(writer);
+                    }
+                    else
+                    {
 
-					array.WriteTo(writer);
-				}
-			}
-			else
-			{
-				JToken token = JToken.FromObject("");
 
-				token.WriteTo(writer);
-			}
+                        JArray array = new JArray();
 
-			
+                        foreach (LanguageValue languageValue in val.LanguageValues)
+                        {
+                            array.Add(JToken.FromObject(languageValue));
+                        }
+
+                        array.WriteTo(writer);
+                    }
+                }
+                else
+                {
+                    JToken token = JToken.FromObject("");
+
+                    token.WriteTo(writer);
+                }
+
+            }
 
 		}
 	}

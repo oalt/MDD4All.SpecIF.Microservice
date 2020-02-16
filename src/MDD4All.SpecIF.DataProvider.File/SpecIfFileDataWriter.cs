@@ -142,7 +142,7 @@ namespace MDD4All.SpecIF.DataProvider.File
 
 		public override Statement SaveStatement(Statement statement)
 		{
-			Statement existingStatement = _specIfData?.Statements.Find(st => st.ID == statement.ID && st.Revision.StringValue == statement.Revision.StringValue);
+			Statement existingStatement = _specIfData?.Statements.Find(st => st.ID == statement.ID && st.Revision == statement.Revision);
 
 			if(existingStatement != null)
 			{

@@ -2,6 +2,7 @@
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
 using MDD4All.SpecIF.DataModels.BaseTypes;
+using MDD4All.SpecIF.DataModels.Helpers;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 using System;
@@ -20,7 +21,7 @@ namespace MDD4All.SpecIF.DataModels
         {
             Title = new Value(title);
 
-            PropertyClass = new Key(classID, 1);
+            PropertyClass = new Key(classID, SpecIfGuidGenerator.CreateNewSpecIfGUID());
             Value = new Value
             {
                 LanguageValues = new List<LanguageValue>

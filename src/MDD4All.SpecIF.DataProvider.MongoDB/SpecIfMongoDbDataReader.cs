@@ -87,15 +87,9 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
         {
             Node result = null;
 
-            if (key.Revision == Key.LATEST_REVISION)
-            {
-                Revision latestRevision = GetLatestHierarchyRevision(key.ID);
-                result = _hierarchyMongoDbAccessor.GetItemById(key.ID + "_R_" + latestRevision.StringValue);
-            }
-            else
-            {
-                result = _hierarchyMongoDbAccessor.GetItemById(key.ID + "_R_" + key.Revision.StringValue);
-            }
+            
+            result = _hierarchyMongoDbAccessor.GetItemById(key.ID + "_R_" + key.Revision);
+            
 
             return result;
         }
@@ -109,7 +103,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 					parent.Nodes = new List<Node>();
 				}
 
-				Node childNode = _nodeMongoDbAccessor.GetItemById(nodeKey.ID + "_R_" + nodeKey.Revision.StringValue);
+				Node childNode = _nodeMongoDbAccessor.GetItemById(nodeKey.ID + "_R_" + nodeKey.Revision);
 
 				parent.Nodes.Add(childNode);
 
@@ -118,7 +112,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
 		}
 
-		public override Revision GetLatestResourceRevisionForBranch(string resourceID, string branchName)
+		public override string GetLatestResourceRevisionForBranch(string resourceID, string branchName)
 		{
 			Resource resource = _resourceMongoDbAccessor.GetItemWithLatestRevisionInBranch(resourceID, branchName);
 
@@ -131,15 +125,9 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 		{
 			Resource result = null;
 
-			if (key.Revision.StringValue == Key.LATEST_REVISION.StringValue)
-			{
-				Revision latestRevision = GetLatestResourceRevisionForBranch(key.ID, key.Revision.BranchName);
-				result = _resourceMongoDbAccessor.GetItemById(key.ID + "_R_" + latestRevision.StringValue);
-			}
-			else
-			{
-				result = _resourceMongoDbAccessor.GetItemById(key.ID + "_R_" + key.Revision.StringValue);
-			}
+			
+			result = _resourceMongoDbAccessor.GetItemById(key.ID + "_R_" + key.Revision);
+			
 			return result;
 		}
 
@@ -147,26 +135,19 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 		{
 			Statement result = null;
 
-			if (key.Revision == Key.LATEST_REVISION)
-			{
-				Revision latestRevision = GetLatestStatementRevision(key.ID);
-				result = _statementMongoDbAccessor.GetItemById(key.ID + "_R_" + latestRevision);
-			}
-			else
-			{
-				result = _statementMongoDbAccessor.GetItemById(key.ID + "_R_" + key.Revision);
-			}
+			result = _statementMongoDbAccessor.GetItemById(key.ID + "_R_" + key.Revision);
+			
 			return result;
 		}
 
-		public override Revision GetLatestHierarchyRevision(string hierarchyID)
+		public override string GetLatestHierarchyRevision(string hierarchyID)
 		{
 			Node hierarchy = _hierarchyMongoDbAccessor.GetItemWithLatestRevision(hierarchyID);
 
 			return hierarchy.Revision;
 		}
 
-		public override Revision GetLatestStatementRevision(string statementID)
+		public override string GetLatestStatementRevision(string statementID)
 		{
 			Statement statement = _statementMongoDbAccessor.GetItemWithLatestRevision(statementID);
 
@@ -206,8 +187,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 			BsonDocument filter = new BsonDocument()
 			{
 				{ "resource.id" , resourceKey.ID  },
-				{ "resource.revision.branch", resourceKey.Revision.BranchName },
-				{ "resource.revision.revisionNumber", resourceKey.Revision.RevsionNumber }
+				{ "resource.revision", resourceKey.Revision }
 			};
 
 			List<Node> searchResult = _hierarchyMongoDbAccessor.GetItemsByFilter(filter.ToJson());
@@ -242,10 +222,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 					
 					{ "nodes.id" , currentNode.ID },
 							
-					{ "nodes.revision.branch", currentNode.Revision.BranchName },
-														
-					{ "nodes.revision.revisionNumber", currentNode.Revision.RevsionNumber }
-							
+					{ "nodes.revision", currentNode.Revision },
 					
 				};
 
@@ -358,9 +335,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
                     { "nodes.id" , childNodeKey.ID },
 
-                    { "nodes.revision.branch", childNodeKey.Revision.BranchName },
-
-                    { "nodes.revision.revisionNumber", childNodeKey.Revision.RevsionNumber }
+                    { "nodes.revision", childNodeKey.Revision },
 
 
                 };

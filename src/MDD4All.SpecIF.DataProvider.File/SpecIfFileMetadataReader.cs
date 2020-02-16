@@ -37,14 +37,9 @@ namespace MDD4All.SpecIF.DataProvider.File
 
 			if (resourceClassesWithSameID.Count != 0)
 			{
-				if (key.Revision == Key.LATEST_REVISION)
-				{
-					result = resourceClassesWithSameID.OrderByDescending(r => r.Revision).First();
-				}
-				else
-				{
-					result = resourceClassesWithSameID.Find(r => r.Revision == key.Revision);
-				}
+				
+				result = resourceClassesWithSameID.Find(r => r.Revision == key.Revision);
+				
 			}
 
 			return result;
@@ -58,14 +53,9 @@ namespace MDD4All.SpecIF.DataProvider.File
 
 			if (propertyClassesWithSameID.Count != 0)
 			{
-				if (key.Revision == Key.LATEST_REVISION)
-				{
-					result = propertyClassesWithSameID.OrderByDescending(r => r.Revision).First();
-				}
-				else
-				{
-					result = propertyClassesWithSameID.Find(r => r.Revision == key.Revision);
-				}
+				
+				result = propertyClassesWithSameID.Find(r => r.Revision == key.Revision);
+				
 			}
 
 			return result;
@@ -84,14 +74,9 @@ namespace MDD4All.SpecIF.DataProvider.File
 
 			if (statementClassesWithSameID.Count != 0)
 			{
-				if (key.Revision == Key.LATEST_REVISION)
-				{
-					result = statementClassesWithSameID.OrderByDescending(r => r.Revision).First();
-				}
-				else
-				{
-					result = statementClassesWithSameID.Find(r => r.Revision == key.Revision);
-				}
+				
+				result = statementClassesWithSameID.Find(r => r.Revision == key.Revision);
+				
 			}
 
 			return result;

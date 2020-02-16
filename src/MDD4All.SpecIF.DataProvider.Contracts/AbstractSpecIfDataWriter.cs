@@ -35,8 +35,8 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 			ResourceClass resourceType = _metadataReader.GetResourceClassByKey(resourceTypeID);
 
 			result.ID = SpecIfGuidGenerator.CreateNewSpecIfGUID();
-			result.Revision = Key.FIRST_MAIN_REVISION;
-			result.Properties = new List<Property>();
+			result.Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID();
+            result.Properties = new List<Property>();
 
 			result.Class = resourceTypeID;
 
@@ -102,57 +102,41 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
             string targetBranchName = "";
 
             // set revision info
-            if (string.IsNullOrEmpty(data.ID)) // no id given. Create new id and add element as main/1
+            if (string.IsNullOrEmpty(data.ID)) // no id given. Create new id and add element as first revision
             {
                 data.ID = SpecIfGuidGenerator.CreateNewSpecIfGUID();
-                data.Revision = Key.FIRST_MAIN_REVISION;
-                data.Replaces = new List<Revision>();
+                data.Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID();
+                data.Replaces = new List<string>();
 
             }
             else // id given
             {
                 if (data.Revision == null) // no revision set. Set default targetbranch == "main"
                 {
-                    data.Revision = new Revision();
+                    data.Revision = "";
                     targetBranchName = "main";
                 }
                 else
                 {
 
-                    if (!string.IsNullOrEmpty(data.Revision.BranchName)) // target branch given by revision. Set as target branch
-                    {
-                        targetBranchName = data.Revision.BranchName;
-                    }
-                    else
-                    {
-                        targetBranchName = "main";
-                    }
+                    
                 }
             }
 
             IdentifiableElement parentElement = GetItemWithLatestRevisionInBranch<T>(data.ID, targetBranchName);
 
-            if (parentElement != null)
-            {
-                data.Revision.RevsionNumber = parentElement.Revision.RevsionNumber + 1;
-                data.Revision.BranchName = parentElement.Revision.BranchName;
-            }
-            else
-            {
-                data.Revision.RevsionNumber = 1;
-                data.Revision.BranchName = targetBranchName;
-            }
+            
 
             // set replacement info
             if (data.Replaces.Count == 0) // no replace given. Take latest of target branch as replacement
             { 
                 if (parentElement == null) // branch root element
                 {
-                    data.Replaces = new List<Revision>();
+                    data.Replaces = new List<string>();
                 }
                 else
                 {
-                    data.Replaces = new List<Revision>();
+                    data.Replaces = new List<string>();
                     data.Replaces.Add(parentElement.Revision);
                 }
             }

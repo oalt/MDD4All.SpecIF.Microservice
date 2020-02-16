@@ -41,7 +41,7 @@ namespace MDD4All.SpecIF.DataModels
 					_resourceReference = new Key()
 					{
 						ID = resourceJObject["id"].ToString(),
-						Revision = new Revision(resourceJObject["revision"].ToString())
+						Revision = resourceJObject["revision"].ToString()
 					};
 				}
 				
@@ -60,11 +60,11 @@ namespace MDD4All.SpecIF.DataModels
 			set
 			{
 				_resourceReference.ID = value;
-				_resourceReference.Revision = Key.LATEST_REVISION;
+				//_resourceReference.Revision = Key.LATEST_REVISION;
 			}
 		}
 
-		private Key _resourceReference = new Key() { ID = "", Revision = Key.LATEST_REVISION };
+		private Key _resourceReference = new Key() { ID = "" };
 
 		[JsonIgnore]
 		[BsonElement("resource")]

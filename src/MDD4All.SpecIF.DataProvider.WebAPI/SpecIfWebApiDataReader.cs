@@ -56,9 +56,9 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
             return task.Result;
         }
 
-		public override Revision GetLatestHierarchyRevision(string hierarchyID)
+		public override string GetLatestHierarchyRevision(string hierarchyID)
 		{
-			Task<Revision> task = GetLatestRevisionAsync<Node>(hierarchyID, "SpecIF/Hierarchy/");
+			Task<string> task = GetLatestRevisionAsync<Node>(hierarchyID, "SpecIF/Hierarchy/");
 			task.Wait();
 
 			return task.Result;
@@ -72,9 +72,9 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 		//	return task.Result;
 		//}
 
-		public override Revision GetLatestStatementRevision(string statementID)
+		public override string GetLatestStatementRevision(string statementID)
 		{
-			Task<Revision> task = GetLatestRevisionAsync<Statement>(statementID, "SpecIF/Statement/");
+			Task<string> task = GetLatestRevisionAsync<Statement>(statementID, "SpecIF/Statement/");
 			task.Wait();
 
 			return task.Result;
@@ -125,15 +125,15 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 			return result;
 		}
 
-		public async Task<Revision> GetLatestRevisionAsync<T>(string resourceID, string apiPath)
+		public async Task<string> GetLatestRevisionAsync<T>(string resourceID, string apiPath)
 		{
-			Revision result = Key.FIRST_MAIN_REVISION;
+			string result = null;
 
 			string answer = await _httpClient.GetStringAsync(_connectionURL + apiPath + "/LatestRevision/" + resourceID);
 
 
 
-			result = new Revision(answer);
+            
 
 			return result;
 		}
@@ -173,7 +173,7 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
             throw new NotImplementedException();
         }
 
-        public override Revision GetLatestResourceRevisionForBranch(string resourceID, string branchName)
+        public override string GetLatestResourceRevisionForBranch(string resourceID, string branchName)
         {
             throw new NotImplementedException();
         }

@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using MDD4All.SpecIF.DataModels;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
 
 namespace MDD4All.SpecIf.Microservice.Controllers
 {
@@ -15,20 +14,20 @@ namespace MDD4All.SpecIf.Microservice.Controllers
     /// </summary>
     [Produces("application/json")]
     [ApiVersion("1.0")]
-    [Route("specif/v{version:apiVersion}/resource-classes")]
+    [Route("specif/v{version:apiVersion}/resourceClasses")]
     [ApiController]
     public class ResourceClassController : Controller
     {
-		private ISpecIfMetadataReader _metadataReader;
+        private ISpecIfMetadataReader _metadataReader;
 
         /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="metadataReader"></param>
 		public ResourceClassController(ISpecIfMetadataReader metadataReader)
-		{
-			_metadataReader = metadataReader;
-		}
+        {
+            _metadataReader = metadataReader;
+        }
 
         /// <summary>
         /// Returns all resource classes with all available revisions.
@@ -55,25 +54,27 @@ namespace MDD4All.SpecIf.Microservice.Controllers
 
 
         /// <summary>
-        /// Returns the main/latest revision of the resource class with the given ID. 
+        /// Returns the resource class with the given ID. 
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">The resource class ID.</param>
+        /// <param name="revision">The resource class revision.</param>
         /// <returns></returns>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(ResourceClass), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public ActionResult<ResourceClass> GetResourceClassById(string id)
+        public ActionResult<ResourceClass> GetResourceClassById(string id, [FromQuery]string revision)
         {
             ActionResult<ResourceClass> result = NotFound();
 
-            if (!string.IsNullOrEmpty(id))
+            if (!string.IsNullOrEmpty(id) && !string.IsNullOrEmpty(revision))
             {
-                ResourceClass dbResult = _metadataReader.GetResourceClassByKey(new Key(id));
-
-                if (dbResult != null)
+                string rev = revision.Replace("%2F", "/");
+                
+                ResourceClass resourceClass = _metadataReader.GetResourceClassByKey(new Key() { ID = id, Revision = rev });
+                if (resourceClass != null)
                 {
-                    result = dbResult;
+                    result = new ObjectResult(resourceClass);
                 }
             }
             else
@@ -89,7 +90,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("{id}/revisions")]
+        [HttpGet("{id}/allRevisions")]
         [ProducesResponseType(typeof(List<ResourceClass>), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
@@ -109,35 +110,45 @@ namespace MDD4All.SpecIf.Microservice.Controllers
             return result;
         }
 
+
+
         /// <summary>
-        /// Returns the resource class with the specific revision.
+        /// Create a new resource class.
         /// </summary>
-        /// <param name="id">The resource class ID.</param>
-        /// <param name="revision">The resource class revision.</param>
+        /// <param name="resourceClass">The resource class data.</param>
         /// <returns></returns>
-        [HttpGet("{id}/revisions/{revision}")]
+        [HttpPost]
         [ProducesResponseType(typeof(ResourceClass), 200)]
-        [ProducesResponseType(404)]
-        public ActionResult<ResourceClass> GetResourceClassRevision(string id, string revision)
+        public ActionResult<ResourceClass> CreateResourceClass([FromBody]ResourceClass resourceClass)
         {
             ActionResult<ResourceClass> result = NotFound();
 
-            if (!string.IsNullOrEmpty(id) && !string.IsNullOrEmpty(revision))
-            {
-                string rev = revision.Replace("%2F", "/");
+            return result;
+        }
 
-                Revision revisionObject = new Revision(rev);
+        /// <summary>
+        /// Update a resource class.
+        /// The subjected ID must exist.
+        /// </summary>
+        /// <param name="resourceClass">The statement class data.</param>
+        /// <returns></returns>
+        [HttpPut]
+        [ProducesResponseType(typeof(ResourceClass), 200)]
+        public ActionResult<ResourceClass> UpdateResourceClass([FromBody]Resource resourceClass)
+        {
+            ActionResult<ResourceClass> result = NotFound();
 
-                ResourceClass resourceClass = _metadataReader.GetResourceClassByKey(new Key() { ID = id, Revision = revisionObject });
-                if (resourceClass != null)
-                {
-                    result = new ObjectResult(resourceClass);
-                }
-            }
-            else
-            {
-                result = new BadRequestResult();
-            }
+            return result;
+        }
+
+        /// <summary>
+        /// Delete a resource class with the given ID.
+        /// </summary>
+        /// <param name="id">The resource class ID.</param>
+        [HttpDelete("{id}")]
+        public ActionResult DeleteResourceClass(string id)
+        {
+            ActionResult result = NotFound();
 
             return result;
         }

@@ -1,4 +1,7 @@
-﻿using System.Reflection;
+﻿/*
+ * Copyright (c) MDD4All.de, Dr. Oliver Alt
+ */
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 

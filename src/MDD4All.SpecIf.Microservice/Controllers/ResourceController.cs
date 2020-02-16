@@ -26,23 +26,60 @@ namespace MDD4All.SpecIf.Microservice.Controllers
 		}
 
         /// <summary>
+        /// Returns all resources with all available revisions.
+        /// </summary>
+        /// <param name="projectID">An optional project ID. The endpount then returns only resources for the given project.</param>
+        /// <returns>The resource data.</returns>
+        [HttpGet()]
+        [ProducesResponseType(typeof(List<Resource>), 200)]
+        public ActionResult<List<Resource>> GetAllResources([FromQuery]string projectID)
+        {
+            return new List<Resource>();
+        }
+
+        /// <summary>
         /// Returns the latest version of the resource with the given ID.
         /// </summary>
         /// <param name="id">The resource ID.</param>
+        /// <param name="revision">The resource revision.</param>
         /// <returns>The resource data.</returns>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Resource), 200)]
-        public ActionResult<Resource> GetResourceById(string id)
+        public ActionResult<Resource> GetResourceById(string id, [FromQuery]string revision)
 		{
-			return GetResourceRevision(id, Key.LATEST_REVISION.StringValue);
-		}
+            ActionResult result = NotFound();
+
+            if (!string.IsNullOrEmpty(id))
+            {
+                if (!string.IsNullOrEmpty(revision))
+                {
+                    string rev = revision.Replace("%2F", "/");
+                    
+                    Resource resource = _specIfDataReader.GetResourceByKey(new Key() { ID = id, Revision = rev });
+                    if (resource != null)
+                    {
+                        result = new ObjectResult(resource);
+                    }
+                }
+                else
+                {
+                    result = NotFound();
+                }
+            }
+            else
+            {
+                result = new BadRequestResult();
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Returns a list of all revisions for the resource with the given ID.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpGet("{id}/revisions")]
+        /// <param name="id">The resource ID.</param>
+        /// <returns>All available revisions for this resource.</returns>
+        [HttpGet("{id}/allRevisions")]
         [ProducesResponseType(typeof(List<Resource>), 200)]
         public ActionResult<List<Resource>> GetAllResourceRevisions(string id)
         {
@@ -62,69 +99,6 @@ namespace MDD4All.SpecIf.Microservice.Controllers
             }
             return result;
         }
-
-        /// <summary>
-        /// Returns a specific revision for the resource with the given ID.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="revision"></param>
-        /// <returns></returns>
-        [HttpGet("{id}/revisions/{revision}")]
-        [ProducesResponseType(typeof(Resource), 201)]
-        public ActionResult<Resource> GetResourceRevision(string id, string revision)
-        {
-            ActionResult result = NotFound();
-
-            if (!string.IsNullOrEmpty(id) && !string.IsNullOrEmpty(revision))
-            {
-                string rev = revision.Replace("%2F", "/");
-
-                Revision revisionObject = new Revision(rev);
-
-                Resource resource = _specIfDataReader.GetResourceByKey(new Key() { ID = id, Revision = revisionObject });
-                if (resource != null)
-                {
-                    result = new ObjectResult(resource);
-                }
-            }
-            else
-            {
-                result = new BadRequestResult();
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Returns the latest revision for the resource with the given ID in the given branch.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="branch"></param>
-        /// <returns></returns>
-		[HttpGet("{id}/branches/{branch}")]
-        [ProducesResponseType(typeof(Resource), 200)]
-        public ActionResult<Resource> GetLatestResourceRevisionInBranch(string id, string branch)
-		{
-            ActionResult result = NotFound();
-
-            if (!string.IsNullOrEmpty(id) && !string.IsNullOrEmpty(branch))
-            {
-                Revision revision = _specIfDataReader.GetLatestResourceRevisionForBranch(id, branch);
-
-                Resource resource = _specIfDataReader.GetResourceByKey(new Key() { ID = id, Revision = revision });
-                if (resource != null)
-                {
-                    result = new ObjectResult(resource);
-                }
-            }
-            else
-            {
-                result = new BadRequestResult();
-            }
-
-            return result;
-        }
-
 
         /// <summary>
         /// Adds a new resource to the SpecIF repository.
@@ -148,7 +122,39 @@ namespace MDD4All.SpecIf.Microservice.Controllers
             return result;
         }
 
-		
+        /// <summary>
+        /// Update a resource. The ID included in the reource data must exist.
+        /// </summary>
+        /// <param name="resource"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [ProducesResponseType(typeof(Resource), 201)]
+        public ActionResult<Resource> UpdateResource([FromBody]Resource resource)
+        {
+            ActionResult<Resource> result = _specIfDataWriter.SaveResource(resource);
+
+            if (result == null)
+            {
+                result = new BadRequestResult();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Delete the resource.
+        /// </summary>
+        /// <param name="id">The resource ID.</param>
+        /// <param name="revision">The resource revision.</param>
+        /// <param name="mode">?mode=forced results in deleting all directly and indirectly depending model elements.</param>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        public ActionResult DeleteResource(string id, [FromQuery]string revision, [FromQuery]string mode)
+        {
+            ActionResult result = NotFound();
+
+            return result;
+        }
 
 	}
 }

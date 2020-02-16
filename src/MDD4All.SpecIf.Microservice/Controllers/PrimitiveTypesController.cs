@@ -10,7 +10,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
 {
     [ApiVersion("1.0")]
     [Produces("application/json")]
-    [Route("specif/v{version:apiVersion}/primitive-types")]
+    [Route("specif/v{version:apiVersion}/primitiveTypes")]
     [ApiController]
     //[SwaggerTag("01 Primitive Types")]
     public class PrimitiveTypesController : Controller

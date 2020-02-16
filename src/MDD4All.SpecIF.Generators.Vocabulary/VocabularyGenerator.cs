@@ -45,7 +45,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
             {
                 ChangedAt = DateTime.Now,
                 Title = new Value("SpecIF Vocabulary"),
-                ResourceReference = new Key(vocabularyHeading.ID, 1)
+                ResourceReference = new Key(vocabularyHeading.ID, vocabularyHeading.Revision)
             };
 
             _vocabulary.Hierarchies.Add(rootNode);
@@ -68,7 +68,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
             {
                 ChangedAt = DateTime.Now,
                 Title = new Value("Doamin " + domainName),
-                ResourceReference = new Key(domainHeading.ID, 1)
+                ResourceReference = new Key(domainHeading.ID, domainHeading.Revision)
             };
 
             parentNode.Nodes.Add(domainHeadingNode);
@@ -84,7 +84,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
                 {
                     ChangedAt = DateTime.Now,
                     Title = new Value("Properties"),
-                    ResourceReference = new Key(propertyHeading.ID, 1)
+                    ResourceReference = new Key(propertyHeading.ID, propertyHeading.Revision)
                 };
 
                 domainHeadingNode.Nodes.Add(propertyHeadingNode);
@@ -99,7 +99,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
                     {
                         ChangedAt = DateTime.Now,
 
-                        ResourceReference = new Key(propertyDescription.ID, 1)
+                        ResourceReference = new Key(propertyDescription.ID, propertyDescription.Revision)
                     };
 
                     propertyHeadingNode.Nodes.Add(node);
@@ -118,7 +118,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
                 {
                     ChangedAt = DateTime.Now,
                     Title = new Value("Resources"),
-                    ResourceReference = new Key(resourceHeading.ID, 1)
+                    ResourceReference = new Key(resourceHeading.ID, resourceHeading.Revision)
                 };
 
                 domainHeadingNode.Nodes.Add(resourceHeadingNode);
@@ -133,7 +133,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
                     {
                         ChangedAt = DateTime.Now,
 
-                        ResourceReference = new Key(resourceDescription.ID, 1)
+                        ResourceReference = new Key(resourceDescription.ID, resourceDescription.Revision)
                     };
 
                     resourceHeadingNode.Nodes.Add(node);
@@ -152,7 +152,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
                 {
                     ChangedAt = DateTime.Now,
                     Title = new Value("Statements"),
-                    ResourceReference = new Key(statementHeading.ID, 1)
+                    ResourceReference = new Key(statementHeading.ID)
                 };
 
                 domainHeadingNode.Nodes.Add(statementHeadingNode);
@@ -167,7 +167,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
                     {
                         ChangedAt = DateTime.Now,
 
-                        ResourceReference = new Key(statementDescription.ID, 1)
+                        ResourceReference = new Key(statementDescription.ID, statementDescription.Revision)
                     };
 
                     statementHeadingNode.Nodes.Add(node);
@@ -180,7 +180,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
             Resource result = new Resource()
             {
                 ChangedAt = DateTime.Now,
-                Class = new Key("RC-Folder", 1),
+                Class = new Key("RC-Folder", "1"),
                 ID = SpecIfGuidGenerator.CreateNewSpecIfGUID(),
                 Title = new Value(title),
                 Properties = new List<Property>()
@@ -204,7 +204,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
             Resource result = new Resource()
             {
                 ChangedAt = DateTime.Now,
-                Class = new Key("RC-PropertyTerm", 1),
+                Class = new Key("RC-PropertyTerm", "1"),
                 ID = "RS-" + propertyClass.ID,
                 Title = propertyClass.Title,
                 Properties = new List<Property>()
@@ -244,7 +244,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
             Resource result = new Resource()
             {
                 ChangedAt = DateTime.Now,
-                Class = new Key("RC-ResourceTerm", 1),
+                Class = new Key("RC-ResourceTerm", "1"),
                 ID = "RS-" + resourceClass.ID,
                 Title = resourceClass.Title,
                 Properties = new List<Property>()
@@ -290,7 +290,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
             Resource result = new Resource()
             {
                 ChangedAt = DateTime.Now,
-                Class = new Key("RC-ResourceTerm", 1),
+                Class = new Key("RC-ResourceTerm", "1"),
                 ID = "RS-" + statementClass.ID,
                 Title = statementClass.Title,
                 Properties = new List<Property>()

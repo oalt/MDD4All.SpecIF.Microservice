@@ -15,7 +15,7 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 		{
 			List<EnumValue> result = new List<EnumValue>();
 
-			DataType dataType = GetDataTypeByKey(new Key(dataTypeID, 0));
+			DataType dataType = GetDataTypeByKey(new Key(dataTypeID, null));
 
 			if (dataType != null && dataType.Values != null)
 			{

@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using MDD4All.SpecIF.DataModels;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
 
 namespace MDD4All.SpecIf.Microservice.Controllers
 {
@@ -14,7 +13,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
     /// </summary>
     [Produces("application/json")]
     [ApiVersion("1.0")]
-    [Route("specif/v{version:apiVersion}/property-classes")]
+    [Route("specif/v{version:apiVersion}/propertyClasses")]
     [ApiController]
     public class PropertyClassController : Controller
     {
@@ -53,25 +52,34 @@ namespace MDD4All.SpecIf.Microservice.Controllers
 
 
         /// <summary>
-        /// Returns the main/latest revision of the property class with the given ID. 
+        /// Returns the property class with the given ID. 
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">The property class ID.</param>
+        /// <param name="revision">The property class revsion.</param>
         /// <returns></returns>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(PropertyClass), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public ActionResult<PropertyClass> GetPropertyClassById(string id)
+        public ActionResult<PropertyClass> GetPropertyClassById(string id, [FromQuery]string revision)
         {
             ActionResult<PropertyClass> result = NotFound();
 
             if (!string.IsNullOrEmpty(id))
             {
-                PropertyClass dbResult = _metadataReader.GetPropertyClassByKey(new Key(id));
-
-                if (dbResult != null)
+                if (!string.IsNullOrEmpty(revision))
                 {
-                    result = dbResult;
+                    string rev = revision.Replace("%2F", "/");
+                    
+                    PropertyClass propertyClass = _metadataReader.GetPropertyClassByKey(new Key() { ID = id, Revision = rev });
+                    if (propertyClass != null)
+                    {
+                        result = new ObjectResult(propertyClass);
+                    }
+                }
+                else
+                {
+                    result = NotFound();
                 }
             }
             else
@@ -87,7 +95,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("{id}/revisions")]
+        [HttpGet("{id}/allRevisions")]
         [ProducesResponseType(typeof(List<PropertyClass>), 200)]
         public ActionResult<List<PropertyClass>> GetAllPropertyClassRevisions(string id)
         {
@@ -106,34 +114,32 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         }
 
         /// <summary>
-        /// Returns the property class with the specific revision.
+        /// Update the property class; the supplied ID must exist.
         /// </summary>
         /// <param name="id">The property class ID.</param>
         /// <param name="revision">The property class revision.</param>
-        /// <returns></returns>
-        [HttpGet("{id}/revisions/{revision}")]
-        [ProducesResponseType(typeof(StatementClass), 201)]
-        [ProducesResponseType(404)]
-        public ActionResult<PropertyClass> GetPropertyClassRevision(string id, string revision)
+        /// <returns>The updated property class element.</returns>
+        [HttpPut("{id}")]
+        public ActionResult UpdatePropertyClass(string id, [FromQuery]string revision)
         {
-            ActionResult<PropertyClass> result = NotFound();
+            ActionResult result = NotFound();
 
-            if (!string.IsNullOrEmpty(id) && !string.IsNullOrEmpty(revision))
-            {
-                string rev = revision.Replace("%2F", "/");
+            return result;
+        }
 
-                Revision revisionObject = new Revision(rev);
 
-                PropertyClass propertyClass = _metadataReader.GetPropertyClassByKey(new Key() { ID = id, Revision = revisionObject });
-                if (propertyClass != null)
-                {
-                    result = new ObjectResult(propertyClass);
-                }
-            }
-            else
-            {
-                result = new BadRequestResult();
-            }
+        /// <summary>
+        /// Delete the property class; the supplied ID must exist. 
+        /// Return an error if there are depending model elements. 
+        /// </summary>
+        /// <param name="id">The property class ID.</param>
+        /// <param name="revision">The property class revision.</param>
+        /// <param name="mode">Delete mode. ?mode=forced results in deleting all directly and indirectly depending model elements.</param>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        public ActionResult DeletePropertyClass(string id, [FromQuery]string revision, [FromQuery]string mode)
+        {
+            ActionResult result = NotFound();
 
             return result;
         }

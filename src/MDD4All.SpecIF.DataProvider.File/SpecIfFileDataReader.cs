@@ -47,14 +47,9 @@ namespace MDD4All.SpecIF.DataProvider.File
 
 			if (hierarchiesWithSameID.Count != 0)
 			{
-				if (key.Revision == Key.LATEST_REVISION)
-				{
-					result = hierarchiesWithSameID.OrderByDescending(r => r.Revision).First();
-				}
-				else
-				{
-					result = hierarchiesWithSameID.Find(r => r.Revision == key.Revision);
-				}
+				
+				result = hierarchiesWithSameID.Find(r => r.Revision == key.Revision);
+				
 			}
 
 			return result;
@@ -68,22 +63,17 @@ namespace MDD4All.SpecIF.DataProvider.File
 
 			if (resourcesWithSameID.Count != 0)
 			{
-				if (key.Revision == Key.LATEST_REVISION)
-				{
-					result = resourcesWithSameID.OrderByDescending(r => r.Revision).First();
-				}
-				else
-				{
-					result = resourcesWithSameID.Find(r => r.Revision == key.Revision);
-				}
+				
+				result = resourcesWithSameID.Find(r => r.Revision == key.Revision);
+				
 			}
 
 			return result;
 		}
 
-		public override Revision GetLatestResourceRevisionForBranch(string resourceID, string branchName)
+		public override string GetLatestResourceRevisionForBranch(string resourceID, string branchName)
 		{
-			Revision result = Key.FIRST_MAIN_REVISION;
+			string result = null;
 
 			// TODO
 			//try
@@ -111,14 +101,9 @@ namespace MDD4All.SpecIF.DataProvider.File
 
 			if (statementsWithSameID.Count != 0)
 			{
-				if (key.Revision == Key.LATEST_REVISION)
-				{
-					result = statementsWithSameID.OrderByDescending(r => r.Revision).First();
-				}
-				else
-				{
-					result = statementsWithSameID.Find(r => r.Revision == key.Revision);
-				}
+				
+				result = statementsWithSameID.Find(r => r.Revision == key.Revision);
+				
 			}
 
 			return result;
@@ -133,9 +118,9 @@ namespace MDD4All.SpecIF.DataProvider.File
 			return result;
 		}
 
-		public override Revision GetLatestHierarchyRevision(string hierarchyID)
+		public override string GetLatestHierarchyRevision(string hierarchyID)
 		{
-			Revision result = Key.FIRST_MAIN_REVISION;
+			string result = null;
 
 			//try
 			//{
@@ -154,9 +139,9 @@ namespace MDD4All.SpecIF.DataProvider.File
 			return result;
 		}
 
-		public override Revision GetLatestStatementRevision(string statementID)
+		public override string GetLatestStatementRevision(string statementID)
 		{
-			Revision result = Key.FIRST_MAIN_REVISION;
+			string result = null;
 
 			//try
 			//{

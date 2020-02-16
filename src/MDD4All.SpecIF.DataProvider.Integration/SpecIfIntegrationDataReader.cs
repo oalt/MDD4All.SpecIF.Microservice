@@ -146,9 +146,9 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			return result;
 		}
 
-		public override Revision GetLatestHierarchyRevision(string hierarchyID)
+		public override string GetLatestHierarchyRevision(string hierarchyID)
 		{
-			Revision result = Key.FIRST_MAIN_REVISION;
+			string result = null;
 
 			ISpecIfDataReader provider = FindDataProviderForHierarchy(hierarchyID);
 
@@ -160,9 +160,9 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			return result;
 		}
 
-		public override Revision GetLatestStatementRevision(string statementID)
+		public override string GetLatestStatementRevision(string statementID)
 		{
-			Revision result = Key.FIRST_MAIN_REVISION;
+			string result = null;
 
 			ISpecIfDataReader provider = FindDataProviderForStatement(statementID);
 
@@ -180,7 +180,7 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 
 			foreach (KeyValuePair<string, ISpecIfDataReader> provider in _dataReaders)
 			{
-				if (provider.Value.GetStatementByKey(new Key() { ID = statementID, Revision = Key.LATEST_REVISION }) != null)
+				if (provider.Value.GetStatementByKey(new Key() { ID = statementID, Revision = null }) != null)
 				{
 					result = provider.Value;
 					break;
@@ -196,7 +196,7 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 
 			foreach (KeyValuePair<string, ISpecIfDataReader> provider in _dataReaders)
 			{
-				if (provider.Value.GetResourceByKey(new Key() { ID = id, Revision = Key.LATEST_REVISION }) != null)
+				if (provider.Value.GetResourceByKey(new Key() { ID = id, Revision = null }) != null)
 				{
 					result = provider.Value;
 					break;
@@ -212,7 +212,7 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 
 			foreach (KeyValuePair<string, ISpecIfDataReader> provider in _dataReaders)
 			{
-				if (provider.Value.GetHierarchyByKey(new Key() { ID = id, Revision = Key.LATEST_REVISION }) != null)
+				if (provider.Value.GetHierarchyByKey(new Key() { ID = id, Revision = null }) != null)
 				{
 					result = provider.Value;
 					break;
@@ -257,7 +257,7 @@ namespace MDD4All.SpecIF.DataProvider.Integration
             throw new System.NotImplementedException();
         }
 
-        public override Revision GetLatestResourceRevisionForBranch(string resourceID, string branchName)
+        public override string GetLatestResourceRevisionForBranch(string resourceID, string branchName)
         {
             throw new System.NotImplementedException();
         }

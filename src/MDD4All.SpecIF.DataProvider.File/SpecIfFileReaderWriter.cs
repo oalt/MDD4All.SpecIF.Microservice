@@ -28,6 +28,7 @@ namespace MDD4All.SpecIF.DataProvider.File
 			}
 			catch(Exception exception)
 			{
+                Debug.WriteLine(path);
 				Debug.WriteLine(exception);
 			}
 

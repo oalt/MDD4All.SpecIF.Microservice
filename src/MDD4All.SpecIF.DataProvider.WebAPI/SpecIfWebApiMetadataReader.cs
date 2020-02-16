@@ -95,7 +95,7 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 
 		public override Revision GetLatestStatementClassRevision(string statementClassID)
 		{
-			Task<Revision> task = GetLatestRevisionAsync<StatementClass>(statementClassID, "SpecIF/StatementClass/");
+			Task<Revision> task = GetLatestRevisionAsync<Resource>(statementClassID, "SpecIF/StatementClass/");
 			task.Wait();
 
 			return task.Result;

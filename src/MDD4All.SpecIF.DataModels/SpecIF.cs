@@ -24,8 +24,11 @@ namespace MDD4All.SpecIF.DataModels
 		[JsonProperty(PropertyName = "description")]
 		public Value Description { get; set; }
 
+        [JsonProperty(PropertyName = "isExtension")]
+        public bool IsExtension { get; set; } = false;
+
 		[JsonProperty(PropertyName = "specifVersion")]
-		public string SpecifVersion { get; set; } = "0.11.8";
+		public string SpecifVersion { get; set; } = "1.0";
 
 		[JsonProperty(PropertyName = "generator")]
 		public string Generator { get; set; }

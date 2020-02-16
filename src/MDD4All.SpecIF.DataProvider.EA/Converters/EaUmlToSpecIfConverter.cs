@@ -8,6 +8,7 @@ using MDD4All.SpecIF.DataModels;
 using MDD4All.EnterpriseArchitect.Manipulations;
 using System.IO;
 using System.Drawing;
+using MDD4All.SpecIF.DataModels.Helpers;
 
 namespace MDD4All.SpecIF.DataProvider.EA.Converters
 {
@@ -901,7 +902,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
                 new Property()
                 {
                     Title = new Value("dcterms:type"),
-                    PropertyClass = new Key("PC-Type", 1),
+                    PropertyClass = new Key("PC-Type", "1"),
                     Value = new Value
                     {
                         LanguageValues = new List<LanguageValue>
@@ -971,10 +972,10 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				Resource tagResource = new Resource()
 				{
 					ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID),
-					Class = new Key("RC-State", 1),
+					Class = new Key("RC-State", "1"),
 					ChangedAt = eaElement.Modified,
 					ChangedBy = eaElement.Author,
-					Revision = Key.FIRST_MAIN_REVISION,
+					Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID(),
 					Title = new Value(tagName)
 				};
 
@@ -984,7 +985,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					new Property()
 					{
 						Title = new Value("dcterms:title"),
-						PropertyClass = new Key("PC-Name", 1),
+						PropertyClass = new Key("PC-Name", "1"),
 						Value = new Value
 						{
 							LanguageValues = new List<LanguageValue>
@@ -1005,7 +1006,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					new Property()
 					{
 						Title = new Value("dcterms:description"),
-						PropertyClass = new Key("PC-Text", 1),
+						PropertyClass = new Key("PC-Text", "1"),
 						Value = new Value
 						{
 							LanguageValues = new List<LanguageValue>
@@ -1026,7 +1027,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					new Property()
 					{
 						Title = new Value("dcterms:type"),
-						PropertyClass = new Key("PC-Type", 1),
+						PropertyClass = new Key("PC-Type", "1"),
 						Value = new Value
 						{
 							LanguageValues = new List<LanguageValue>
@@ -1047,7 +1048,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					new Property()
 					{
 						Title = new Value("rdf:value"),
-						PropertyClass = new Key("PC-Value", 1),
+						PropertyClass = new Key("PC-Value", "1"),
 						Value = new Value
 						{
 							LanguageValues = new List<LanguageValue>
@@ -1108,8 +1109,8 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			Resource result = new Resource()
 			{
 				ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(element.ElementGUID + "_CONSTRAINT_" + index),
-				Class = new Key("RC-State", 1),
-				Revision = Key.FIRST_MAIN_REVISION,
+				Class = new Key("RC-State", "1"),
+				Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID(),
 				Title = new Value(elementConstraint.Name)
 			};
 
@@ -1119,7 +1120,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				new Property()
 				{
 					Title = new Value("dcterms:title"),
-					PropertyClass = new Key("PC-Name", 1),
+					PropertyClass = new Key("PC-Name", "1"),
 					Value = new Value
 					{
 						LanguageValues = new List<LanguageValue>
@@ -1139,7 +1140,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				new Property()
 				{
 					Title = new Value("dcterms:type"),
-					PropertyClass = new Key("PC-Type", 1),
+					PropertyClass = new Key("PC-Type", "1"),
 					Value = new Value
 					{
 						LanguageValues = new List<LanguageValue>
@@ -1159,7 +1160,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					new Property()
 					{
 						Title = new Value("SpecIF:Stereotype"),
-						PropertyClass = new Key("PC-Stereotype", 1),
+						PropertyClass = new Key("PC-Stereotype", "1"),
 						Value = new Value
 						{
 							LanguageValues = new List<LanguageValue>
@@ -1178,7 +1179,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					new Property()
 					{
 						Title = new Value("rdf:value"),
-						PropertyClass = new Key("PC-Value", 1),
+						PropertyClass = new Key("PC-Value", "1"),
 						Value = new Value
 						{
 							LanguageValues = new List<LanguageValue>
@@ -1238,10 +1239,10 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					result = new Resource()
 					{
 						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID),
-						Class = new Key("RC-Diagram", 1),
+						Class = new Key("RC-Diagram", "1"),
 						ChangedAt = diagram.ModifiedDate,
 						ChangedBy = diagram.Author,
-						Revision = Key.FIRST_MAIN_REVISION,
+						Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID(),
 						Title = new Value(diagram.Name)
 					};
 
@@ -1251,7 +1252,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 						new Property()
 						{
 							Title = new Value("dcterms:title"),
-							PropertyClass = new Key("PC-Name", 1),
+							PropertyClass = new Key("PC-Name", "1"),
 							Value = new Value
 							{
 								LanguageValues = new List<LanguageValue>
@@ -1272,7 +1273,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 						new Property()
 						{
 							Title = new Value("dcterms:description"),
-							PropertyClass = new Key("PC-Text", 1),
+							PropertyClass = new Key("PC-Text", "1"),
 							Value = new Value
 							{
 								LanguageValues = new List<LanguageValue>
@@ -1293,7 +1294,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 						new Property()
 						{
 							Title = new Value("SpecIF:Diagram"),
-							PropertyClass = new Key("PC-Diagram", 1),
+							PropertyClass = new Key("PC-Diagram", "1"),
 							Value = new Value
 							{
 								LanguageValues = new List<LanguageValue>
@@ -1314,7 +1315,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 						new Property()
 						{
 							Title = new Value("SpecIF:Notation"),
-							PropertyClass = new Key("PC-Notation", 1),
+							PropertyClass = new Key("PC-Notation", "1"),
 							Value = new Value
 							{
 								LanguageValues = new List<LanguageValue>
@@ -1346,7 +1347,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				Class = new Key("RC-State", 1),
 				ChangedAt = eaElement.Modified,
 				ChangedBy = eaElement.Author,
-				Revision = Key.FIRST_MAIN_REVISION,
+				Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID(),
 				Title = new Value(attribute.Name)
 			};
 
@@ -1356,7 +1357,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				new Property()
 				{
 					Title = new Value("dcterms:title"),
-					PropertyClass = new Key("PC-Name", 1),
+					PropertyClass = new Key("PC-Name", "1"),
 					Value = new Value
 					{
 						LanguageValues = new List<LanguageValue>
@@ -1377,7 +1378,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				new Property()
 				{
 					Title = new Value("dcterms:description"),
-					PropertyClass = new Key("PC-Text", 1),
+					PropertyClass = new Key("PC-Text", "1"),
 					Value = new Value
 					{
 						LanguageValues = new List<LanguageValue>
@@ -1398,7 +1399,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				new Property()
 				{
 					Title = new Value("dcterms:type"),
-					PropertyClass = new Key("PC-Type", 1),
+					PropertyClass = new Key("PC-Type", "1"),
 					Value = new Value
 					{
 						LanguageValues = new List<LanguageValue>
@@ -1419,7 +1420,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					new Property()
 					{
 						Title = new Value("rdf:value"),
-						PropertyClass = new Key("PC-Value", 1),
+						PropertyClass = new Key("PC-Value", "1"),
 						Value = new Value
 						{
 							LanguageValues = new List<LanguageValue>
@@ -1458,7 +1459,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			Statement umlRelationship = new Statement()
 			{
 				ID = connectorID,
-				Revision = Key.FIRST_MAIN_REVISION,
+				Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID(),
 				Title = new Value("UML:Relationship"),
 				Class = new Key("SC-UML_Relationship"),
 				StatementSubject = new Key(sourceID, 1),
@@ -1479,7 +1480,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					new Property()
 					{
 						Title = new Value("dcterms:title"),
-						PropertyClass = new Key("PC-Name", 1),
+						PropertyClass = new Key("PC-Name", "1"),
 						Value = new Value
 						{
 							LanguageValues = new List<LanguageValue>
@@ -1498,7 +1499,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					new Property()
 					{
 						Title = new Value("dcterms:description"),
-						PropertyClass = new Key("PC-Text", 1),
+						PropertyClass = new Key("PC-Text", "1"),
 						Value = new Value
 						{
 							LanguageValues = new List<LanguageValue>
@@ -1518,7 +1519,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					new Property()
 					{
 						Title = new Value("dcterms:type"),
-						PropertyClass = new Key("PC-Type", 1),
+						PropertyClass = new Key("PC-Type", "1"),
 						Value = new Value
 						{
 							LanguageValues = new List<LanguageValue>
@@ -1537,7 +1538,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					new Property()
 					{
 						Title = new Value("UML:ConnectorDirection"),
-						PropertyClass = new Key("PC-UML_ConnectorDirection", 1),
+						PropertyClass = new Key("PC-UML_ConnectorDirection", "1"),
 						Value = new Value
 						{
 							LanguageValues = new List<LanguageValue>
@@ -1572,7 +1573,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					new Property()
 					{
 						Title = new Value("SpecIF:Stereotype"),
-						PropertyClass = new Key("PC-Stereotype", 1),
+						PropertyClass = new Key("PC-Stereotype", "1"),
 						Value = new Value
 						{
 							LanguageValues = new List<LanguageValue>
@@ -1591,7 +1592,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					new Property()
 					{
 						Title = new Value("UML:ConnectorSourceRole"),
-						PropertyClass = new Key("PC-UML_ConnectorSourceRole", 1),
+						PropertyClass = new Key("PC-UML_ConnectorSourceRole", "1"),
 						Value = new Value
 						{
 							LanguageValues = new List<LanguageValue>
@@ -1610,7 +1611,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					new Property()
 					{
 						Title = new Value("UML:ConnectorTargetRole"),
-						PropertyClass = new Key("PC-UML_ConnectorTargetRole", 1),
+						PropertyClass = new Key("PC-UML_ConnectorTargetRole", "1"),
 						Value = new Value
 						{
 							LanguageValues = new List<LanguageValue>
@@ -1629,7 +1630,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					new Property()
 					{
 						Title = new Value("UML:ConnectorSourceMultiplicity"),
-						PropertyClass = new Key("PC-UML_ConnectorSourceMultiplicity", 1),
+						PropertyClass = new Key("PC-UML_ConnectorSourceMultiplicity", "1"),
 						Value = new Value
 						{
 							LanguageValues = new List<LanguageValue>
@@ -1692,8 +1693,8 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			Resource result = new Resource()
 			{
 				ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(connector.ConnectorGUID + "_CONSTRAINT_" + index),
-				Class = new Key("RC-State", 1),
-				Revision = Key.FIRST_MAIN_REVISION,
+				Class = new Key("RC-State", "1"),
+				Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID(),
 				Title = new Value(connectorConstraint.Name)
 			};
 
@@ -1703,7 +1704,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				new Property()
 				{
 					Title = new Value("dcterms:title"),
-					PropertyClass = new Key("PC-Name", 1),
+					PropertyClass = new Key("PC-Name", "1"),
 					Value = new Value
 					{
 						LanguageValues = new List<LanguageValue>
@@ -1723,7 +1724,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				new Property()
 				{
 					Title = new Value("dcterms:type"),
-					PropertyClass = new Key("PC-Type", 1),
+					PropertyClass = new Key("PC-Type", "1"),
 					Value = new Value
 					{
 						LanguageValues = new List<LanguageValue>
@@ -1743,7 +1744,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					new Property()
 					{
 						Title = new Value("SpecIF:Stereotype"),
-						PropertyClass = new Key("PC-Stereotype", 1),
+						PropertyClass = new Key("PC-Stereotype", "1"),
 						Value = new Value
 						{
 							LanguageValues = new List<LanguageValue>
@@ -1762,7 +1763,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					new Property()
 					{
 						Title = new Value("rdf:value"),
-						PropertyClass = new Key("PC-Value", 1),
+						PropertyClass = new Key("PC-Value", "1"),
 						Value = new Value
 						{
 							LanguageValues = new List<LanguageValue>
@@ -1785,8 +1786,8 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			Resource result = new Resource()
 			{
 				ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(connector.ConnectorGUID + "_GUARD"),
-				Class = new Key("RC-Actor", 1),
-				Revision = Key.FIRST_MAIN_REVISION,
+				Class = new Key("RC-Actor", "1"),
+				Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID(),
 				Title = new Value(connector.TransitionGuard)
 			};
 
@@ -1796,7 +1797,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				new Property()
 				{
 					Title = new Value("dcterms:title"),
-					PropertyClass = new Key("PC-Name", 1),
+					PropertyClass = new Key("PC-Name", "1"),
 					Value = new Value
 					{
 						LanguageValues = new List<LanguageValue>
@@ -1816,7 +1817,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				new Property()
 				{
 					Title = new Value("dcterms:type"),
-					PropertyClass = new Key("PC-Type", 1),
+					PropertyClass = new Key("PC-Type", "1"),
 					Value = new Value
 					{
 						LanguageValues = new List<LanguageValue>
@@ -1836,7 +1837,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					new Property()
 					{
 						Title = new Value("SpecIF:Stereotype"),
-						PropertyClass = new Key("PC-Stereotype", 1),
+						PropertyClass = new Key("PC-Stereotype", "1"),
 						Value = new Value
 						{
 							LanguageValues = new List<LanguageValue>
@@ -1855,7 +1856,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					new Property()
 					{
 						Title = new Value("rdf:value"),
-						PropertyClass = new Key("PC-Value", 1),
+						PropertyClass = new Key("PC-Value", "1"),
 						Value = new Value
 						{
 							LanguageValues = new List<LanguageValue>
@@ -1895,8 +1896,8 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				Resource tagResource = new Resource()
 				{
 					ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.TagGUID),
-					Class = new Key("RC-State", 1),
-					Revision = Key.FIRST_MAIN_REVISION,
+					Class = new Key("RC-State", "1"),
+					Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID(),
 					Title = new Value(tagName)
 				};
 
@@ -1925,7 +1926,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					new Property()
 					{
 						Title = new Value("dcterms:description"),
-						PropertyClass = new Key("PC-Text", 1),
+						PropertyClass = new Key("PC-Text", "1"),
 						Value = new Value
 						{
 							LanguageValues = new List<LanguageValue>
@@ -2031,7 +2032,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					result = new Statement()
 					{
 						Title = new Value("rdf:type"),
-						Class = new Key("SC-Classifier", 1),
+						Class = new Key("SC-Classifier", "1"),
 						StatementSubject = new Key(classifiedResource.ID, classifiedResource.Revision),
 						StatementObject = new Key(classifierSpecIfID, 1)
 					};
@@ -2063,7 +2064,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			result = new Statement()
 			{
 				Title = new Value("SpecIF:contains"),
-				Class = new Key("SC-contains", 1),
+				Class = new Key("SC-contains", "1"),
 				StatementSubject = new Key(subjectID, 1),
 				StatementObject = new Key(objectID, 1)
 			};
@@ -2080,7 +2081,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			result = new Statement()
 			{
 				Title = new Value("SpecIF:shows"),
-				Class = new Key("SC-shows", 1),
+				Class = new Key("SC-shows", "1"),
 				StatementSubject = new Key(subjectID, 1),
 				StatementObject = new Key(objectID, 1)
 			};

@@ -3,6 +3,7 @@
  */
 using MDD4All.SpecIF.DataModels.BaseTypes;
 using MDD4All.SpecIF.DataModels.Converters;
+using MDD4All.SpecIF.DataModels.Helpers;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
@@ -30,21 +31,13 @@ namespace MDD4All.SpecIF.DataModels
 		public Key(string id)
 		{
 			ID = id;
-			Revision = LATEST_REVISION;
-		}
+            Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID();
+        }
 
-		public Key(string id, Revision revision) 
+		public Key(string id, string revision) 
 		{
 			ID = id;
 			Revision = revision;
-		}
-
-		public Key(string id, int revision)
-		{
-			ID = id;
-			Revision = new Revision();
-
-			Revision.RevsionNumber = revision;
 		}
 
 		[JsonProperty(PropertyName = "id")]
@@ -53,13 +46,13 @@ namespace MDD4All.SpecIF.DataModels
 
 		[JsonProperty(PropertyName = "revision")]
 		[BsonElement("revision")]
-		public Revision Revision { get; set; } = new Revision();
+		public string Revision { get; set; } = SpecIfGuidGenerator.CreateNewSpecIfGUID();
 
 		public override string ToString()
 		{
 			string result = "";
 
-			result += ID + "_" + Revision.StringValue;
+			result += ID + "_" + Revision;
 
 			return result;
 		}

@@ -19,17 +19,27 @@ namespace MDD4All.SpecIF.DataModels
 
 		public Value(string value)
 		{
-			LanguageValues.Add(new LanguageValue(value));
+            SimpleValue = value;
 		}
 
 		[BsonElement("languageValues")]
+        [JsonIgnore]
 		public List<LanguageValue> LanguageValues { get; set; } = new List<LanguageValue>();
+
+        [BsonElement("simpleValue")]
+        [JsonIgnore]
+        public string SimpleValue { get; set; } = null;
+
 
 		public string ToSimpleTextString()
 		{
 			string result = "";
 
-			if(LanguageValues.Count > 0)
+            if(SimpleValue != null)
+            {
+                result = SimpleValue;
+            }
+            else if(LanguageValues.Count > 0)
 			{
 				result = LanguageValues[0].Text;
 			}

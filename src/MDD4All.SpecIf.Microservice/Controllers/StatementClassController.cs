@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using MDD4All.SpecIF.DataModels;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
 
 namespace MDD4All.SpecIf.Microservice.Controllers
 {
@@ -14,7 +13,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
     /// </summary>
     [Produces("application/json")]
     [ApiVersion("1.0")]
-    [Route("specif/v{version:apiVersion}/statement-classes")]
+    [Route("specif/v{version:apiVersion}/statementClasses")]
     [ApiController]
     public class StatementClassController : Controller
     {
@@ -34,7 +33,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// </summary>
         /// <returns>All statement classes as a list.</returns>
         [HttpGet]
-        [ProducesResponseType(typeof(List<StatementClass>), 200)]
+        [ProducesResponseType(typeof(List<Resource>), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public ActionResult<List<StatementClass>> GetAllStatementClasses()
@@ -62,17 +61,23 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         [ProducesResponseType(typeof(StatementClass), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public ActionResult<StatementClass> GetStatementClassById(string id)
+        public ActionResult<StatementClass> GetStatementClassById(string id, [FromQuery]string revision)
         {
             ActionResult<StatementClass> result = NotFound();
 
             if (!string.IsNullOrEmpty(id))
             {
-                StatementClass dbResult = _metadataReader.GetStatementClassByKey(new Key(id));
-
-                if (dbResult != null)
+                if (!string.IsNullOrEmpty(revision))
                 {
-                    result = dbResult;
+                    string rev = revision.Replace("%2F", "/");
+
+                    
+
+                    StatementClass statementClass = _metadataReader.GetStatementClassByKey(new Key() { ID = id, Revision = rev });
+                    if (statementClass != null)
+                    {
+                        result = new ObjectResult(statementClass);
+                    }
                 }
             }
             else
@@ -88,7 +93,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("{id}/revisions")]
+        [HttpGet("{id}/allRevisions")]
         [ProducesResponseType(typeof(List<StatementClass>), 200)]
         public ActionResult<List<StatementClass>> GetAllStatementClassRevisions(string id)
         {
@@ -107,36 +112,46 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         }
 
         /// <summary>
-        /// Returns the statement class with the specific revision.
+        /// Create a new statement class.
         /// </summary>
-        /// <param name="id">The statement class ID.</param>
-        /// <param name="revision">The statement class revision.</param>
+        /// <param name="statementClass">The statement class data.</param>
         /// <returns></returns>
-        [HttpGet("{id}/revisions/{revision}")]
+        [HttpPost]
         [ProducesResponseType(typeof(StatementClass), 200)]
-        [ProducesResponseType(404)]
-        public ActionResult<StatementClass> GetStatementClassRevision(string id, string revision)
+        public ActionResult<StatementClass> CreateStatementClass([FromBody]Resource statementClass)
         {
             ActionResult<StatementClass> result = NotFound();
 
-            if (!string.IsNullOrEmpty(id) && !string.IsNullOrEmpty(revision))
-            {
-                string rev = revision.Replace("%2F", "/");
+            return result;
+        }
 
-                Revision revisionObject = new Revision(rev);
-
-                StatementClass statementClass = _metadataReader.GetStatementClassByKey(new Key() { ID = id, Revision = revisionObject });
-                if (statementClass != null)
-                {
-                    result = new ObjectResult(statementClass);
-                }
-            }
-            else
-            {
-                result = new BadRequestResult();
-            }
+        /// <summary>
+        /// Update a statement class.
+        /// The subjected ID must exist.
+        /// </summary>
+        /// <param name="statementClass">The statement class data.</param>
+        /// <returns></returns>
+        [HttpPut]
+        [ProducesResponseType(typeof(StatementClass), 200)]
+        public ActionResult<StatementClass> UpdateStatementClass([FromBody]Resource statementClass)
+        {
+            ActionResult<StatementClass> result = NotFound();
 
             return result;
         }
+
+        /// <summary>
+        /// Delete a statement class with the given ID.
+        /// </summary>
+        /// <param name="id">The statement class ID.</param>
+        [HttpDelete("{id}")]
+        public ActionResult DeleteStatementClass(string id)
+        {
+            ActionResult result = NotFound();
+
+            return result;
+        }
+
+
     }
 }

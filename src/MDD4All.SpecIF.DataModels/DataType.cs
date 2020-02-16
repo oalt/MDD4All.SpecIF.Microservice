@@ -19,17 +19,17 @@ namespace MDD4All.SpecIF.DataModels
 		[BsonElement("maxLength")]
 		public int? MaxLength { get; set; }
 
-		[JsonProperty(PropertyName = "accuracy")]
-		[BsonElement("accuracy")]
-		public int? Accuracy { get; set; }
+		[JsonProperty(PropertyName = "fractionDigits")]
+		[BsonElement("fractionDigits")]
+		public int? FractionDigits { get; set; }
 
-		[JsonProperty(PropertyName = "min")]
-		[BsonElement("min")]
-		public int? Min { get; set; }
+		[JsonProperty(PropertyName = "minInclusive")]
+		[BsonElement("minInclusive")]
+		public int? MinInclusive { get; set; }
 
-		[JsonProperty(PropertyName = "max")]
-		[BsonElement("max")]
-		public int? Max { get; set; }
+		[JsonProperty(PropertyName = "maxInclusive")]
+		[BsonElement("maxInclusive")]
+		public int? MaxInclusive { get; set; }
 
 		[JsonProperty(PropertyName = "values")]
 		[BsonElement("value")]
@@ -43,10 +43,5 @@ namespace MDD4All.SpecIF.DataModels
 		[BsonElement("multiple")]
 		public bool Multiple { get; set; }		
 
-		
-
-		
-		
-		
 	}
 }

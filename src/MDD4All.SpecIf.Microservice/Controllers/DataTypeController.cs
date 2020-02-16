@@ -5,13 +5,12 @@ using System.Collections.Generic;
 using MDD4All.SpecIF.DataModels;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
 
 namespace MDD4All.SpecIf.Microservice.Controllers
 {
     [ApiVersion("1.0")]
     [Produces("application/json")]
-    [Route("specif/v{version:apiVersion}/data-types")]
+    [Route("specif/v{version:apiVersion}/dataTypes")]
     [ApiController]
     public class DataTypeController : Controller
     {
@@ -46,25 +45,35 @@ namespace MDD4All.SpecIf.Microservice.Controllers
 		}
 
         /// <summary>
-        /// Returns the latest revision of the data type with the given ID. 
+        /// Returns a data type with the given ID. 
         /// </summary>
         /// <param name="id">The data type ID.</param>
+        /// <param name="revision">The data type revision id.</param>
         /// <returns>The data type or a not found code.</returns>
 		[HttpGet("{id}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public ActionResult<DataType> GetDataTypeById(string id)
+        public ActionResult<DataType> GetDataTypeById(string id, [FromQuery]string revision)
 		{
             ActionResult<DataType> result = NotFound();
 
-            if (!string.IsNullOrEmpty(id))
+            if (!string.IsNullOrEmpty(id) )
             {
-                DataType dbResult = _metadataReader.GetDataTypeByKey(new Key(id));
-
-                if (dbResult != null)
+                if (!string.IsNullOrEmpty(revision))
                 {
-                    result = dbResult;
+                    string rev = revision.Replace("%2F", "/");
+                    
+                    DataType statementClass = _metadataReader.GetDataTypeByKey(new Key() { ID = id, Revision = rev });
+                    if (statementClass != null)
+                    {
+                        result = new ObjectResult(statementClass);
+                    }
                 }
+                else
+                {
+                    result = NotFound();
+                }
+
             }
             else
             {
@@ -79,7 +88,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("{id}/revisions")]
+        [HttpGet("{id}/allRevisions")]
         [ProducesResponseType(typeof(List<DataType>), 200)]
         public ActionResult<List<DataType>> GetAllDatatypeRevisions(string id)
         {
@@ -98,36 +107,47 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         }
 
         /// <summary>
-        /// Returns the data type with the specific revision.
+        /// Create a data type.
         /// </summary>
-        /// <param name="id">The data type ID.</param>
-        /// <param name="revision">The data type revision.</param>
-        /// <returns></returns>
-        [HttpGet("{id}/revisions/{revision}")]
-        [ProducesResponseType(typeof(DataType), 200)]
-        [ProducesResponseType(404)]
-        public ActionResult<DataType> GetDataTypeRevision(string id, string revision)
+        /// <param name="dataType">The data type to create.</param>
+        /// <returns>The updated data type element.</returns>
+        [HttpPost]
+        public ActionResult CreateDataType([FromBody]DataType dataType)
         {
-            ActionResult<DataType> result = NotFound();
-
-            if (!string.IsNullOrEmpty(id) && !string.IsNullOrEmpty(revision))
-            {
-                string rev = revision.Replace("%2F", "/");
-
-                Revision revisionObject = new Revision(rev);
-
-                DataType statementClass = _metadataReader.GetDataTypeByKey(new Key() { ID = id, Revision = revisionObject });
-                if (statementClass != null)
-                {
-                    result = new ObjectResult(statementClass);
-                }
-            }
-            else
-            {
-                result = new BadRequestResult();
-            }
+            ActionResult result = NotFound();
 
             return result;
         }
+
+        /// <summary>
+        /// Update the data type; the supplied ID must exist.
+        /// </summary>
+        /// <param name="dataType">The data type data.</param>
+        /// <returns>The updated data type element.</returns>
+        [HttpPut]
+        public ActionResult UpdateDataType([FromBody]DataType dataType)
+        {
+            ActionResult result = NotFound();
+
+            return result;
+        }
+
+
+        /// <summary>
+        /// Delete the data type; the supplied ID must exist. 
+        /// Return an error if there are depending model elements. 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="revision"></param>
+        /// <param name="mode">Delete mode. ?mode=forced results in deleting all directly and indirectly depending model elements.</param>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        public ActionResult DeleteDataType(string id, [FromQuery]string revision, [FromQuery]string mode)
+        {
+            ActionResult result = NotFound();
+
+            return result;
+        }
+       
     }
 }

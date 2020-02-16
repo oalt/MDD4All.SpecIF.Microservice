@@ -57,68 +57,68 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 				{
 					if (isMultiple != null && isMultiple == true)
 					{
-						if (property.Value.LanguageValues?.FirstOrDefault() != null)
-						{
-							char[] separator = { ',' };
+						//if (property.Value.LanguageValues?.FirstOrDefault() != null)
+						//{
+						//	char[] separator = { ',' };
 
 
-							string[] values = property.Value.LanguageValues[0].Text.Split(separator);
+						//	string[] values = property.Value.LanguageValues[0].Text.Split(separator);
 
-							int counter = 0;
+						//	int counter = 0;
 
-							foreach (string enumId in values)
-							{
-								EnumValue value = enumDataType.Values.Find(val => val.ID == enumId.Trim());
+						//	foreach (string enumId in values)
+						//	{
+						//		EnumValue value = enumDataType.Values.Find(val => val.ID == enumId.Trim());
 
-								if (value != null)
-								{
-									result += value.Title;
+						//		if (value != null)
+						//		{
+						//			result += value.Title;
 
-									if (counter < values.Length - 1)
-									{
-										result += ", ";
-									}
+						//			if (counter < values.Length - 1)
+						//			{
+						//				result += ", ";
+						//			}
 
-								}
-								counter++;
-							}
-						}
+						//		}
+						//		counter++;
+						//	}
+						//}
 
 					}
 					else
 					{
-						if (property.Value.LanguageValues?.FirstOrDefault() != null)
-						{
-							string enumId = property.Value.LanguageValues[0].Text;
-							EnumValue value = enumDataType.Values.Find(val => val.ID == enumId);
+						//if (property.Value.LanguageValues?.FirstOrDefault() != null)
+						//{
+						//	string enumId = property.Value.LanguageValues[0].Text;
+						//	EnumValue value = enumDataType.Values.Find(val => val.ID == enumId);
 
-							if (value != null && value.Title != null)
-							{
-								result = value.Title.LanguageValues?.FirstOrDefault(val => val.Language == language)?.Text;
+						//	if (value != null && value.Title != null)
+						//	{
+						//		result = value.Title.LanguageValues?.FirstOrDefault(val => val.Language == language)?.Text;
 
-								if(result == null && value.Title.LanguageValues.Count > 0)
-								{
-									result = value.Title.LanguageValues[0].Text;
-								}
-							}
-						}
+						//		if(result == null && value.Title.LanguageValues.Count > 0)
+						//		{
+						//			result = value.Title.LanguageValues[0].Text;
+						//		}
+						//	}
+						//}
 
 					}
 				}
 			}
 			else
 			{
-				LanguageValue languageValue = property.Value.LanguageValues.FirstOrDefault(val => val.Language == language);
+				//LanguageValue languageValue = property.Value.LanguageValues.FirstOrDefault(val => val.Language == language);
 				
-				if(languageValue == null)
-				{
-					languageValue = property.Value.LanguageValues?.FirstOrDefault();
-				}
+				//if(languageValue == null)
+				//{
+				//	languageValue = property.Value.LanguageValues?.FirstOrDefault();
+				//}
 
-				if (languageValue != null)
-				{
-					result = languageValue.Text;
-				}
+				//if (languageValue != null)
+				//{
+				//	result = languageValue.Text;
+				//}
 			}
 			return result;
 		}
