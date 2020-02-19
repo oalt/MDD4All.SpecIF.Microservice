@@ -28,11 +28,11 @@ namespace MDD4All.SpecIF.DataModels
 
 		[JsonProperty(PropertyName = "subjectClasses")]
 		[BsonElement("subjectClasses")]
-		public List<string> SubjectClasses { get; set; }
+		public List<Key> SubjectClasses { get; set; }
 
 		[JsonProperty(PropertyName = "objectClasses")]
 		[BsonElement("objectClasses")]
-		public List<string> ObjectClasses { get; set; }
+		public List<Key> ObjectClasses { get; set; }
 
 			
 	}
