@@ -95,7 +95,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("{id}/allRevisions")]
+        [HttpGet("{id}/revisions")]
         [ProducesResponseType(typeof(List<PropertyClass>), 200)]
         public ActionResult<List<PropertyClass>> GetAllPropertyClassRevisions(string id)
         {

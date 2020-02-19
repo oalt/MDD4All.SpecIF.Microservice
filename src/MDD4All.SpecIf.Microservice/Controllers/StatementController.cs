@@ -159,7 +159,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// </summary>
         /// <param name="id">The statement id.</param>
         /// <returns>A list of statement revsions.</returns>
-        [HttpGet("{id}/allRevisions")]
+        [HttpGet("{id}/revisions")]
         [ProducesResponseType(typeof(List<Resource>), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(400)]

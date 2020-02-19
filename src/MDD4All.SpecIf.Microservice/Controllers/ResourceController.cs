@@ -79,7 +79,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// </summary>
         /// <param name="id">The resource ID.</param>
         /// <returns>All available revisions for this resource.</returns>
-        [HttpGet("{id}/allRevisions")]
+        [HttpGet("{id}/revisions")]
         [ProducesResponseType(typeof(List<Resource>), 200)]
         public ActionResult<List<Resource>> GetAllResourceRevisions(string id)
         {

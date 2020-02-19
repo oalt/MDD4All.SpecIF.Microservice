@@ -81,7 +81,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// <param name="id">The hierarchy ID.</param>
         /// <param name="depth">The maximum depth of child nodes to return. If not set the complete hierarchy depth is returned.</param>
         /// <returns></returns>
-		[HttpGet("{id}/allRevisions")]
+		[HttpGet("{id}/revisions")]
         [ProducesResponseType(typeof(List<Node>), 200)]
         public ActionResult<List<Node>> GetAllHierarchyRevisions(string id, [FromBody]int depth)
         {

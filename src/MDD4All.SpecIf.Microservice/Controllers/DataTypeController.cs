@@ -88,7 +88,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("{id}/allRevisions")]
+        [HttpGet("{id}/revisions")]
         [ProducesResponseType(typeof(List<DataType>), 200)]
         public ActionResult<List<DataType>> GetAllDatatypeRevisions(string id)
         {

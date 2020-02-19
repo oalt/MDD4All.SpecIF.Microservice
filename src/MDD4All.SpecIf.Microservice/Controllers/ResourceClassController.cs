@@ -90,7 +90,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("{id}/allRevisions")]
+        [HttpGet("{id}/revisions")]
         [ProducesResponseType(typeof(List<ResourceClass>), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
