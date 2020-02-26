@@ -45,9 +45,9 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 		public abstract PropertyClass GetPropertyClassByKey(Key key);
 		public abstract ResourceClass GetResourceClassByKey(Key key);
 		public abstract StatementClass GetStatementClassByKey(Key key);
-		public abstract Revision GetLatestPropertyClassRevision(string propertyClassID);
-		public abstract Revision GetLatestResourceClassRevision(string resourceClassID);
-		public abstract Revision GetLatestStatementClassRevision(string statementClassID);
+		public abstract string GetLatestPropertyClassRevision(string propertyClassID);
+		public abstract string GetLatestResourceClassRevision(string resourceClassID);
+		public abstract string GetLatestStatementClassRevision(string statementClassID);
         public abstract List<StatementClass> GetAllStatementClasses();
         public abstract List<DataType> GetAllDataTypeRevisions(string dataTypeID);
         public abstract List<PropertyClass> GetAllPropertyClassRevisions(string propertyClassID);

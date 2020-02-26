@@ -3,6 +3,7 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Net;
 using MDD4All.SpecIF.DataModels;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +31,8 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// </summary>
         /// <returns></returns>
 		[HttpGet]
-        public List<Node> GetAllHierarchies([FromQuery]string project, [FromQuery]bool rootNodesOnly)
+        [ProducesResponseType(typeof(List<Node>), 200)]
+        public ActionResult<List<Node>> GetAllHierarchies([FromQuery]string project, [FromQuery]bool rootNodesOnly)
         {
             ActionResult<List<Node>> result = NotFound();
 
@@ -38,11 +40,15 @@ namespace MDD4All.SpecIf.Microservice.Controllers
             {
                 result = GetRootNodes(project);
             }
+            else
+            {
+                result = _dataReader.GetAllHierarchies();
+            }
 
-			return _dataReader.GetAllHierarchies();
+            return result;
         }
 
-        private ActionResult<List<Node>> GetRootNodes([FromQuery]string project)
+        private ActionResult<List<Node>> GetRootNodes(string project)
         {
             ActionResult<List<Node>> result = NotFound();
 
@@ -59,16 +65,27 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// <param name="depth">The maximum depth of child nodes to return. If not set the complete hierarchy depth is returned.</param>
         /// <returns></returns>
 		[HttpGet("{id}")]
-        public Node GetHierarchyById(string id, [FromQuery]string revision, [FromBody]int depth)
+        [ProducesResponseType(typeof(Node), 200)]
+        public ActionResult<Node> GetHierarchyById(string id, [FromQuery]string revision, [FromQuery]int depth)
 		{
-			Node result = null;
-			if (!string.IsNullOrEmpty(id) && _dataReader != null)
+			ActionResult<Node> result = BadRequest();
+
+            string rev = null;
+
+            if (revision != null)
+            {
+                rev = WebUtility.UrlDecode(revision);
+            }
+
+            if (!string.IsNullOrEmpty(id) && _dataReader != null)
 			{
-				Node hierarchy = _dataReader.GetHierarchyByKey(new Key(id));
+                Key key = new Key(id, rev);
+
+				Node hierarchy = _dataReader.GetHierarchyByKey(key);
 
 				if (hierarchy != null)
 				{
-					result = hierarchy;
+					result = new OkObjectResult(hierarchy);
 				}
 			}
 
@@ -135,7 +152,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         }
 
         /// <summary>
-        /// Moves an existion node and all child nodes to a new parent.
+        /// Moves an existing node and all child nodes to a new parent.
         /// </summary>
         /// <param name="nodeId">The id of the node to move.</param>
         /// <param name="newParentId">The id of the new parent.</param>

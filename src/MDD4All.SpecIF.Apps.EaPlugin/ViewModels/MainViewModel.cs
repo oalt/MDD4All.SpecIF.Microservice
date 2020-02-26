@@ -38,13 +38,13 @@ namespace MDD4All.SpecIF.Apps.EaPlugin.ViewModels
                     {
                         EAAPI.Package selectedPackage = _repository.GetTreeSelectedPackage();
 
-                        DataModels.SpecIF specIF;
+                        DataModels.SpecIF specIF=null;
 
-                        EaUmlToSpecIfConverter converter;
+                        //EaUmlToSpecIfConverter converter;
 
-                        converter = new EaUmlToSpecIfConverter(_repository);
+                        //converter = new EaUmlToSpecIfConverter(_repository);
 
-                        specIF = converter.ConvertModelToSpecIF(selectedPackage);
+                        //specIF = converter.ConvertModelToSpecIF(selectedPackage);
 
                         SpecIfFileReaderWriter.SaveSpecIfToFile(specIF, saveFileDialog.FileName);
 

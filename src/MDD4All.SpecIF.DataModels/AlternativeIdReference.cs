@@ -20,7 +20,7 @@ namespace MDD4All.SpecIF.DataModels
 
         [JsonProperty(PropertyName = "revision", Order = -100)]
         [BsonElement("revision")]
-        public Revision Revision { get; set; }
+        public string Revision { get; set; }
 
         [JsonProperty(PropertyName = "project", Order = -101)]
         [BsonElement("project")]

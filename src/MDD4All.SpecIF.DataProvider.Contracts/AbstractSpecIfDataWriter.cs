@@ -95,52 +95,42 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 			return result;
 		}
 
-        public SpecIfBaseElement UpdateVersionInfo<T>(SpecIfBaseElement data)
+        public SpecIfBaseElement UpdateVersionInfo<T>(SpecIfBaseElement data, bool isUpdate = false)
         {
-            SpecIfBaseElement result = data;
+            SpecIfBaseElement result = null;
 
-            string targetBranchName = "";
-
-            // set revision info
-            if (string.IsNullOrEmpty(data.ID)) // no id given. Create new id and add element as first revision
+            if (isUpdate)
             {
-                data.ID = SpecIfGuidGenerator.CreateNewSpecIfGUID();
-                data.Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID();
+                if (!string.IsNullOrEmpty(data.ID)) // no id given. Create new id and add element as first revision
+                {
+                    string oldRevision = data.Revision;
+
+                    data.Revision = SpecIfGuidGenerator.CreateNewRevsionGUID();
+
+                    data.Replaces = new List<string>();
+                    data.Replaces.Add(oldRevision);
+
+                    result = data;
+                }
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(data.ID)) // no id given. Create new id and add element as first revision
+                {
+                    data.ID = SpecIfGuidGenerator.CreateNewSpecIfGUID();
+
+
+
+                }
+                if (string.IsNullOrEmpty(data.Revision))
+                {
+                    data.Revision = SpecIfGuidGenerator.CreateNewRevsionGUID();
+                }
                 data.Replaces = new List<string>();
 
+                result = data;
             }
-            else // id given
-            {
-                if (data.Revision == null) // no revision set. Set default targetbranch == "main"
-                {
-                    data.Revision = "";
-                    targetBranchName = "main";
-                }
-                else
-                {
-
-                    
-                }
-            }
-
-            IdentifiableElement parentElement = GetItemWithLatestRevisionInBranch<T>(data.ID, targetBranchName);
-
             
-
-            // set replacement info
-            if (data.Replaces.Count == 0) // no replace given. Take latest of target branch as replacement
-            { 
-                if (parentElement == null) // branch root element
-                {
-                    data.Replaces = new List<string>();
-                }
-                else
-                {
-                    data.Replaces = new List<string>();
-                    data.Replaces.Add(parentElement.Revision);
-                }
-            }
-
             result.ChangedAt = DateTime.Now;
 
             return result;
@@ -161,5 +151,6 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
         protected abstract IdentifiableElement GetItemWithLatestRevisionInBranch<T>(string id, string branch);
         public abstract void AddNode(string parentNodeID, Node newNode);
         public abstract void MoveNode(string nodeID, string newParentID, int position);
+        public abstract Resource UpdateResource(Resource resource);
     }
 }

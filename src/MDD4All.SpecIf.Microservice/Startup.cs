@@ -7,6 +7,7 @@
 using Consul;
 using MDD4All.SpecIf.Microservice.DocumentFilters;
 using MDD4All.SpecIf.Microservice.OperationFilters;
+using MDD4All.SpecIF.DataModels;
 using MDD4All.SpecIF.DataModels.Service;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using MDD4All.SpecIF.DataProvider.MongoDB;
@@ -44,6 +45,7 @@ namespace MDD4All.SpecIf.Microservice
 			services.AddMvc().AddJsonOptions(options =>
             {
                 options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+                
             });
 
             services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
@@ -64,6 +66,8 @@ namespace MDD4All.SpecIf.Microservice
 
             services.AddSwaggerGen(options =>
             {
+                options.DescribeAllParametersInCamelCase();
+
                 options.SwaggerDoc("v1.0", new Info
                             {
                                 Title = "SpecIF API",
@@ -167,7 +171,7 @@ namespace MDD4All.SpecIf.Microservice
             app.UseSwagger();
             app.UseSwaggerUI(c => {
                 c.SwaggerEndpoint("/swagger/v1.0/swagger.json", "v1.0");
-
+                
 
             });
 

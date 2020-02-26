@@ -18,14 +18,19 @@ namespace MDD4All.SpecIF.DataProvider.File
 			_metaData = SpecIfFileReaderWriter.ReadDataFromSpecIfFile(@"c:\specif\metadata.specif");
 		}
 
-		public override List<DataType> GetAllDataTypes()
+        public SpecIfFileMetadataReader(DataModels.SpecIF metaData)
+        {
+            _metaData = metaData;
+        }
+
+        public override List<DataType> GetAllDataTypes()
 		{
 			return _metaData?.DataTypes;
 		}
 
 		public override DataType GetDataTypeByKey(Key key)
 		{
-			return _metaData?.DataTypes.FirstOrDefault(dataType => dataType.ID == key.ID);
+			return _metaData?.DataTypes.FirstOrDefault(dataType => dataType.ID == key.ID && dataType.Revision == key.Revision);
 		}
 
 		
@@ -87,17 +92,17 @@ namespace MDD4All.SpecIF.DataProvider.File
 			return _metaData?.ResourceClasses;
 		}
 
-		public override Revision GetLatestPropertyClassRevision(string propertyClassID)
+		public override string GetLatestPropertyClassRevision(string propertyClassID)
 		{
 			throw new System.NotImplementedException();
 		}
 
-		public override Revision GetLatestResourceClassRevision(string resourceClassID)
+		public override string GetLatestResourceClassRevision(string resourceClassID)
 		{
 			throw new System.NotImplementedException();
 		}
 
-		public override Revision GetLatestStatementClassRevision(string statementClassID)
+		public override string GetLatestStatementClassRevision(string statementClassID)
 		{
 			throw new System.NotImplementedException();
 		}

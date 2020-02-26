@@ -22,17 +22,24 @@ namespace MDD4All.SpecIF.DataModels.Converters
 			Value value = new Value();
 			value.LanguageValues = new List<LanguageValue>();
 
-			if (reader.ValueType == typeof(string))
-			{
-                value.SimpleValue = reader.Value.ToString();
-			}
-			else
-			{
-				JArray ja = JArray.Load(reader);
-				List<LanguageValue> values = ja.ToObject<List<LanguageValue>>();
+            if (reader.ValueType != null)
+            {
+                if (reader.ValueType == typeof(string))
+                {
+                    value.SimpleValue = reader.Value.ToString();
+                }
+                else
+                {
+                    JArray ja = JArray.Load(reader);
+                    List<LanguageValue> values = ja.ToObject<List<LanguageValue>>();
 
-				value.LanguageValues = values;
-			}
+                    value.LanguageValues = values;
+                }
+            }
+            else
+            {
+                value.SimpleValue = "";
+            }
 			
 			return value;
 		}

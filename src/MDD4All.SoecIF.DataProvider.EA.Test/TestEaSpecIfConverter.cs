@@ -37,14 +37,14 @@ namespace MDD4All.SoecIF.DataProvider.EA.Test
 
 					SpecIF.DataModels.SpecIF specIF;
 
-					EaUmlToSpecIfConverter converter;
+					//EaUmlToSpecIfConverter converter;
 
-					converter = new EaUmlToSpecIfConverter(repository);
+					//converter = new EaUmlToSpecIfConverter(repository);
 
-					specIF = converter.ConvertModelToSpecIF(rootModelPackage);
+					//specIF = converter.ConvertModelToSpecIF(rootModelPackage);
 						
 
-					SpecIfFileReaderWriter.SaveSpecIfToFile(specIF, @"C:\Users\olli\Documents\work\github\SpecIF-Graph\source\specif\TestModel1.specif");
+					//SpecIfFileReaderWriter.SaveSpecIfToFile(specIF, @"C:\Users\olli\Documents\work\github\SpecIF-Graph\source\specif\TestModel1.specif");
 
 					Console.WriteLine("Finished");
 				}

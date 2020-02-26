@@ -24,7 +24,7 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 
         List<PropertyClass> GetAllPropertyClassRevisions(string propertyClassID);
 
-		Revision GetLatestPropertyClassRevision(string propertyClassID);
+		string GetLatestPropertyClassRevision(string propertyClassID);
 
 		List<ResourceClass> GetAllResourceClasses();
 
@@ -32,7 +32,7 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 
         List<ResourceClass> GetAllResourceClassRevisions(string resourceClassID);
 
-		Revision GetLatestResourceClassRevision(string resourceClassID);
+		string GetLatestResourceClassRevision(string resourceClassID);
 
         List<StatementClass> GetAllStatementClasses();
 
@@ -40,6 +40,6 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 
         List<StatementClass> GetAllStatementClassRevisions(string statementClassID);
 
-        Revision GetLatestStatementClassRevision(string statementClassID);
+        string GetLatestStatementClassRevision(string statementClassID);
 	}
 }

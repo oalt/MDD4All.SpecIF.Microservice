@@ -77,25 +77,25 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 			return task.Result;
 		}
 
-		public override Revision GetLatestPropertyClassRevision(string propertyClassID)
+		public override string GetLatestPropertyClassRevision(string propertyClassID)
 		{
-			Task<Revision> task = GetLatestRevisionAsync<PropertyClass>(propertyClassID, "SpecIF/PropertyClass/");
+			Task<string> task = GetLatestRevisionAsync<string>(propertyClassID, "SpecIF/PropertyClass/");
 			task.Wait();
 
 			return task.Result;
 		}
 
-		public override Revision GetLatestResourceClassRevision(string resourceClassID)
+		public override string GetLatestResourceClassRevision(string resourceClassID)
 		{
-			Task<Revision> task = GetLatestRevisionAsync<ResourceClass>(resourceClassID, "SpecIF/ResourceClass/");
+			Task<string> task = GetLatestRevisionAsync<string>(resourceClassID, "SpecIF/ResourceClass/");
 			task.Wait();
 
 			return task.Result;
 		}
 
-		public override Revision GetLatestStatementClassRevision(string statementClassID)
+		public override string GetLatestStatementClassRevision(string statementClassID)
 		{
-			Task<Revision> task = GetLatestRevisionAsync<Resource>(statementClassID, "SpecIF/StatementClass/");
+			Task<string> task = GetLatestRevisionAsync<string>(statementClassID, "SpecIF/StatementClass/");
 			task.Wait();
 
 			return task.Result;
@@ -142,13 +142,13 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 			return result;
 		}
 
-		public async Task<Revision> GetLatestRevisionAsync<T>(string resourceID, string apiPath)
+		public async Task<string> GetLatestRevisionAsync<T>(string resourceID, string apiPath)
 		{
-			Revision result = Key.FIRST_MAIN_REVISION;
+			string result = "";
 
 			string answer = await _httpClient.GetStringAsync(_connectionURL + apiPath + "/LatestRevision/" + resourceID);
 
-			result = new Revision(answer);
+			//result = new Revision(answer);
 
 			return result;
 		}

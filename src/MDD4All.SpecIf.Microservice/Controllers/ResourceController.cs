@@ -28,7 +28,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// <summary>
         /// Returns all resources with all available revisions.
         /// </summary>
-        /// <param name="projectID">An optional project ID. The endpount then returns only resources for the given project.</param>
+        /// <param name="projectID">An optional project ID. The endpoint then returns only resources for the given project.</param>
         /// <returns>The resource data.</returns>
         [HttpGet()]
         [ProducesResponseType(typeof(List<Resource>), 200)]
@@ -104,7 +104,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// Adds a new resource to the SpecIF repository.
         /// </summary>
         /// <description>The new resource is added as a new element wit a specific revision 
-        /// and a specific branch, dependend on the given information.
+        /// and a specific branch, depended on the given information.
         /// The new resource element is returned as response.</description>
         /// <param name="resource"></param>
         /// <returns></returns>
@@ -123,7 +123,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         }
 
         /// <summary>
-        /// Update a resource. The ID included in the reource data must exist.
+        /// Update a resource. The ID included in the resource data must exist.
         /// </summary>
         /// <param name="resource"></param>
         /// <returns></returns>
@@ -131,7 +131,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         [ProducesResponseType(typeof(Resource), 201)]
         public ActionResult<Resource> UpdateResource([FromBody]Resource resource)
         {
-            ActionResult<Resource> result = _specIfDataWriter.SaveResource(resource);
+            ActionResult<Resource> result = _specIfDataWriter.UpdateResource(resource);
 
             if (result == null)
             {

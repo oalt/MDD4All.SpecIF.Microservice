@@ -212,15 +212,15 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
 
             Property nameProperty = new Property("dcterms:title", 
                                          "PC-Name", 
-                                         propertyClass.Title.ToSimpleTextString() + " [Property Class]", 
+                                         Value.ToSimpleTextString(propertyClass.Title) + " [Property Class]", 
                                          SpecIfGuidGenerator.CreateNewSpecIfGUID(), 
                                          DateTime.Now, 
                                          "SpecIFicator");
 
             result.Properties.Add(nameProperty);
 
-            string description = GetDescription(propertyClass.Title.ToSimpleTextString(),
-                                                        propertyClass.Description.ToSimpleTextString(),
+            string description = GetDescription(Value.ToSimpleTextString(propertyClass.Title),
+                                                        Value.ToSimpleTextString(propertyClass.Description),
                                                         propertyClass);
 
             description += "<dt>Data Type</dt>";
@@ -252,15 +252,15 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
 
             Property nameProperty = new Property("dcterms:title",
                                          "PC-Name",
-                                         resourceClass.Title.ToSimpleTextString() + " [Resource Class]",
+                                         Value.ToSimpleTextString(resourceClass.Title) + " [Resource Class]",
                                          SpecIfGuidGenerator.CreateNewSpecIfGUID(),
                                          DateTime.Now,
                                          "SpecIFicator");
 
             result.Properties.Add(nameProperty);
 
-            string resourceDescription = GetDescription(resourceClass.Title.ToSimpleTextString(),
-                                                        resourceClass.Description.ToSimpleTextString(),
+            string resourceDescription = GetDescription(Value.ToSimpleTextString(resourceClass.Title),
+                                                        Value.ToSimpleTextString(resourceClass.Description),
                                                         resourceClass);
 
             if (resourceClass.PropertyClasses != null && resourceClass.PropertyClasses.Count != 0)
@@ -298,15 +298,15 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
 
             Property nameProperty = new Property("dcterms:title",
                                          "PC-Name",
-                                         statementClass.Title.ToSimpleTextString() + " [Statement Class]",
+                                         Value.ToSimpleTextString(statementClass.Title) + " [Statement Class]",
                                          SpecIfGuidGenerator.CreateNewSpecIfGUID(),
                                          DateTime.Now,
                                          "SpecIFicator");
 
             result.Properties.Add(nameProperty);
 
-            string resourceDescription = GetDescription(statementClass.Title.ToSimpleTextString(),
-                                                        statementClass.Description.ToSimpleTextString(),
+            string resourceDescription = GetDescription(Value.ToSimpleTextString(statementClass.Title),
+                                                        Value.ToSimpleTextString(statementClass.Description),
                                                         statementClass);
 
             if (statementClass.PropertyClasses != null && statementClass.PropertyClasses.Count != 0)

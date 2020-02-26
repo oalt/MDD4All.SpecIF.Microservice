@@ -12,18 +12,6 @@ namespace MDD4All.SpecIF.DataModels
 	[JsonConverter(typeof(KeyConverter))]
 	public class Key : SpecIfElement
 	{
-		public static Revision LATEST_REVISION = new Revision()
-		{
-			BranchName = "main",
-			RevsionNumber = 0
-		};
-
-		public static Revision FIRST_MAIN_REVISION = new Revision()
-		{
-			BranchName = "main",
-			RevsionNumber = 1
-		};
-
 		public Key()
 		{
 		}

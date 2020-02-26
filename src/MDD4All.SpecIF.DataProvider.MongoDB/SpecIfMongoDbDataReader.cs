@@ -87,9 +87,14 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
         {
             Node result = null;
 
-            
-            result = _hierarchyMongoDbAccessor.GetItemById(key.ID + "_R_" + key.Revision);
-            
+            if (key.Revision != null)
+            {
+                result = _hierarchyMongoDbAccessor.GetItemById(key.ID + "_R_" + key.Revision);
+            }
+            else
+            {
+                result = _hierarchyMongoDbAccessor.GetItemByFilter("{ 'id' : '" + key.ID + "'}");
+            }
 
             return result;
         }

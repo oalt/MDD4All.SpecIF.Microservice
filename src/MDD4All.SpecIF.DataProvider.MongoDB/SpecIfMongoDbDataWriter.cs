@@ -46,7 +46,10 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
             if (parentNode != null)
             {
-                newNode.Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID();
+                if (string.IsNullOrEmpty(newNode.Revision))
+                {
+                    newNode.Revision = SpecIfGuidGenerator.CreateNewRevsionGUID();
+                }
 
                 if (string.IsNullOrEmpty(newNode.ID))
                 {
@@ -187,8 +190,17 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
 		public override Node SaveHierarchy(Node hierarchyToUpdate)
 		{
-            //_hierarchyMongoDbAccessor.Update(hierarchyToUpdate, hierarchyToUpdate.Id);
-            Node result = null;
+            
+            Node result = hierarchyToUpdate;
+
+            Node oldNode = _hierarchyMongoDbAccessor.GetItemById(hierarchyToUpdate.Id);
+
+            if(oldNode != null)
+            {
+                hierarchyToUpdate.IsHierarchyRoot = oldNode.IsHierarchyRoot;
+            }
+
+            _hierarchyMongoDbAccessor.Update(hierarchyToUpdate, hierarchyToUpdate.Id);
 
             return result;
         }
@@ -211,6 +223,25 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
             return result;
 
+        }
+
+        public override Resource UpdateResource(Resource resource)
+        {
+            Resource result = null;
+
+            Resource newResource = UpdateVersionInfo<Resource>(resource, true) as Resource;
+
+            if (newResource != null)
+            {
+                AddResource(newResource);
+                result = newResource;
+            }
+            else
+            {
+                result = null;
+            }
+
+            return result;
         }
 
         public override Statement SaveStatement(Statement statement)
@@ -247,5 +278,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
             return result;
         }
+
+        
     }
 }

@@ -1,5 +1,6 @@
 ﻿using MDD4All.SpecIF.DataProvider.File;
 using System;
+using System.IO;
 
 namespace MDD4All.SpecIF.Generators.Vocabulary
 {
@@ -8,13 +9,19 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
 
         public Program()
         {
-            VocabularyGenerator vocabularyGenerator = new VocabularyGenerator();
-
             string[] classDefinitionRoots = { @"c:\Users\olli\Documents\work\github\GfSESpecIF\classDefinitions" };
 
-            DataModels.SpecIF vocabulary = vocabularyGenerator.GenerateVocabulary(classDefinitionRoots);
+            //VocabularyGenerator vocabularyGenerator = new VocabularyGenerator();
 
-            SpecIfFileReaderWriter.SaveSpecIfToFile(vocabulary, @"c:\specif\GeneratedVocabulary.specif");
+            //DataModels.SpecIF vocabulary = vocabularyGenerator.GenerateVocabulary(classDefinitionRoots);
+
+            //SpecIfFileReaderWriter.SaveSpecIfToFile(vocabulary, @"c:\specif\GeneratedVocabulary.specif");
+
+            DocumentationGenerator documentationGenerator = new DocumentationGenerator();
+
+            string documentation = documentationGenerator.GenerateVocabularyDocumentation(classDefinitionRoots);
+
+            File.WriteAllText(@"c:\specif\doc1.md", documentation);
 
         }
 

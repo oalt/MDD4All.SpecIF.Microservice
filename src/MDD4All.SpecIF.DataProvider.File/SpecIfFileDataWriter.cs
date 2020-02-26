@@ -166,5 +166,10 @@ namespace MDD4All.SpecIF.DataProvider.File
         {
             throw new NotImplementedException();
         }
+
+        public override Resource UpdateResource(Resource resource)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

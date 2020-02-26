@@ -22,6 +22,21 @@ namespace MDD4All.SpecIF.DataModels
             SimpleValue = value;
 		}
 
+        public static string ToSimpleTextString(object value)
+        {
+            string result = "";
+            if(value is string)
+            {
+                result = (string)value;
+            }
+            else if(value is object[])
+            {
+
+            }
+
+            return result;
+        }
+
 		[BsonElement("languageValues")]
         [JsonIgnore]
 		public List<LanguageValue> LanguageValues { get; set; } = new List<LanguageValue>();

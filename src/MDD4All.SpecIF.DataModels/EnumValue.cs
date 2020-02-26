@@ -18,6 +18,6 @@ namespace MDD4All.SpecIF.DataModels
 
 		[JsonProperty(PropertyName = "title")]
 		[BsonElement("title")]
-		public Value Title { get; set; }
+		public object Title { get; set; }
 	}
 }

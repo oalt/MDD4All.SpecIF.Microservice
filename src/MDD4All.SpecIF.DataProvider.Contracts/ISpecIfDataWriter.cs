@@ -13,6 +13,8 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 
 		Resource SaveResource(Resource resource);
 
+        Resource UpdateResource(Resource resource);
+
 		void AddHierarchy(Node hierarchy);
 
 		Node SaveHierarchy(Node hierarchyToUpdate);

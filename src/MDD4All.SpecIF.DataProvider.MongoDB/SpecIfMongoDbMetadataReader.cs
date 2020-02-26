@@ -137,9 +137,9 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
             return result;
 		}
 
-		public override Revision GetLatestPropertyClassRevision(string propertyClassID)
+		public override string GetLatestPropertyClassRevision(string propertyClassID)
 		{
-            Revision result = null;
+            string result = null;
 
 			PropertyClass propertyClass = _propertyClassMongoDbAccessor.GetItemWithLatestRevision(propertyClassID);
 
@@ -151,9 +151,9 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 			return result;
 		}
 
-		public override Revision GetLatestResourceClassRevision(string resourceClassID)
+		public override string GetLatestResourceClassRevision(string resourceClassID)
 		{
-            Revision result = null;
+            string result = "";
 
 			ResourceClass resourceClass = _resourceClassMongoDbAccessor.GetItemWithLatestRevision(resourceClassID);
 
@@ -165,9 +165,9 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 			return result;
 		}
 
-		public override Revision GetLatestStatementClassRevision(string statementClassID)
+		public override string GetLatestStatementClassRevision(string statementClassID)
 		{
-            Revision result = null;
+            string result = null;
 
 			StatementClass statementClass = _statementClassMongoDbAccessor.GetItemWithLatestRevision(statementClassID);
 

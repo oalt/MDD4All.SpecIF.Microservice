@@ -16,7 +16,7 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 			{
 				foreach (Property property in statement.Properties)
 				{
-					string title = property.Title.LanguageValues[0].Text;
+                    string title = ""; // property.Title.LanguageValues[0].Text;
 
 					if (title == propertyTitle)
 					{

@@ -15,5 +15,14 @@ namespace MDD4All.SpecIF.DataModels.Helpers
 
 			return result;
 		}
+
+        public static string CreateNewRevsionGUID()
+        {
+            string result = "";
+
+            result = Guid.NewGuid().ToString().Replace("{", "").Replace("}", "");
+
+            return result;
+        }
 	}
 }
