@@ -162,7 +162,7 @@ namespace MDD4All.SpecIF.DataProvider.File
             throw new NotImplementedException();
         }
 
-        public override void MoveNode(string nodeID, string newParentID, int position)
+        public override void MoveNode(string nodeID, string newParentID, string newSiblingId)
         {
             throw new NotImplementedException();
         }

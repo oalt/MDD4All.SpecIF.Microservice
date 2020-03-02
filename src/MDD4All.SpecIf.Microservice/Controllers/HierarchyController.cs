@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MDD4All.SpecIf.Microservice.Controllers
 {
+    /// <summary>
+    /// Web API controller for Hierarchy elements. 
+    /// </summary>
     [Produces("application/json")]
     [ApiVersion("1.0")]
     [Route("specif/v{version:apiVersion}/hierarchies")]
@@ -20,6 +23,11 @@ namespace MDD4All.SpecIf.Microservice.Controllers
 
 		ISpecIfDataWriter _dataWriter;
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="dataReader">The data reader.</param>
+        /// <param name="dataWriter">The data writer.</param>
 		public HierarchyController(ISpecIfDataReader dataReader, ISpecIfDataWriter dataWriter)
 		{
 			_dataReader = dataReader;
@@ -168,11 +176,11 @@ namespace MDD4All.SpecIf.Microservice.Controllers
             {
                 try
                 {
-                    _dataWriter.MoveNode(nodeId, newParentId, 0);
+                    _dataWriter.MoveNode(nodeId, newParentId, newSiblingId);
                 }
                 catch (Exception exception)
                 {
-                    result = new BadRequestResult();
+                    result = new BadRequestObjectResult(exception);
                 }
 
             }

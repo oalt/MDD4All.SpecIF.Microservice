@@ -85,7 +85,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
             return result;
 		}
 
-        public override void MoveNode(string nodeID, string newParentID, int position)
+        public override void MoveNode(string nodeID, string newParentID, string newSiblingId)
         {
             try
             {
@@ -94,6 +94,26 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
                 Node oldParent = _dataReader.GetParentNode(new Key { ID = nodeID, Revision = null });
 
                 Node newParent = _dataReader.GetNodeByKey(new Key { ID = newParentID, Revision = null });
+
+                Node newSibling = null;
+
+                int position = 0;
+
+                if (!string.IsNullOrEmpty(newSiblingId))
+                {
+                    newSibling = _dataReader.GetNodeByKey(new Key { ID = newSiblingId, Revision = null });
+                    
+                    for(int childCount = 0; childCount<newParent.Nodes.Count; childCount++)
+                    {
+                        Node childNode = newParent.Nodes[childCount];
+                        if(childNode.ID == childNode.ID)
+                        {
+                            position = childCount + 1;
+                            break;
+                        }
+                    }
+
+                }
 
                 int oldIndex = -1;
 

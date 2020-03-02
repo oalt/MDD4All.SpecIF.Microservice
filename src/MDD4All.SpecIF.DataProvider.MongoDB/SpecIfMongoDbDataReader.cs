@@ -335,7 +335,11 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
         {
             Node result = null;
 
-            BsonDocument filter = new BsonDocument()
+            BsonDocument filter;
+
+            if (childNodeKey.Revision != null)
+            {
+                filter = new BsonDocument()
                 {
 
                     { "nodes.id" , childNodeKey.ID },
@@ -344,7 +348,14 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
 
                 };
-
+            }
+            else
+            {
+                filter = new BsonDocument()
+                {
+                    { "nodes.id" , childNodeKey.ID }   
+                };
+            }
 
             List<Node> searchResult = _nodeMongoDbAccessor.GetItemsByFilter(filter.ToJson());
 

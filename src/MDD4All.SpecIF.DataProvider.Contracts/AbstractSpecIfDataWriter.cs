@@ -150,7 +150,7 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
         public abstract void AddStatement(Statement statement);
         protected abstract IdentifiableElement GetItemWithLatestRevisionInBranch<T>(string id, string branch);
         public abstract void AddNode(string parentNodeID, Node newNode);
-        public abstract void MoveNode(string nodeID, string newParentID, int position);
+        public abstract void MoveNode(string nodeID, string newParentID, string newSiblingId);
         public abstract Resource UpdateResource(Resource resource);
     }
 }
