@@ -95,77 +95,50 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
                 Node newParent = _dataReader.GetNodeByKey(new Key { ID = newParentID, Revision = null });
 
-                Node newSibling = null;
+                if (oldParent.Id == newParent.Id)
+                {
+                    newParent = oldParent;
+                }
 
-                int position = 0;
+                int removeIndex = 0;
+
+                foreach (Key nodeKey in oldParent.NodeReferences)
+                {
+                    if (nodeKey.ID == nodeToMove.ID)
+                    {
+                        break;
+                    }
+                    removeIndex++;
+                }
+
+                oldParent.NodeReferences.RemoveAt(removeIndex);
+
+                int insertIndex = 0;
 
                 if (!string.IsNullOrEmpty(newSiblingId))
                 {
-                    newSibling = _dataReader.GetNodeByKey(new Key { ID = newSiblingId, Revision = null });
-                    
-                    for(int childCount = 0; childCount<newParent.Nodes.Count; childCount++)
+                    foreach (Key nodeKey in newParent.NodeReferences)
                     {
-                        Node childNode = newParent.Nodes[childCount];
-                        if(childNode.ID == childNode.ID)
+                        insertIndex++;
+
+                        if (nodeKey.ID == newSiblingId)
                         {
-                            position = childCount + 1;
                             break;
                         }
+
                     }
 
                 }
 
-                int oldIndex = -1;
+                newParent.NodeReferences.Insert(insertIndex, new Key(nodeToMove.ID, nodeToMove.Revision));
 
-                for (int counter = 0; counter < oldParent.NodeReferences.Count; counter++)
+                SaveNode(oldParent);
+
+                if (oldParent.Id != newParent.Id)
                 {
-                    Key childNode = oldParent.NodeReferences[counter];
-
-                    if (childNode.ID == nodeID)
-                    {
-                        oldIndex = counter;
-                        break;
-                    }
+                    SaveNode(newParent);
                 }
-
-                if (oldIndex != -1)
-                {
-                    if (oldParent.Id != newParent.Id)
-                    {
-                        oldParent.NodeReferences.RemoveAt(oldIndex);
-
-                        if (position > newParent.NodeReferences.Count)
-                        {
-                            newParent.NodeReferences.Add(new Key(nodeToMove.ID, nodeToMove.Revision));
-                        }
-                        else
-                        {
-                            newParent.NodeReferences.Insert(position, new Key(nodeToMove.ID, nodeToMove.Revision));
-                        }
-
-                        SaveNode(oldParent);
-                        SaveNode(newParent);
-                    }
-                    else // old parent == new parent
-                    {
-                        oldParent.NodeReferences.RemoveAt(oldIndex);
-
-                        if (position > oldParent.NodeReferences.Count)
-                        {
-                            oldParent.NodeReferences.Add(new Key(nodeToMove.ID, nodeToMove.Revision));
-                        }
-                        else
-                        {
-                            oldParent.NodeReferences.Insert(position, new Key(nodeToMove.ID, nodeToMove.Revision));
-                        }
-
-                        SaveNode(oldParent);
-                    }
-                }
-                else
-                {
-                    throw new Exception("Child node not found");
-                }
+                
 
             }
             catch (Exception exception)
