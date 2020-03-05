@@ -55,12 +55,12 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 			//throw new NotImplementedException();
 		}
 
-        public override void MoveNode(string nodeID, string newParentID, int position)
-        {
-            throw new NotImplementedException();
-        }
+    public override void MoveNode(string nodeID, string newParentID, string newSiblingId)
+    {
+      throw new NotImplementedException();
+    }
 
-        public override Node SaveHierarchy(Node hierarchyToUpdate)
+    public override Node SaveHierarchy(Node hierarchyToUpdate)
         {
             throw new NotImplementedException();
         }
@@ -85,25 +85,30 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
             throw new NotImplementedException();
         }
 
-  //      public override void UpdateHierarchy(Node hierarchyToUpdate)
-		//{
-		//	PutDataAsync(_connectionURL + "/Hierarchy", hierarchyToUpdate).Wait();
-		//}
+        public override Resource UpdateResource(Resource resource)
+        {
+            throw new NotImplementedException();
+        }
 
-		//public override void UpdateNode(Node nodeToUpdate)
-		//{
-		//	PutDataAsync(_connectionURL + "/Node", nodeToUpdate).Wait();
-		//}
+        //      public override void UpdateHierarchy(Node hierarchyToUpdate)
+        //{
+        //	PutDataAsync(_connectionURL + "/Hierarchy", hierarchyToUpdate).Wait();
+        //}
 
-		//public override void UpdateResource(Resource resource)
-		//{
-		//	PutDataAsync(_connectionURL + "/Resource", resource).Wait();
-		//}
+        //public override void UpdateNode(Node nodeToUpdate)
+        //{
+        //	PutDataAsync(_connectionURL + "/Node", nodeToUpdate).Wait();
+        //}
 
-		//public override void UpdateStatement(Statement statement)
-		//{
-		//	throw new NotImplementedException();
-		//}
+        //public override void UpdateResource(Resource resource)
+        //{
+        //	PutDataAsync(_connectionURL + "/Resource", resource).Wait();
+        //}
+
+        //public override void UpdateStatement(Statement statement)
+        //{
+        //	throw new NotImplementedException();
+        //}
 
         protected override IdentifiableElement GetItemWithLatestRevisionInBranch<T>(string id, string branch)
         {

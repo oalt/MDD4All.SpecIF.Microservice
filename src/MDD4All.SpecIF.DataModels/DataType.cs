@@ -32,7 +32,7 @@ namespace MDD4All.SpecIF.DataModels
 		public int? MaxInclusive { get; set; }
 
 		[JsonProperty(PropertyName = "values")]
-		[BsonElement("value")]
+		[BsonElement("values")]
 		public List<EnumValue> Values { get; set; }
 
 		/// <summary>
@@ -41,7 +41,7 @@ namespace MDD4All.SpecIF.DataModels
 		/// </summary>
 		[JsonProperty(PropertyName = "multiple")]
 		[BsonElement("multiple")]
-		public bool Multiple { get; set; }		
+		public bool? Multiple { get; set; }		
 
 	}
 }

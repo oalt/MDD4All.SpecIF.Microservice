@@ -147,7 +147,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
                     result += "<ul>";
                     foreach (EnumValue value in dataType.Values)
                     {
-                        result += "<li>" + value.Title.ToString() + " [" + value.ID + "]</li>";
+                        result += "<li>" + value.Value.ToString() + " [" + value.ID + "]</li>";
                     }
                     result += "</ul>";
                 }
