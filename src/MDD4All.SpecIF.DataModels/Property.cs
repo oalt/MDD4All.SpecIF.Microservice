@@ -45,7 +45,7 @@ namespace MDD4All.SpecIF.DataModels
 
 		[JsonProperty(PropertyName = "value", Order = -97)]
 		[BsonElement("value")]
-		public Value Value
+		public object Value
 		{
 			get; set;
 		}

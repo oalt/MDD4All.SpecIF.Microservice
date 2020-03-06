@@ -12,10 +12,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Converters\EaUmlToSpecIfConverter.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="MDD4All.EnterpriseArchitect.Manipulations" Version="2.1.0.26" />
     <PackageReference Include="System.Drawing.Common" Version="4.5.1" />
   </ItemGroup>
