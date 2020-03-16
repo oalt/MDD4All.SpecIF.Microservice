@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using MDD4All.SpecIF.DataModels;
 using MDD4All.SpecIF.DataProvider.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MDD4All.SpecIf.Microservice.Controllers
@@ -111,6 +112,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// </summary>
         /// <param name="dataType">The data type to create.</param>
         /// <returns>The updated data type element.</returns>
+        [Authorize(Roles = "Administrator")]
         [HttpPost]
         public ActionResult CreateDataType([FromBody]DataType dataType)
         {
@@ -124,6 +126,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// </summary>
         /// <param name="dataType">The data type data.</param>
         /// <returns>The updated data type element.</returns>
+        [Authorize(Roles = "Administrator")]
         [HttpPut]
         public ActionResult UpdateDataType([FromBody]DataType dataType)
         {
@@ -141,6 +144,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// <param name="revision"></param>
         /// <param name="mode">Delete mode. ?mode=forced results in deleting all directly and indirectly depending model elements.</param>
         /// <returns></returns>
+        [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]
         public ActionResult DeleteDataType(string id, [FromQuery]string revision, [FromQuery]string mode)
         {

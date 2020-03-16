@@ -1,6 +1,7 @@
 ﻿/*
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
+using MDD4All.SpecIf.Microservice.Helpers;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
@@ -10,8 +11,9 @@ namespace MDD4All.SpecIf.Microservice
 	{
 		public static void Main(string[] args)
 		{
-			BuildWebHost(args).Run();
-		}
+            //JwtConfigurationCreator creator = new JwtConfigurationCreator(); 
+            BuildWebHost(args).Run();
+        }
 
 		public static IWebHost BuildWebHost(string[] args)
 		{

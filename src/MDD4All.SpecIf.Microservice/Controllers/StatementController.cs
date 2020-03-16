@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using MDD4All.SpecIF.DataModels;
 using MDD4All.SpecIF.DataProvider.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MDD4All.SpecIf.Microservice.Controllers
@@ -187,6 +188,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// </summary>
         /// <param name="statemenet">The statement to create.</param>
         /// <returns>The created statement data.</returns>
+        [Authorize(Roles = "Editor")]
         [HttpPost]
         [ProducesResponseType(typeof(Statement), 201)]
         [ProducesResponseType(400)]
@@ -208,6 +210,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// </summary>
         /// <param name="statemenet">The statement to update.</param>
         /// <returns>The created statement data (perhaps with modified revision data).</returns>
+        [Authorize(Roles = "Editor")]
         [HttpPut]
         [ProducesResponseType(typeof(Statement), 201)]
         [ProducesResponseType(400)]
@@ -231,6 +234,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// <param name="revision"></param>
         /// <param name="mode">?mode=forced results in deleting all directly and indirectly depending model elements.</param>
         /// <returns></returns>
+        [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]
         public ActionResult DeleteStatement(string id, [FromQuery]string revision, [FromQuery]string mode)
         {

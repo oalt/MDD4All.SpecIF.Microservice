@@ -3,6 +3,7 @@
  */
 using System.Collections.Generic;
 using MDD4All.SpecIF.DataModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -62,6 +63,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// Create a file; the supplied ID must be unique.
         /// </summary>
         /// <param name="file"></param>
+        [Authorize(Roles = "Editor")]
         [HttpPost]
         public void CreateNewFile(IFormFile file)
         {
@@ -71,6 +73,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// Update the file; the supplied ID must exist.
         /// </summary>
         /// <param name="file"></param>
+        [Authorize(Roles = "Editor")]
         [HttpPut]
         public void UpdateFile(IFormFile file)
         {
@@ -81,6 +84,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <param name="revision"></param>
+        [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]
         public void DeleteFile(string id, [FromQuery]string revision)
         {

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Net;
 using MDD4All.SpecIF.DataModels;
 using MDD4All.SpecIF.DataProvider.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MDD4All.SpecIf.Microservice.Controllers
@@ -120,6 +121,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// </summary>
         /// <param name="node">The hierarchy data to add.</param>
         /// <param name="parentNodeId">An optional parent node id.</param>
+        [Authorize(Roles = "Editor")]
         [HttpPost]
         public void CreateNewHierarchy([FromBody]Node node, [FromQuery]string parentNodeId)
         {
@@ -133,12 +135,13 @@ namespace MDD4All.SpecIf.Microservice.Controllers
             }
         }
 
-        
+
 
         /// <summary>
         /// Update an existing hierarchy node.
         /// </summary>
         /// <param name="node"></param>
+        [Authorize(Roles = "Editor")]
         [HttpPut]
         public void UpdateHierarchy([FromBody]Node node)
         {
@@ -151,6 +154,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// <param name="id"></param>
         /// <param name="revision"></param>
         /// <returns></returns>
+        [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]
         public ActionResult DeleteHierarchy(string id, [FromQuery]string revision)
         {
@@ -167,6 +171,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// <param name="newSiblingId">The id of the new sibling. 
         /// If nothing is set the node will be the first element in the new location list.
         /// </param>
+        [Authorize(Roles = "Editor")]
         [HttpPut("move")]
         public ActionResult MoveNode([FromQuery]string nodeId, [FromQuery]string newParentId, [FromQuery]string newSiblingId)
         {

@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using MDD4All.SpecIF.DataModels;
 using MDD4All.SpecIF.DataProvider.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MDD4All.SpecIf.Microservice.Controllers
@@ -116,6 +117,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// </summary>
         /// <param name="statementClass">The statement class data.</param>
         /// <returns></returns>
+        [Authorize(Roles = "Administrator")]
         [HttpPost]
         [ProducesResponseType(typeof(StatementClass), 200)]
         public ActionResult<StatementClass> CreateStatementClass([FromBody]Resource statementClass)
@@ -131,6 +133,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// </summary>
         /// <param name="statementClass">The statement class data.</param>
         /// <returns></returns>
+        [Authorize(Roles = "Administrator")]
         [HttpPut]
         [ProducesResponseType(typeof(StatementClass), 200)]
         public ActionResult<StatementClass> UpdateStatementClass([FromBody]Resource statementClass)
@@ -144,6 +147,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// Delete a statement class with the given ID.
         /// </summary>
         /// <param name="id">The statement class ID.</param>
+        [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]
         public ActionResult DeleteStatementClass(string id)
         {

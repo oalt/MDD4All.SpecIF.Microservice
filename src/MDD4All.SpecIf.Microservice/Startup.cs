@@ -7,20 +7,29 @@
 using Consul;
 using MDD4All.SpecIf.Microservice.DocumentFilters;
 using MDD4All.SpecIf.Microservice.OperationFilters;
-using MDD4All.SpecIF.DataModels;
+using MDD4All.SpecIf.Microservice.RightsManagement;
+using MDD4All.SpecIF.DataModels.RightsManagement;
 using MDD4All.SpecIF.DataModels.Service;
 using MDD4All.SpecIF.DataProvider.Contracts;
+using MDD4All.SpecIF.DataProvider.Contracts.Authorization;
 using MDD4All.SpecIF.DataProvider.MongoDB;
+using MDD4All.SpecIF.DataProvider.MongoDB.Authorization;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace MDD4All.SpecIf.Microservice
 {
@@ -42,12 +51,19 @@ namespace MDD4All.SpecIf.Microservice
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddMvc().AddJsonOptions(options =>
+            string mongoDbConnectionString = "mongodb://localhost:27017";
+
+            
+
+            services.AddMvc().AddJsonOptions(options =>
             {
                 options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
                 
             });
 
+            
+
+            // CORS
             services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
             {
                 builder.AllowAnyOrigin()
@@ -55,6 +71,7 @@ namespace MDD4All.SpecIf.Microservice
                        .AllowAnyHeader();
             }));
 
+            // API versioning
             services.AddApiVersioning(
                 options =>
                 {
@@ -64,6 +81,7 @@ namespace MDD4All.SpecIf.Microservice
                     options.DefaultApiVersion = new ApiVersion(1, 0);
                 });
 
+            // Swagger generation
             services.AddSwaggerGen(options =>
             {
                 options.DescribeAllParametersInCamelCase();
@@ -109,6 +127,21 @@ namespace MDD4All.SpecIf.Microservice
                 string filePath = Path.Combine(System.AppContext.BaseDirectory, "MDD4All.SpecIf.Microservice.xml");
                 options.IncludeXmlComments(filePath);
 
+                var security = new Dictionary<string, IEnumerable<string>>
+                {
+                    {"Bearer", new string[] { }},
+                };
+
+                options.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                    Name = "Authorization",
+                    In = "header",
+                    Type = "apiKey"
+                });
+
+                options.AddSecurityRequirement(security);
+
                 //options.TagActionsBy()
             });
 
@@ -123,11 +156,53 @@ namespace MDD4All.SpecIf.Microservice
 			{
 				if (dataSource == "MongoDB")
 				{
-					services.AddScoped<ISpecIfMetadataReader>(dataProvider => new SpecIfMongoDbMetadataReader(dataConnection));
+                    // user and role management
+                    services.AddScoped<IUserStore<ApplicationUser>>(userStore =>
+                    {
+                        return new SpecIfApiUserStore(dataConnection);
+
+                    });
+
+                    services.AddScoped<IUserRoleStore<ApplicationUser>>(userStore =>
+                    {
+                        return new SpecIfApiUserStore(dataConnection);
+
+                    });
+
+                    services.AddScoped<IRoleStore<ApplicationRole>>(roleStore =>
+                    {
+                        return new SpecIfApiRoleStore(dataConnection);
+                    });
+
+                    IJwtConfigurationReader jwtConfigurationReader = new MongoDbJwtConfigurationReader(dataConnection);
+
+                    services.AddSingleton<IJwtConfigurationReader>(jwtConfigurationReader);
+
+                    services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(options =>
+                    {
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidateAudience = true,
+                            ValidateLifetime = true,
+                            ValidateIssuerSigningKey = true,
+                            ValidIssuer = jwtConfigurationReader.GetIssuer(),
+                            ValidAudience = jwtConfigurationReader.GetIssuer(),
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfigurationReader.GetSecret()))
+                        };
+                    })
+                    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options => Configuration.Bind("CookieSettings", options)); ;
+
+                    //services.AddIdentity<ApplicationUser, ApplicationRole>();
+
+                    // SpecIF MongoDB connections
+                    services.AddScoped<ISpecIfMetadataReader>(dataProvider => new SpecIfMongoDbMetadataReader(dataConnection));
 					services.AddScoped<ISpecIfDataReader>(dataProvider => new SpecIfMongoDbDataReader(dataConnection));
 					services.AddScoped<ISpecIfDataWriter>(dataProvider => new SpecIfMongoDbDataWriter(dataConnection, new SpecIfMongoDbMetadataReader(dataConnection),
                         new SpecIfMongoDbDataReader(dataConnection)));
 
+                    // Consul
 					string serviceAddress = "http://localhost";
 					int port = 888;
 
@@ -158,9 +233,11 @@ namespace MDD4All.SpecIf.Microservice
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime)
 		{
-			if (env.IsDevelopment())
+            app.UseAuthentication();
+
+            if (env.IsDevelopment())
 			{
-				app.UseBrowserLink();
+				//app.UseBrowserLink();
 				app.UseDeveloperExceptionPage();
 			}
 			else
@@ -182,10 +259,10 @@ namespace MDD4All.SpecIf.Microservice
 
 			app.UseMvc(routes =>
 			{
-				routes.MapRoute(
-					name: "default",
-					template: "{controller=Home}/{action=Index}/{id?}");
-			});
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+            });
 
             // register with consul
             try

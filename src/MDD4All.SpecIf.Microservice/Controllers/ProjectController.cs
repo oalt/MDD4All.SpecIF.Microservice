@@ -3,6 +3,7 @@
  */
 using System.Collections.Generic;
 using MDD4All.SpecIF.DataModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MDD4All.SpecIf.Microservice.Controllers
@@ -46,6 +47,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// </summary>
         /// <param name="value">The SpecIF data defining the project.</param>
         /// <returns></returns>
+        [Authorize(Roles = "Editor")]
         [HttpPost]
         public ActionResult CreateNewProject([FromBody]SpecIF.DataModels.SpecIF value)
         {
@@ -58,6 +60,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// <param name="id">The project ID.</param>
         /// <param name="value">The SpecIF data to include.</param>
         /// <returns></returns>
+        [Authorize(Roles = "Editor")]
         [HttpPut("{id}")]
         [ProducesResponseType(200)]
         public ActionResult UpdateProject(string id, [FromBody]SpecIF.DataModels.SpecIF value)
@@ -70,6 +73,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// </summary>
         /// <param name="id">Th ID of the project to delete.</param>
         /// <returns></returns>
+        [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]
         public ActionResult DeleteProject(string id)
         {

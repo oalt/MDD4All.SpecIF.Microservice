@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using MDD4All.SpecIF.DataModels;
 using System.Collections.Generic;
-using Swashbuckle.AspNetCore.Annotations;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MDD4All.SpecIf.Microservice.Controllers
 {
@@ -108,6 +108,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// The new resource element is returned as response.</description>
         /// <param name="resource"></param>
         /// <returns></returns>
+        [Authorize(Roles = "Editor")]
         [HttpPost]
         [ProducesResponseType(typeof(Resource), 201)]
         public ActionResult<Resource> AddNewResource([FromBody]Resource resource)
@@ -127,6 +128,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// </summary>
         /// <param name="resource"></param>
         /// <returns></returns>
+        [Authorize(Roles = "Editor")]
         [HttpPut]
         [ProducesResponseType(typeof(Resource), 201)]
         public ActionResult<Resource> UpdateResource([FromBody]Resource resource)
@@ -148,6 +150,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// <param name="revision">The resource revision.</param>
         /// <param name="mode">?mode=forced results in deleting all directly and indirectly depending model elements.</param>
         /// <returns></returns>
+        [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]
         public ActionResult DeleteResource(string id, [FromQuery]string revision, [FromQuery]string mode)
         {

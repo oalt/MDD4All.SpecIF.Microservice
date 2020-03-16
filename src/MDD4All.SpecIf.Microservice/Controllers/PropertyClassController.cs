@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using MDD4All.SpecIF.DataModels;
 using MDD4All.SpecIF.DataProvider.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MDD4All.SpecIf.Microservice.Controllers
@@ -114,11 +115,25 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         }
 
         /// <summary>
+        /// Create a new property class.
+        /// </summary>
+        [Authorize(Roles = "Administrator")]
+        [HttpPost]
+        [ProducesResponseType(typeof(PropertyClass), 200)]
+        public ActionResult<PropertyClass> CreatePropertyClass([FromBody] PropertyClass propertyClass)
+        {
+            ActionResult result = BadRequest();
+
+            return result;
+        }
+
+        /// <summary>
         /// Update the property class; the supplied ID must exist.
         /// </summary>
         /// <param name="id">The property class ID.</param>
         /// <param name="revision">The property class revision.</param>
         /// <returns>The updated property class element.</returns>
+        [Authorize(Roles = "Administrator")]
         [HttpPut("{id}")]
         public ActionResult UpdatePropertyClass(string id, [FromQuery]string revision)
         {
@@ -136,6 +151,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// <param name="revision">The property class revision.</param>
         /// <param name="mode">Delete mode. ?mode=forced results in deleting all directly and indirectly depending model elements.</param>
         /// <returns></returns>
+        [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]
         public ActionResult DeletePropertyClass(string id, [FromQuery]string revision, [FromQuery]string mode)
         {
