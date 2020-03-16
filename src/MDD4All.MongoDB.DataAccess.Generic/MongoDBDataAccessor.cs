@@ -166,5 +166,30 @@ namespace MDD4All.MongoDB.DataAccess.Generic
 
 			}
 		}
+
+        public bool Delete(string id)
+        {
+
+            bool result = false;
+            try
+            {
+                IMongoCollection<T> collection = _db.GetCollection<T>(_collectionName);
+
+                BsonDocument filter = BsonDocument.Parse("{ \"_id\" : " + " \"" + id + "\"}");
+
+                DeleteResult deleteResult = collection.DeleteOne(filter);
+
+                if(deleteResult.IsAcknowledged)
+                {
+                    result = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                result = false;
+            }
+
+            return result;
+        }
 	}
 }
