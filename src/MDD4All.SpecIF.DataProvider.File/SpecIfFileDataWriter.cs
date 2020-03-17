@@ -7,9 +7,7 @@ using MDD4All.SpecIF.DataProvider.Contracts;
 using MDD4All.SpecIF.DataProvider.Contracts.DataModels;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace MDD4All.SpecIF.DataProvider.File
 {
@@ -98,13 +96,13 @@ namespace MDD4All.SpecIF.DataProvider.File
 			throw new NotImplementedException();
 		}
 
-        public override void AddHierarchy(Node hierarchy)
+        public override void AddHierarchy(Node hierarchy, string projectID = null)
 		{
 			_specIfData?.Hierarchies.Add(hierarchy);
 			SpecIfFileReaderWriter.SaveSpecIfToFile(_specIfData, _path);
 		}
 
-		public override Resource SaveResource(Resource resource)
+		public override Resource SaveResource(Resource resource, string projectID = null)
 		{
 			throw new NotImplementedException();
 		}
@@ -140,7 +138,7 @@ namespace MDD4All.SpecIF.DataProvider.File
             return result;
 		}
 
-		public override Statement SaveStatement(Statement statement)
+		public override Statement SaveStatement(Statement statement, string projectID = null)
 		{
 			Statement existingStatement = _specIfData?.Statements.Find(st => st.ID == statement.ID && st.Revision == statement.Revision);
 
@@ -168,6 +166,21 @@ namespace MDD4All.SpecIF.DataProvider.File
         }
 
         public override Resource UpdateResource(Resource resource)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void AddProject(ISpecIfMetadataWriter metadataWriter, DataModels.SpecIF project, string integrationID = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void UpdateProject(ISpecIfMetadataWriter metadataWriter, DataModels.SpecIF project)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DeleteProject(string projectID)
         {
             throw new NotImplementedException();
         }

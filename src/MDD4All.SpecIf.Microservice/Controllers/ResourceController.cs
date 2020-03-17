@@ -103,7 +103,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// <summary>
         /// Adds a new resource to the SpecIF repository.
         /// </summary>
-        /// <description>The new resource is added as a new element wit a specific revision 
+        /// <description>The new resource is added as a new element with a specific revision 
         /// and a specific branch, depended on the given information.
         /// The new resource element is returned as response.</description>
         /// <param name="resource"></param>
@@ -111,9 +111,9 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         [Authorize(Roles = "Editor")]
         [HttpPost]
         [ProducesResponseType(typeof(Resource), 201)]
-        public ActionResult<Resource> AddNewResource([FromBody]Resource resource)
+        public ActionResult<Resource> AddNewResource([FromBody]Resource resource, [FromQuery]string projectID)
         {
-			ActionResult<Resource> result = _specIfDataWriter.SaveResource(resource);
+			ActionResult<Resource> result = _specIfDataWriter.SaveResource(resource, projectID);
 
             if(result == null)
             {

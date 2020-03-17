@@ -40,6 +40,11 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
             throw new NotImplementedException();
         }
 
+        public override void AddProject(ISpecIfMetadataWriter metadataWriter, DataModels.SpecIF project, string integrationID = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void AddResource(Resource resource)
 		{
 			PostDataAsync(_connectionURL + "/Resource", resource).Wait();
@@ -50,7 +55,12 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 			PostDataAsync(_connectionURL + "/Statement", statement).Wait();
 		}
 
-		public override void InitializeIdentificators()
+        public override void DeleteProject(string projectID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void InitializeIdentificators()
 		{
 			//throw new NotImplementedException();
 		}
@@ -60,7 +70,7 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
       throw new NotImplementedException();
     }
 
-    public override Node SaveHierarchy(Node hierarchyToUpdate)
+    public override Node SaveHierarchy(Node hierarchyToUpdate, string projectID = null)
         {
             throw new NotImplementedException();
         }
@@ -75,12 +85,17 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
             throw new NotImplementedException();
         }
 
-        public override Resource SaveResource(Resource resource)
+        public override Resource SaveResource(Resource resource, string projectID = null)
         {
             throw new NotImplementedException();
         }
 
-        public override Statement SaveStatement(Statement statement)
+        public override Statement SaveStatement(Statement statement, string projectID = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void UpdateProject(DataModels.SpecIF project)
         {
             throw new NotImplementedException();
         }

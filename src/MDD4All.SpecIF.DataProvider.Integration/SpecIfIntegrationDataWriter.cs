@@ -172,7 +172,7 @@ namespace MDD4All.SpecIF.DataProvider.Integration
             throw new NotImplementedException();
         }
 
-        public override Resource SaveResource(Resource resource)
+        public override Resource SaveResource(Resource resource, string projectID = null)
         {
             throw new NotImplementedException();
         }
@@ -198,6 +198,21 @@ namespace MDD4All.SpecIF.DataProvider.Integration
         }
 
         public override Resource UpdateResource(Resource resource)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void AddProject(ISpecIfMetadataWriter metadataWriter, DataModels.SpecIF project, string integrationID = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void UpdateProject(DataModels.SpecIF project)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DeleteProject(string projectID)
         {
             throw new NotImplementedException();
         }

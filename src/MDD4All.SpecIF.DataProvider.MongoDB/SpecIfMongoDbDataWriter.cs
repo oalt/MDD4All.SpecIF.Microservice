@@ -7,6 +7,7 @@ using MDD4All.SpecIF.DataModels.BaseTypes;
 using MDD4All.SpecIF.DataModels.Helpers;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using MDD4All.SpecIF.DataProvider.Contracts.DataModels;
+using MDD4All.SpecIF.DataProvider.Contracts.Exceptions;
 using System;
 using System.Collections.Generic;
 
@@ -22,8 +23,9 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 		private MongoDBDataAccessor<Statement> _statementMongoDbAccessor;
 		private MongoDBDataAccessor<Node> _hierarchyMongoDbAccessor;
 		private MongoDBDataAccessor<Node> _nodeMongoDbAccessor;
+        private MongoDBDataAccessor<ProjectDescriptor> _projectMongoDbAccessor;
 
-		private MongoDBDataAccessor<SpecIfIdentifier> _identifierMongoDbAccessor;
+        private MongoDBDataAccessor<SpecIfIdentifier> _identifierMongoDbAccessor;
 
 		public SpecIfMongoDbDataWriter(string connectionString, ISpecIfMetadataReader metadataReader, 
             ISpecIfDataReader dataReader) : base(metadataReader, dataReader)
@@ -37,7 +39,9 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
 			_identifierMongoDbAccessor = new MongoDBDataAccessor<SpecIfIdentifier>(connectionString, SPECIF_ADMIN_DATABASE_NAME);
 
-			InitializeIdentificators();
+            _projectMongoDbAccessor = new MongoDBDataAccessor<ProjectDescriptor>(connectionString, DATABASE_NAME);
+
+            InitializeIdentificators();
 		}
 
         public override void AddNode(string parentNodeId, Node newNode)
@@ -174,9 +178,18 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 			}
 		}
 
-        public override void AddHierarchy(Node hierarchy)
+        public override void AddHierarchy(Node hierarchy, string projectID = null)
 		{
             hierarchy.IsHierarchyRoot = true;
+
+            if (projectID == null)
+            {
+                hierarchy.ProjectID = DEFAULT_PROJECT;
+            }
+            else
+            {
+                hierarchy.ProjectID = projectID;
+            }
 
 			_hierarchyMongoDbAccessor.Add(hierarchy);
 		}
@@ -198,7 +211,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
             return result;
         }
 
-		public override Resource SaveResource(Resource resource)
+		public override Resource SaveResource(Resource resource, string projectID = null)
 		{
             Resource result = null;
 
@@ -206,6 +219,15 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
             if (newResource != null)
             {
+                if (projectID == null)
+                {
+                    newResource.ProjectID = DEFAULT_PROJECT;
+                }
+                else
+                {
+                    resource.ProjectID = projectID;
+                }
+
                 AddResource(newResource);
                 result = newResource;
             }
@@ -237,7 +259,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
             return result;
         }
 
-        public override Statement SaveStatement(Statement statement)
+        public override Statement SaveStatement(Statement statement, string projectID = null)
 		{
             Statement result = null;
 
@@ -245,6 +267,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
             if (newStatement != null)
             {
+                newStatement.ProjectID = projectID;
                 AddStatement(newStatement);
                 result = newStatement;
             }
@@ -272,6 +295,74 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
             return result;
         }
 
-        
+        private const string DEFAULT_PROJECT = "PRJ-DEFAULT";
+
+        public override void AddProject(ISpecIfMetadataWriter metadataWriter,
+                                        DataModels.SpecIF specif, 
+                                        string integrationID = null)
+        {
+
+            string projectID = DEFAULT_PROJECT;
+
+            if(integrationID == null)
+            {
+                ProjectDescriptor defaultProject = _projectMongoDbAccessor.GetItemById(DEFAULT_PROJECT);
+
+                if (defaultProject == null)
+                {
+                    defaultProject = new ProjectDescriptor()
+                    {
+                        CreatedAt = DateTime.Now,
+                        Description = "SpecIF default project.",
+                        ID = DEFAULT_PROJECT,
+                        Title = "Default Project"
+
+                    };
+
+                    _projectMongoDbAccessor.Add(defaultProject);
+                }
+            }
+            else
+            {
+                ProjectDescriptor integrationProject = _projectMongoDbAccessor.GetItemById(integrationID);
+
+                if(integrationProject == null)
+                {
+                    specif.ID = integrationID;
+
+                    _projectMongoDbAccessor.Add(new ProjectDescriptor(specif));
+
+                    projectID = integrationID;
+                }
+            }
+
+            
+
+            IntegrateProjectData(metadataWriter, specif, projectID);
+            
+        }
+
+        public override void UpdateProject(ISpecIfMetadataWriter metadataWriter, 
+                                           DataModels.SpecIF project)
+        {
+            ProjectDescriptor integrationProject = _projectMongoDbAccessor.GetItemById(project.ID);
+
+            if(integrationProject != null)
+            {
+                _projectMongoDbAccessor.Update(new ProjectDescriptor(project), project.ID);
+
+                IntegrateProjectData(metadataWriter, project, project.ID);
+            }
+            else
+            {
+                throw new ProjectNotFoundException();
+            }
+
+        }
+
+        public override void DeleteProject(string projectID)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

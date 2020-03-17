@@ -1,111 +1,52 @@
 ﻿/*
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
-using MDD4All.SpecIF.DataModels.BaseTypes;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 
 namespace MDD4All.SpecIF.DataModels
 {
-	public class SpecIF : SpecIfElement
+	public class SpecIF : ProjectDescriptor
 	{
 		public SpecIF()
 		{
 		}
 
-		[JsonProperty(PropertyName = "id")]
-		public string ID { get; set; } = "_" + Guid.NewGuid().ToString();
-
-		[JsonProperty(PropertyName = "title")]
-		public Value Title { get; set; } = new Value();
-
-		[JsonProperty(PropertyName = "description")]
-		public Value Description { get; set; }
-
-        [JsonProperty(PropertyName = "isExtension")]
-        public bool IsExtension { get; set; } = false;
-
-		[JsonProperty(PropertyName = "specifVersion")]
-		public string SpecifVersion { get; set; } = "1.0";
-
-		[JsonProperty(PropertyName = "generator")]
-		public string Generator { get; set; }
-
-		[JsonProperty(PropertyName = "generatorVersion")]
-		public string GeneratorVersion { get; set; }
-
-		[JsonProperty(PropertyName = "rights")]
-		public Rights Rights { get; set; }
-
-		[JsonProperty(PropertyName = "createdAt")]
-		public DateTime CreatedAt { get; set; } = DateTime.Now;
-
-		[JsonProperty(PropertyName = "createdBy")]
-		public Creator CreatedBy { get; set; }
-
 		// type definitions (metadata)
-		[JsonProperty(PropertyName = "dataTypes")]
+        [BsonIgnore]
+		[JsonProperty(PropertyName = "dataTypes", Order = 20)]
 		public List<DataType> DataTypes { get; set; } = new List<DataType>();
 
-		[JsonProperty(PropertyName = "propertyClasses")]
+        [BsonIgnore]
+        [JsonProperty(PropertyName = "propertyClasses", Order = 21)]
 		public List<PropertyClass> PropertyClasses { get; set; } = new List<PropertyClass>();
 
-		[JsonProperty(PropertyName = "resourceClasses")]
+        [BsonIgnore]
+        [JsonProperty(PropertyName = "resourceClasses", Order = 22)]
 		public List<ResourceClass> ResourceClasses { get; set; } = new List<ResourceClass>();
 
-		[JsonProperty(PropertyName = "statementClasses")]
+        [BsonIgnore]
+        [JsonProperty(PropertyName = "statementClasses", Order = 23)]
 		public List<StatementClass> StatementClasses { get; set; } = new List<StatementClass>();
 
-		// data
-		[JsonProperty(PropertyName = "resources")]
+        // data
+        [BsonIgnore]
+        [JsonProperty(PropertyName = "resources", Order = 24)]
 		public List<Resource> Resources { get; set; } = new List<Resource>();
 
-		[JsonProperty(PropertyName = "statements")]
+        [BsonIgnore]
+        [JsonProperty(PropertyName = "statements", Order = 25)]
 		public List<Statement> Statements { get; set; } = new List<Statement>();
 
-		[JsonProperty(PropertyName = "hierarchies")]
+        
+        [JsonProperty(PropertyName = "hierarchies", Order = 26)]
 		[BsonIgnore]
 		public List<Node> Hierarchies { get; set; } = new List<Node>();
 
-		private List<Key> _nodeReferences;
 
-		[JsonIgnore]
-		[BsonElement("hierarchies")]
-		public List<Key> NodeReferences
-		{
-			get
-			{
-				List<Key> result = new List<Key>();
-
-				if (Hierarchies != null && Hierarchies.Count > 0)
-				{
-					foreach (Node node in Hierarchies)
-					{
-						Key nodeReference = new Key()
-						{
-							ID = node.ID,
-							Revision = node.Revision
-						};
-
-						result.Add(nodeReference);
-					}
-				}
-				else
-				{
-					result = _nodeReferences;
-				}
-				return result;
-			}
-
-			set
-			{
-				_nodeReferences = value;
-			}
-		}
-
-		[JsonProperty(PropertyName = "files")]
+        [BsonIgnore]
+        [JsonProperty(PropertyName = "files", Order = 27)]
 		public List<File> Files { get; set; }
 	}
 }

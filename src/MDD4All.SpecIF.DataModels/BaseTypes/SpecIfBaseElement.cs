@@ -1,8 +1,6 @@
 ﻿/*
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
-using MDD4All.SpecIF.DataModels.Converters;
-using MDD4All.SpecIF.DataModels.Service;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 using System;
@@ -16,7 +14,11 @@ namespace MDD4All.SpecIF.DataModels.BaseTypes
 			ChangedAt = DateTime.Now;
 		}
 
-		[JsonProperty(PropertyName = "title", Order = -97)]
+        [JsonIgnore]
+        [BsonElement("project")]
+        public string ProjectID { get; set; }
+
+        [JsonProperty(PropertyName = "title", Order = -97)]
 		[BsonElement("title")]
         public object Title { get; set; } 
 

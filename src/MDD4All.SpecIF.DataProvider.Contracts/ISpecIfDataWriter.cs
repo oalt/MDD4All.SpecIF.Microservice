@@ -7,21 +7,30 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 {
 	public interface ISpecIfDataWriter : ISpecIfDataProviderBase
 	{
+        void AddProject(ISpecIfMetadataWriter metadataWriter, 
+                        SpecIF.DataModels.SpecIF project, 
+                        string integrationID = null);
+
+        void UpdateProject(ISpecIfMetadataWriter metadataWriter, 
+                           SpecIF.DataModels.SpecIF project);
+
+        void DeleteProject(string projectID);
+
 		Resource CreateResource(Key resourceClassKey);
 
 		void AddResource(Resource resource);
 
-		Resource SaveResource(Resource resource);
+		Resource SaveResource(Resource resource, string projectID = null);
 
         Resource UpdateResource(Resource resource);
 
-		void AddHierarchy(Node hierarchy);
+		void AddHierarchy(Node hierarchy, string projectID = null);
 
 		Node SaveHierarchy(Node hierarchyToUpdate);
 
 		void AddStatement(Statement statement);
 
-		Statement SaveStatement(Statement statement);
+		Statement SaveStatement(Statement statement, string projectID = null);
 
 		void AddNode(string parentNodeID, Node newNode);
 

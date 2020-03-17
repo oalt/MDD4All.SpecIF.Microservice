@@ -5,7 +5,6 @@ using MDD4All.SpecIF.DataModels;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace MDD4All.SpecIF.DataProvider.File
 {
@@ -170,7 +169,7 @@ namespace MDD4All.SpecIF.DataProvider.File
 			throw new NotImplementedException();
 		}
 
-        public override List<Node> GetAllHierarchyRootNodes()
+        public override List<Node> GetAllHierarchyRootNodes(string projectID = null)
         {
             throw new NotImplementedException();
         }
@@ -201,6 +200,17 @@ namespace MDD4All.SpecIF.DataProvider.File
         }
 
         public override Node GetParentNode(Key childNode)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override DataModels.SpecIF GetProject(ISpecIfMetadataReader metadataReader, string projectID, 
+            List<Key> hierarchyFilter = null, bool includeMetadata = true)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override List<ProjectDescriptor> GetProjectDescriptions()
         {
             throw new NotImplementedException();
         }

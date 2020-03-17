@@ -136,21 +136,93 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
             return result;
         }
 
-        
+        protected void IntegrateProjectData(ISpecIfMetadataWriter metadataWriter,
+                                            SpecIF.DataModels.SpecIF project,
+                                            string integrationID = null)
+        {
+            string projectID = integrationID;
+            
+            if (project.DataTypes != null)
+            {
+                foreach (DataType dataType in project.DataTypes)
+                {
+                    dataType.ProjectID = projectID;
+                    metadataWriter.AddDataType(dataType);
+                }
+            }
+
+            if (project.PropertyClasses != null)
+            {
+                foreach (PropertyClass propertyClass in project.PropertyClasses)
+                {
+                    propertyClass.ProjectID = projectID;
+                    metadataWriter.AddPropertyClass(propertyClass);
+                }
+            }
+
+            if (project.ResourceClasses != null)
+            {
+                foreach (ResourceClass resourceClass in project.ResourceClasses)
+                {
+                    resourceClass.ProjectID = projectID;
+                    metadataWriter.AddResourceClass(resourceClass);
+                }
+            }
+
+            if (project.StatementClasses != null)
+            {
+                foreach (StatementClass statementClass in project.StatementClasses)
+                {
+                    statementClass.ProjectID = projectID;
+                    metadataWriter.AddStatementClass(statementClass);
+                }
+            }
+
+            // data
+            if (project.Resources != null)
+            {
+                foreach (Resource resource in project.Resources)
+                {
+                    
+                    AddResource(resource);
+                    
+                }
+            }
+
+            if (project.Statements != null)
+            {
+                foreach (Statement statement in project.Statements)
+                {
+                    AddStatement(statement);
+                    
+                }
+            }
+
+            if (project.Hierarchies != null)
+            {
+                foreach (Node data in project.Hierarchies)
+                {
+                    AddHierarchy(data);
+                }
+            }
+        }
 
         public abstract void InitializeIdentificators();
         public abstract void SaveIdentificators();
         public abstract Node SaveHierarchy(Node hierarchyToUpdate);
         public abstract Node SaveNode(Node nodeToUpdate);
-        public abstract Resource SaveResource(Resource resource);
-        public abstract Statement SaveStatement(Statement statement);
+        public abstract Resource SaveResource(Resource resource, string projectID = null);
+        public abstract Statement SaveStatement(Statement statement, string projectID = null);
 
-        public abstract void AddHierarchy(Node hierarchy);
+        public abstract void AddHierarchy(Node hierarchy, string projectID = null);
         public abstract void AddResource(Resource resource);
         public abstract void AddStatement(Statement statement);
         protected abstract IdentifiableElement GetItemWithLatestRevisionInBranch<T>(string id, string branch);
         public abstract void AddNode(string parentNodeID, Node newNode);
         public abstract void MoveNode(string nodeID, string newParentID, string newSiblingId);
         public abstract Resource UpdateResource(Resource resource);
+        public abstract void AddProject(ISpecIfMetadataWriter metadataWriter, SpecIF.DataModels.SpecIF project, string integrationID = null);
+        public abstract void UpdateProject(ISpecIfMetadataWriter metadataWriter, SpecIF.DataModels.SpecIF project);
+        public abstract void DeleteProject(string projectID);
     }
 }

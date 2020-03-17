@@ -198,7 +198,8 @@ namespace MDD4All.SpecIf.Microservice
 
                     // SpecIF MongoDB connections
                     services.AddScoped<ISpecIfMetadataReader>(dataProvider => new SpecIfMongoDbMetadataReader(dataConnection));
-					services.AddScoped<ISpecIfDataReader>(dataProvider => new SpecIfMongoDbDataReader(dataConnection));
+                    services.AddScoped<ISpecIfMetadataWriter>(dataProvider => new SpecIfMongoDbMetadataWriter(dataConnection));
+                    services.AddScoped<ISpecIfDataReader>(dataProvider => new SpecIfMongoDbDataReader(dataConnection));
 					services.AddScoped<ISpecIfDataWriter>(dataProvider => new SpecIfMongoDbDataWriter(dataConnection, new SpecIfMongoDbMetadataReader(dataConnection),
                         new SpecIfMongoDbDataReader(dataConnection)));
 
@@ -233,6 +234,8 @@ namespace MDD4All.SpecIf.Microservice
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime)
 		{
+            app.UseHttpsRedirection();
+
             app.UseAuthentication();
 
             if (env.IsDevelopment())

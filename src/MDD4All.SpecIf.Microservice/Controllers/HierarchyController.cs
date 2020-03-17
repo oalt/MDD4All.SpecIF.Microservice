@@ -123,11 +123,13 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// <param name="parentNodeId">An optional parent node id.</param>
         [Authorize(Roles = "Editor")]
         [HttpPost]
-        public void CreateNewHierarchy([FromBody]Node node, [FromQuery]string parentNodeId)
+        public void CreateNewHierarchy([FromBody]Node node, 
+                                       [FromQuery]string parentNodeId,
+                                       [FromQuery]string projectId)
         {
             if (string.IsNullOrEmpty(parentNodeId))
             {
-                _dataWriter.AddHierarchy(node);
+                _dataWriter.AddHierarchy(node, projectId);
             }
             else
             {

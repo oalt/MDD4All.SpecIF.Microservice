@@ -7,7 +7,13 @@ using System.Collections.Generic;
 namespace MDD4All.SpecIF.DataProvider.Contracts
 {
 	public interface ISpecIfDataReader : ISpecIfDataProviderBase
-	{ 
+	{
+        List<ProjectDescriptor> GetProjectDescriptions();
+
+        SpecIF.DataModels.SpecIF GetProject(ISpecIfMetadataReader metadataReader,
+                                            string projectID, 
+                                            List<Key> hierarchyFilter = null, 
+                                            bool includeMetadata = true);
 
 		Resource GetResourceByKey(Key key);
 
@@ -17,10 +23,10 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 
 		List<Node> GetAllHierarchies();
 
-        List<Node> GetAllHierarchyRootNodes();
+        List<Node> GetAllHierarchyRootNodes(string projectID = null);
 
 		Node GetHierarchyByKey(Key key);
-
+        
         List<Node> GetChildNodes(Key parentNodeKey);
 
         Node GetNodeByKey(Key key);

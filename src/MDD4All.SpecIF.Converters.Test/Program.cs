@@ -21,7 +21,7 @@ namespace MDD4All.SpecIF.Converters.Test
         {
 			List<FileInfo> files = new List<FileInfo>();
 
-			DirectoryInfo directoryInfo = new DirectoryInfo(@"c:\Users\olli\Documents\work\github\GfSESpecIF\classDefinitions");
+			DirectoryInfo directoryInfo = new DirectoryInfo(@"d:\work\github\SpecIF\classDefinitions\");
 
             foreach(DirectoryInfo subDirectoryInfo in directoryInfo.GetDirectories())
             {
@@ -32,18 +32,18 @@ namespace MDD4All.SpecIF.Converters.Test
 
 			
 
-			DirectoryInfo umlDirectoryInfo = new DirectoryInfo(@"c:\Users\olli\Documents\work\github\SpecIFSysML\classDefinitions");
+			//DirectoryInfo umlDirectoryInfo = new DirectoryInfo(@"c:\Users\olli\Documents\work\github\SpecIFSysML\classDefinitions");
 
-			FileInfo[] umlFiles = umlDirectoryInfo.GetFiles("*.specif");
+			//FileInfo[] umlFiles = umlDirectoryInfo.GetFiles("*.specif");
 
-			//files.AddRange(umlFiles);
+			////files.AddRange(umlFiles);
 
-			FileInfo umlData = new FileInfo(@"C:\Users\olli\Documents\work\github\SpecIF-Graph\source\specif\TestModel1.specif");
+			//FileInfo umlData = new FileInfo(@"C:\Users\olli\Documents\work\github\SpecIF-Graph\source\specif\TestModel1.specif");
 
-            //files.Add(umlData);
+   //         //files.Add(umlData);
 
-            FileInfo vocabularyData = new FileInfo(@"c:\specif\GeneratedVocabulary.specif");
-            //files.Add(vocabularyData);
+   //         FileInfo vocabularyData = new FileInfo(@"c:\specif\GeneratedVocabulary.specif");
+   //         //files.Add(vocabularyData);
 
 			SpecIfMongoDbMetadataReader mongoDbMetadataReader = new SpecIfMongoDbMetadataReader(CONNECTION_STRING);
             SpecIfMongoDbDataReader mongoDbDataReader = new SpecIfMongoDbDataReader(CONNECTION_STRING);

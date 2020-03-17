@@ -173,5 +173,15 @@ namespace MDD4All.SpecIF.DataProvider.EA
         {
             throw new NotImplementedException();
         }
+
+        public override DataModels.SpecIF GetProject(string projectID, List<string> hierarchyFilter = null, bool includeMetadata = true)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override List<ProjectDescriptor> GetProjectDescriptions()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

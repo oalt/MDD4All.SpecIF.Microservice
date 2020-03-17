@@ -4,7 +4,9 @@
 using MDD4All.MongoDB.DataAccess.Generic;
 using MDD4All.SpecIF.DataModels;
 using MDD4All.SpecIF.DataProvider.Contracts;
+using MDD4All.SpecIF.DataProvider.Contracts.Exceptions;
 using MongoDB.Bson;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,26 +20,44 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 		private MongoDBDataAccessor<Statement> _statementMongoDbAccessor;
 		private MongoDBDataAccessor<Node> _hierarchyMongoDbAccessor;
 		private MongoDBDataAccessor<Node> _nodeMongoDbAccessor;
+        private MongoDBDataAccessor<ProjectDescriptor> _projectMongoDbAccessor;
 
-		public SpecIfMongoDbDataReader(string connectionString)
+
+
+        public SpecIfMongoDbDataReader(string connectionString)
 		{
 			_resourceMongoDbAccessor = new MongoDBDataAccessor<Resource>(connectionString, DATABASE_NAME);
 
 			_statementMongoDbAccessor = new MongoDBDataAccessor<Statement>(connectionString, DATABASE_NAME);
 			_hierarchyMongoDbAccessor = new MongoDBDataAccessor<Node>(connectionString, DATABASE_NAME);
 
-			_nodeMongoDbAccessor = new MongoDBDataAccessor<Node>(connectionString, DATABASE_NAME);			
+			_nodeMongoDbAccessor = new MongoDBDataAccessor<Node>(connectionString, DATABASE_NAME);
 
-		}
+            _projectMongoDbAccessor = new MongoDBDataAccessor<ProjectDescriptor>(connectionString, DATABASE_NAME);
 
-        public override List<Node> GetAllHierarchyRootNodes()
+        }
+
+        public override List<Node> GetAllHierarchyRootNodes(string projectID = null)
         {
             List<Node> result = new List<Node>();
 
-            BsonDocument filter = new BsonDocument()
+            BsonDocument filter;
+
+            if (projectID == null)
             {
-                {  "isHierarchyRoot", true }
-            };
+                filter = new BsonDocument()
+                {
+                    { "isHierarchyRoot", true }
+                };
+            }
+            else
+            {
+                filter = new BsonDocument()
+                {
+                    { "isHierarchyRoot", true },
+                    { "project", projectID }
+                };
+            }
 
             result = new List<Node>(_hierarchyMongoDbAccessor.GetItemsByFilter(filter.ToJson()));
 
@@ -363,6 +383,162 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
             {
                 result = searchResult[0];
             }
+
+            return result;
+        }
+
+        public override DataModels.SpecIF GetProject(ISpecIfMetadataReader metadataReader, 
+                                                     string projectID, 
+                                                     List<Key> hierarchyFilter = null, 
+                                                     bool includeMetadata = true)
+        {
+            DataModels.SpecIF result = new DataModels.SpecIF();
+
+            ProjectDescriptor project = _projectMongoDbAccessor.GetItemById(projectID);
+
+            if(project == null)
+            {
+                throw new ProjectNotFoundException();
+            }
+            else
+            {
+                result.ID = project.ID;
+                result.Title = project.Title;
+                result.Description = project.Description;
+                result.SpecifVersion = project.SpecifVersion;
+                result.Generator = project.Generator;
+                result.GeneratorVersion = project.GeneratorVersion;
+                result.CreatedAt = DateTime.Now;
+                result.CreatedBy = project.CreatedBy;
+                result.Rights = project.Rights;
+
+                Dictionary<Key, Node> hierarchies = new Dictionary<Key, Node>();
+                Dictionary<Key, Resource> resources = new Dictionary<Key, Resource>();
+                Dictionary<Key, Statement> statements = new Dictionary<Key, Statement>();
+
+                Dictionary<Key, ResourceClass> resourceClasses = new Dictionary<Key, ResourceClass>();
+                Dictionary<Key, StatementClass> statementClasses = new Dictionary<Key, StatementClass>();
+                Dictionary<Key, DataType> dataTypes = new Dictionary<Key, DataType>();
+                Dictionary<Key, PropertyClass> propertyClasses = new Dictionary<Key, PropertyClass>();
+
+                List<Node> hierarchyRoots = GetAllHierarchyRootNodes(projectID);
+
+                if (hierarchyFilter != null && hierarchyFilter.Count > 0)
+                {
+                    foreach(Node hierarchyRoot in hierarchyRoots)
+                    {
+                        if(hierarchyFilter.Contains(new Key(hierarchyRoot.ID, hierarchyRoot.Revision)))
+                        {
+                            Key hierarchyKey = new Key(hierarchyRoot.ID, hierarchyRoot.Revision);
+                            Node hierarchy = GetHierarchyByKey(hierarchyKey);
+
+                            if(!hierarchies.ContainsKey(hierarchyKey))
+                            {
+                                hierarchies.Add(hierarchyKey, hierarchy);
+                            }
+
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (Node hierarchyRoot in hierarchyRoots)
+                    {
+                        Key hierarchyKey = new Key(hierarchyRoot.ID, hierarchyRoot.Revision);
+                        Node hierarchy = GetHierarchyByKey(hierarchyKey);
+
+                        if (!hierarchies.ContainsKey(hierarchyKey))
+                        {
+                            hierarchies.Add(hierarchyKey, hierarchy);
+                        }
+
+                    }
+                }
+
+                foreach (KeyValuePair<Key, Node> hierarchyNode in hierarchies)
+                {
+                    AddResourcesRecursively(hierarchyNode.Value, ref resources);
+                }
+
+                //TODO: Statements
+
+                foreach(KeyValuePair<Key, Resource> cachedResource in resources)
+                {
+                    result.Resources.Add(cachedResource.Value);
+                }
+
+                foreach (KeyValuePair<Key, Node> cachedHierarchy in hierarchies)
+                {
+                    result.Hierarchies.Add(cachedHierarchy.Value);
+                }
+
+                if (includeMetadata)
+                {
+                    foreach (KeyValuePair<Key, Resource> resourceKeyValuePair in resources)
+                    {
+                        Resource resource = resourceKeyValuePair.Value;
+
+                        foreach (Property property in resource.Properties)
+                        {
+                            if (!propertyClasses.ContainsKey(property.PropertyClass))
+                            {
+                                PropertyClass propertyClass = metadataReader.GetPropertyClassByKey(property.PropertyClass);
+                                if(propertyClass != null)
+                                {
+                                    propertyClasses.Add(property.PropertyClass, propertyClass);
+
+                                    if(!dataTypes.ContainsKey(propertyClass.DataType))
+                                    {
+                                        DataType dataType = metadataReader.GetDataTypeByKey(propertyClass.DataType);
+                                        if(dataType != null)
+                                        {
+                                            dataTypes.Add(propertyClass.DataType, dataType);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    foreach(KeyValuePair<Key, PropertyClass> cachedPropertyClass in propertyClasses)
+                    {
+                        result.PropertyClasses.Add(cachedPropertyClass.Value);
+                    }
+
+                    foreach (KeyValuePair<Key, DataType> cachedDataType in dataTypes)
+                    {
+                        result.DataTypes.Add(cachedDataType.Value);
+                    }
+
+                    
+
+                } // if(includeMetadata)
+            }
+
+
+            return result;
+        }
+
+        private void AddResourcesRecursively(Node currentNode, ref Dictionary<Key, Resource> result)
+        {
+            Resource resource = GetResourceByKey(currentNode.ResourceReference);
+
+            if(!result.ContainsKey(currentNode.ResourceReference))
+            {
+                result.Add(currentNode.ResourceReference, resource);
+            }
+
+            foreach(Node childNode in currentNode.Nodes)
+            {
+                AddResourcesRecursively(childNode, ref result);
+            }
+        }
+
+        public override List<ProjectDescriptor> GetProjectDescriptions()
+        {
+            List<ProjectDescriptor> result = new List<ProjectDescriptor>();
+
+            result = _projectMongoDbAccessor.GetItems().ToList();
 
             return result;
         }

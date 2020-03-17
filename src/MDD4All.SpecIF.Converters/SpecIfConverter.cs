@@ -3,6 +3,7 @@
  */
 using MDD4All.SpecIF.DataModels;
 using MDD4All.SpecIF.DataProvider.Contracts;
+using System;
 
 namespace MDD4All.SpecIF.Converters
 {
@@ -16,7 +17,30 @@ namespace MDD4All.SpecIF.Converters
 		{
 			ConvertMetadata(sourceData, targetMetadataWriter);
 			ConvertData(sourceData, targetDataWriter);
-		}
+
+            ProjectDescriptor project = new ProjectDescriptor()
+            {
+                CreatedAt = DateTime.Now,
+                Description = "SpecIF default project.",
+                ID = "PRJ-DEFAULT",
+                Title = "Default Project"
+
+            };
+
+            DataModels.SpecIF specif = new DataModels.SpecIF();
+
+            specif.ID = project.ID;
+            specif.Title = project.Title;
+            specif.Description = project.Description;
+            specif.SpecifVersion = project.SpecifVersion;
+            specif.Generator = project.Generator;
+            specif.GeneratorVersion = project.GeneratorVersion;
+            specif.CreatedAt = DateTime.Now;
+            specif.CreatedBy = project.CreatedBy;
+            specif.Rights = project.Rights;
+
+            targetDataWriter.AddProject(targetMetadataWriter, specif);
+        }
 
 		public void ConvertMetadata(DataModels.SpecIF sourceData, 
 									ISpecIfMetadataWriter targetMetadataWriter,
@@ -131,21 +155,23 @@ namespace MDD4All.SpecIF.Converters
 			}
 
 
-			//if (sourceData.Files != null)
-			//{
-			//	foreach (File file in sourceData.Files)
-			//	{
-			//		if (!overrideExistingData)
-			//		{
-			//			targetDataWriter.AddFile(file);
-			//		}
-			//		else
-			//		{
-			//			targetDataWriter.UpdateFile(file);
-			//		}
-			//	}
-			//}
-		}
+            //if (sourceData.Files != null)
+            //{
+            //	foreach (File file in sourceData.Files)
+            //	{
+            //		if (!overrideExistingData)
+            //		{
+            //			targetDataWriter.AddFile(file);
+            //		}
+            //		else
+            //		{
+            //			targetDataWriter.UpdateFile(file);
+            //		}
+            //	}
+            //}
+
+            
+        }
 
 		private void ConvertHierarchyNodesRecusrively(Node node, ISpecIfDataWriter dataWriter, bool overrideExistingData)
 		{
