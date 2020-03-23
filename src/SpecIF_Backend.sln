@@ -65,8 +65,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2.1_Generators", "2.1_Gener
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SpecIF.Generators.Vocabulary", "MDD4All.SpecIF.Generators.Vocabulary\MDD4All.SpecIF.Generators.Vocabulary.csproj", "{D6EEE6D7-8EE7-41BA-AC77-CFC78016BD75}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "WebApplication1\WebApplication1.csproj", "{A2748B6F-C696-4A15-8423-B4934FED304B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -141,10 +139,6 @@ Global
 		{D6EEE6D7-8EE7-41BA-AC77-CFC78016BD75}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6EEE6D7-8EE7-41BA-AC77-CFC78016BD75}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6EEE6D7-8EE7-41BA-AC77-CFC78016BD75}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A2748B6F-C696-4A15-8423-B4934FED304B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A2748B6F-C696-4A15-8423-B4934FED304B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A2748B6F-C696-4A15-8423-B4934FED304B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A2748B6F-C696-4A15-8423-B4934FED304B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -172,7 +166,6 @@ Global
 		{C8C1DC9D-389A-4FCF-A932-E2E355A0AD04} = {09BFA16E-6238-44C4-88D6-E0C2F182AF4F}
 		{18A03F70-C988-4C26-92AA-A4CD1F9101C8} = {7D0FA414-B3D2-4264-A91F-EAA551CA5A5D}
 		{D6EEE6D7-8EE7-41BA-AC77-CFC78016BD75} = {18A03F70-C988-4C26-92AA-A4CD1F9101C8}
-		{A2748B6F-C696-4A15-8423-B4934FED304B} = {A925129B-2A55-4DBA-8B2A-44BEB40F89EF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C8F9327E-C222-4E00-A62F-20527B230190}

@@ -31,6 +31,10 @@ namespace MDD4All.SpecIF.DataModels
             CreatedBy = projectDescriptor.CreatedBy;
         }
 
+        [BsonElement("schema")]
+        [JsonProperty(PropertyName = "$schema", Order = 1)]
+        public object Schema { get; set; } = "https://specif.de/v1.0/schema";
+
         /// <summary>
         /// Project ID.
         /// </summary>
@@ -48,8 +52,8 @@ namespace MDD4All.SpecIF.DataModels
         [JsonProperty(PropertyName = "isExtension", Order = 5)]
         public bool IsExtension { get; set; } = false;
 
-        [JsonProperty(PropertyName = "specifVersion", Order = 6)]
-        public string SpecifVersion { get; set; } = "1.0";
+        //[JsonProperty(PropertyName = "specifVersion", Order = 6)]
+        //public string SpecifVersion { get; set; } = "1.0";
 
         [JsonProperty(PropertyName = "generator", Order = 7)]
         public string Generator { get; set; }

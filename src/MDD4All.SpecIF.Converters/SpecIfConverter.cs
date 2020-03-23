@@ -32,7 +32,7 @@ namespace MDD4All.SpecIF.Converters
             specif.ID = project.ID;
             specif.Title = project.Title;
             specif.Description = project.Description;
-            specif.SpecifVersion = project.SpecifVersion;
+            specif.Schema = project.Schema;
             specif.Generator = project.Generator;
             specif.GeneratorVersion = project.GeneratorVersion;
             specif.CreatedAt = DateTime.Now;

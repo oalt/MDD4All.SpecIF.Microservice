@@ -19,7 +19,7 @@
     },
     "MDD4All.SpecIf.Microservice.Integration": {
       "commandName": "Project",
-      "commandLineArgs": "dataSource=MongoDB dataConnection=mongodb://localhost:27017",
+      "commandLineArgs": "",
       "launchBrowser": true,
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:888;http://localhost:887",

@@ -405,7 +405,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
                 result.ID = project.ID;
                 result.Title = project.Title;
                 result.Description = project.Description;
-                result.SpecifVersion = project.SpecifVersion;
+                result.Schema = project.Schema;
                 result.Generator = project.Generator;
                 result.GeneratorVersion = project.GeneratorVersion;
                 result.CreatedAt = DateTime.Now;

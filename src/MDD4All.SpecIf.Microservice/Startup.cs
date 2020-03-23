@@ -51,16 +51,12 @@ namespace MDD4All.SpecIf.Microservice
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
-            string mongoDbConnectionString = "mongodb://localhost:27017";
-
-            
-
+            // MVC
             services.AddMvc().AddJsonOptions(options =>
             {
                 options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
                 
             });
-
             
 
             // CORS
