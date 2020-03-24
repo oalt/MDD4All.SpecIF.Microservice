@@ -20,6 +20,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
     [Produces("application/json")]
     [Route("specif/v{version:apiVersion}")]
     [ApiController]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class AdministrationController : Controller
     {
         private readonly IUserStore<ApplicationUser> _userStore;
@@ -216,6 +217,8 @@ namespace MDD4All.SpecIf.Microservice.Controllers
                         user.PasswordHash = passwordHasher.HashPassword(user, userLogin.Password);
 
                         await _userStore.UpdateAsync(user, CancellationToken.None);
+
+                        result = new OkResult();
                     }
                     else
                     {
