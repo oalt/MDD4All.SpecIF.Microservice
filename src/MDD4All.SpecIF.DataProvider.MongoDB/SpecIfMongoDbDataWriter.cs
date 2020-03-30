@@ -191,8 +191,18 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
                 hierarchy.ProjectID = projectID;
             }
 
-			_hierarchyMongoDbAccessor.Add(hierarchy);
+            AddHierarchyRecusrsively(hierarchy);
 		}
+
+        private void AddHierarchyRecusrsively(Node currentNode)
+        {
+            _hierarchyMongoDbAccessor.Add(currentNode);
+
+            foreach(Node childNode in currentNode.Nodes)
+            {
+                AddHierarchyRecusrsively(childNode);
+            }
+        }
 
 		public override Node SaveHierarchy(Node hierarchyToUpdate)
 		{
