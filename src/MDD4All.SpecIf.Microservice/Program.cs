@@ -2,8 +2,11 @@
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
 using MDD4All.SpecIf.Microservice.Helpers;
+using MDD4All.SpecIf.Microservice.Startup;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server.Features;
+using System.Collections.Generic;
 
 namespace MDD4All.SpecIf.Microservice
 {
@@ -12,12 +15,13 @@ namespace MDD4All.SpecIf.Microservice
 		public static void Main(string[] args)
 		{
             //JwtConfigurationCreator creator = new JwtConfigurationCreator(); 
-            BuildWebHost(args).Run();
+            
+            ServiceStarter serviceStarter = new ServiceStarter();
+
+            serviceStarter.Start(args);
+            
         }
 
-		public static IWebHost BuildWebHost(string[] args)
-		{
-			return WebHost.CreateDefaultBuilder(args).UseStartup<Startup>().Build();
-		}
+		
 	}
 }

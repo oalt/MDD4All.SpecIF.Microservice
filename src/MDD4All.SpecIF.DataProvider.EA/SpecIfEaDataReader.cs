@@ -134,7 +134,7 @@ namespace MDD4All.SpecIF.DataProvider.EA
 			throw new NotImplementedException();
 		}
 
-        public override List<Node> GetAllHierarchyRootNodes()
+        public override List<Node> GetAllHierarchyRootNodes(string projectID = null)
         {
             throw new NotImplementedException();
         }
@@ -174,7 +174,7 @@ namespace MDD4All.SpecIF.DataProvider.EA
             throw new NotImplementedException();
         }
 
-        public override DataModels.SpecIF GetProject(string projectID, List<string> hierarchyFilter = null, bool includeMetadata = true)
+        public override DataModels.SpecIF GetProject(ISpecIfMetadataReader metadataReader, string projectID, List<Key> hierarchyFilter = null, bool includeMetadata = true)
         {
             throw new NotImplementedException();
         }
@@ -183,5 +183,9 @@ namespace MDD4All.SpecIF.DataProvider.EA
         {
             throw new NotImplementedException();
         }
+
+        
+
+        
     }
 }

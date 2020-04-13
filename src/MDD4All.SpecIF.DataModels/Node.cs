@@ -44,6 +44,10 @@ namespace MDD4All.SpecIF.DataModels
 						Revision = resourceJObject["revision"].ToString()
 					};
 				}
+                else if(value is Key)
+                {
+                    _resourceReference = value as Key;
+                }
 				
 			}
 		}

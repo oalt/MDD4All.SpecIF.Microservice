@@ -6,7 +6,9 @@ using MDD4All.SpecIF.DataModels.Service;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using MDD4All.SpecIF.DataProvider.WebAPI;
 using MDD4All.SpecIF.ServiceDataProvider;
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MDD4All.SpecIF.DataProvider.Integration
 {
@@ -17,6 +19,11 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 
 		private Dictionary<string, ISpecIfDataReader> _dataReaders = new Dictionary<string, ISpecIfDataReader>();
 
+        private bool _cacheActive = false;
+
+        private ISpecIfDataReader _cacheDataReader;
+        private ISpecIfDataWriter _cacheDataWriter;
+
 
 		public SpecIfIntegrationDataReader(SpecIfServiceDataProvider specIfServiceDataProvider)
 		{
@@ -25,20 +32,33 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 		}
 
 
+        public void ActivateCache(ISpecIfDataWriter dataWriter, ISpecIfDataReader dataReader)
+        {
+            _cacheActive = true;
+
+            _cacheDataReader = dataReader;
+
+            _cacheDataWriter = dataWriter;
+        }
+
+
 		private void InitializeReaders()
 		{
 			List<SpecIfServiceDescription> serviceDescriptions = _descriptionProvider.GetAvailableServices();
 
 			foreach (SpecIfServiceDescription serviceDescription in serviceDescriptions)
 			{
-				if (serviceDescription.DataRead == true)
-				{
-					SpecIfWebApiDataReader dataReader = new SpecIfWebApiDataReader(serviceDescription.ServiceAddress + ":" + serviceDescription.ServicePort);
+                if (serviceDescription.ID != "{F8B21340-B442-4040-BEFE-CF455BABB3A5}")
+                {
+                    if (serviceDescription.DataRead == true)
+                    {
+                        SpecIfWebApiDataReader dataReader = new SpecIfWebApiDataReader(serviceDescription.ServiceAddress + ":" + serviceDescription.ServicePort);
 
-					dataReader.DataSourceDescription = serviceDescription;
+                        dataReader.DataSourceDescription = serviceDescription;
 
-					_dataReaders.Add(serviceDescription.ID, dataReader);
-				}
+                        _dataReaders.Add(serviceDescription.ID, dataReader);
+                    }
+                }
 			}
 		}
 
@@ -110,25 +130,69 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 
 		public override Resource GetResourceByKey(Key key)
 		{
-			Resource result = null;
+            Resource result = null;
 
-			foreach (KeyValuePair<string, ISpecIfDataReader> provider in _dataReaders)
-			{
-				Resource resource = provider.Value.GetResourceByKey(key);
+            Resource cachedResource = null;
 
-				if (resource != null)
-				{
-					result = resource;
-					break;
-				}
-			}
+            if (_cacheActive)
+            {
+                result = _cacheDataReader.GetResourceByKey(key);
+            }
+            if (result == null)
+            {
 
-			return result;
-		}
+                Task<Resource> task = GetResourceByKeyAsync(key);
 
+                task.Wait();
 
+                result = task.Result;
 
-		public override Statement GetStatementByKey(Key key)
+                if (_cacheActive && result != null)
+                {
+                    _cacheDataWriter.AddResource(result);
+                }
+            }
+            
+            return result;
+        }
+
+        public async Task<Resource> GetResourceByKeyAsync(Key key)
+        {
+            Resource result = null;
+
+            List<Task<Resource>> tasks = new List<Task<Resource>>();
+
+            foreach (KeyValuePair<string, ISpecIfDataReader> provider in _dataReaders)
+            {
+                Task<Resource> resource = ((SpecIfWebApiDataReader)provider.Value).GetResourceByKeyAsync(key);
+
+                
+
+                tasks.Add(resource);
+            }
+
+            while (true)
+            {
+                if (tasks.Count == 0)
+                {
+                    break;
+                }
+
+                Task<Resource> firstFinishedTask = await Task.WhenAny(tasks.ToArray());
+
+                if (firstFinishedTask.Result != null)
+                {
+                    Console.WriteLine("Task result: " + firstFinishedTask.Result);
+                    result = firstFinishedTask.Result;
+                    break;
+                }
+                tasks.Remove(firstFinishedTask);
+            }
+
+            return result;
+
+        }
+        public override Statement GetStatementByKey(Key key)
 		{
 			Statement result = null;
 
@@ -232,10 +296,7 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 			throw new System.NotImplementedException();
 		}
 
-        public override List<Node> GetAllHierarchyRootNodes()
-        {
-            throw new System.NotImplementedException();
-        }
+
 
         public override List<Resource> GetAllResourceRevisions(string resourceID)
         {
@@ -254,7 +315,20 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 
         public override List<Node> GetChildNodes(Key parentNodeKey)
         {
-            throw new System.NotImplementedException();
+            List<Node> result = new List<Node>();
+
+            foreach (KeyValuePair<string, ISpecIfDataReader> provider in _dataReaders)
+            {
+                List<Node> childNodes = provider.Value.GetChildNodes(parentNodeKey);
+
+                if (childNodes != null)
+                {
+                    result = childNodes;
+                    break;
+                }
+            }
+
+            return result;
         }
 
         public override string GetLatestResourceRevisionForBranch(string resourceID, string branchName)
@@ -264,7 +338,20 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 
         public override Node GetNodeByKey(Key key)
         {
-            throw new System.NotImplementedException();
+            Node result = null;
+
+            foreach (KeyValuePair<string, ISpecIfDataReader> provider in _dataReaders)
+            {
+                Node node = provider.Value.GetNodeByKey(key);
+
+                if (node != null)
+                {
+                    result = node;
+                    break;
+                }
+            }
+
+            return result;
         }
 
         public override Node GetParentNode(Key childNode)
@@ -272,12 +359,42 @@ namespace MDD4All.SpecIF.DataProvider.Integration
             throw new System.NotImplementedException();
         }
 
-        public override DataModels.SpecIF GetProject(string projectID, List<string> hierarchyFilter = null, bool includeMetadata = true)
-        {
-            throw new System.NotImplementedException();
-        }
 
         public override List<ProjectDescriptor> GetProjectDescriptions()
+        {
+            List<ProjectDescriptor> result = new List<ProjectDescriptor>();
+
+            foreach (KeyValuePair<string, ISpecIfDataReader> dataReader in _dataReaders)
+            {
+                List<ProjectDescriptor> projectDescriptions = dataReader.Value.GetProjectDescriptions();
+
+                if (projectDescriptions != null && projectDescriptions.Count > 0)
+                {
+                    result.AddRange(projectDescriptions);
+                }
+            }
+
+            return result;
+        }
+
+        public override List<Node> GetAllHierarchyRootNodes(string projectID = null)
+        {
+            List<Node> result = new List<Node>();
+
+            foreach (KeyValuePair<string, ISpecIfDataReader> dataReader in _dataReaders)
+            {
+                List<Node> hierarchies = dataReader.Value.GetAllHierarchyRootNodes(projectID);
+
+                if (hierarchies != null && hierarchies.Count > 0)
+                {
+                    result.AddRange(hierarchies);
+                }
+            }
+
+            return result;
+        }
+
+        public override DataModels.SpecIF GetProject(ISpecIfMetadataReader metadataReader, string projectID, List<Key> hierarchyFilter = null, bool includeMetadata = true)
         {
             throw new System.NotImplementedException();
         }

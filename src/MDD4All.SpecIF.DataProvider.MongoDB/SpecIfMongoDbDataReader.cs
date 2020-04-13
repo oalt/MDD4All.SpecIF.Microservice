@@ -14,7 +14,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 {
 	public class SpecIfMongoDbDataReader : AbstractSpecIfDataReader
 	{
-		private const string DATABASE_NAME = "specif";
+		private string DATABASE_NAME = "specif";
 
 		private MongoDBDataAccessor<Resource> _resourceMongoDbAccessor;
 		private MongoDBDataAccessor<Statement> _statementMongoDbAccessor;
@@ -24,9 +24,14 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
 
 
-        public SpecIfMongoDbDataReader(string connectionString)
+        public SpecIfMongoDbDataReader(string connectionString, string dataBase = "specif")
 		{
-			_resourceMongoDbAccessor = new MongoDBDataAccessor<Resource>(connectionString, DATABASE_NAME);
+            if (dataBase != null)
+            {
+                DATABASE_NAME = dataBase;
+            }
+
+            _resourceMongoDbAccessor = new MongoDBDataAccessor<Resource>(connectionString, DATABASE_NAME);
 
 			_statementMongoDbAccessor = new MongoDBDataAccessor<Statement>(connectionString, DATABASE_NAME);
 			_hierarchyMongoDbAccessor = new MongoDBDataAccessor<Node>(connectionString, DATABASE_NAME);

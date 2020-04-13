@@ -1,0 +1,101 @@
+﻿@{
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model MDD4All.SpecIF.ViewModels.IntegrationService.IntegrationServiceViewModel
+
+@using MDD4All.SpecIF.DataModels.Service;
+
+@{
+	ViewData["Title"] = "SpecIF Integration Service";
+}
+
+
+<h1>
+	<img src="~/images/DataIntegration.png" width="64px" height="64px" /> SpecIF Web APIs
+</h1>
+<h2>
+	Available Services
+	@Html.ActionLink("Refresh", "Refresh", "Service", new {  },
+new { @class = "btn btn-info btn-space pull-right", role = "button" })
+</h2>
+
+<table class="table table-hover">
+	<thead>
+		<tr>
+			<th></th>
+			<th>Name</th>
+			<th>Service-ID</th>
+			<th>URL</th>
+			<th>Description</th>
+			<th>Read Data</th>
+			<th>Write Data</th>
+			<th>Read Metadata</th>
+			<th>Write Metadata</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (SpecIfServiceDescription serviceDescription in Model.ServiceDescriptions)
+		{
+			<tr>
+				<td>
+					<img src="@serviceDescription.ServiceAddress:@serviceDescription.ServicePort.ToString()@serviceDescription.IconURL" alt="service icon" style="max-height:80px; max-width:100px" />
+				</td>
+				<td>
+					@serviceDescription.ServiceName
+				</td>
+				<td>
+					@serviceDescription.ID
+				</td>
+				<td>
+					<a href="@serviceDescription.ServiceAddress:@serviceDescription.ServicePort.ToString()/swagger"
+                       target="_blank">@serviceDescription.ServiceAddress:@serviceDescription.ServicePort.ToString()</a>
+				</td>
+				<td>
+					@serviceDescription.ServiceDescription
+				</td>
+				<td>
+					@if (serviceDescription.DataRead)
+					{
+						<img src="~/images/iconYes.png" alt="yes" />
+					}
+					else
+					{
+						<img src="~/images/iconNoEntry.png" alt="no" />
+					}
+
+				</td>
+				<td>
+					@if (serviceDescription.DataWrite)
+					{
+						<img src="~/images/iconYes.png" alt="yes" />
+					}
+					else
+					{
+						<img src="~/images/iconNoEntry.png" alt="no" />
+					}
+				</td>
+				<td>
+					@if (serviceDescription.MetadataRead)
+					{
+						<img src="~/images/iconYes.png" alt="yes" />
+					}
+					else
+					{
+						<img src="~/images/iconNoEntry.png" alt="no" />
+					}
+				</td>
+				<td>
+					@if (serviceDescription.MetadataWrite)
+					{
+						<img src="~/images/iconYes.png" alt="yes" />
+					}
+					else
+					{
+						<img src="~/images/iconNoEntry.png" alt="no" />
+					}
+				</td>
+			</tr>
+
+		}
+	</tbody>
+</table>

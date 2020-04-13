@@ -17,11 +17,11 @@ namespace MDD4All.SpecIF.DataModels
 			Value = new Value();
 		}
 
-        public Property(string title, string classID, string value, string id, DateTime changedAt, string changedBy)
+        public Property(string title, Key classID, string value, string id, DateTime changedAt, string changedBy)
         {
             Title = new Value(title);
 
-            PropertyClass = new Key(classID, SpecIfGuidGenerator.CreateNewSpecIfGUID());
+            PropertyClass = new Key(classID.ID, classID.Revision);
             Value = new Value
             {
                 LanguageValues = new List<LanguageValue>
@@ -34,6 +34,8 @@ namespace MDD4All.SpecIF.DataModels
             };
 
             ID = id;
+
+            Revision = SpecIfGuidGenerator.CreateNewRevsionGUID();
 
             ChangedAt = changedAt;
             ChangedBy = changedBy;

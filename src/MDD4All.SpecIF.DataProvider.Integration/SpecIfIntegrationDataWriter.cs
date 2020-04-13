@@ -33,20 +33,23 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 		{
 			List<SpecIfServiceDescription> serviceDescriptions = _descriptionProvider.GetAvailableServices();
 
-			foreach (SpecIfServiceDescription serviceDescription in serviceDescriptions)
-			{
-				if (serviceDescription.DataRead == true)
-				{
-					SpecIfWebApiDataWriter dataWriter = new SpecIfWebApiDataWriter(serviceDescription.ServiceAddress + ":" + serviceDescription.ServicePort, 
-                                                                                   _metadataReader,
-                                                                                   _dataReader);
+            foreach (SpecIfServiceDescription serviceDescription in serviceDescriptions)
+            {
+                if (serviceDescription.ID != "{F8B21340-B442-4040-BEFE-CF455BABB3A5}")
+                {
+                    if (serviceDescription.DataWrite == true)
+                    {
+                        SpecIfWebApiDataWriter dataWriter = new SpecIfWebApiDataWriter(serviceDescription.ServiceAddress + ":" + serviceDescription.ServicePort,
+                                                                                       _metadataReader,
+                                                                                       _dataReader);
 
-					dataWriter.DataSourceDescription = serviceDescription;
+                        dataWriter.DataSourceDescription = serviceDescription;
 
-					_dataWriters.Add(serviceDescription.ID, dataWriter);
-					_demoDataWriterList.Add(dataWriter);
-				}
-			}
+                        _dataWriters.Add(serviceDescription.ID, dataWriter);
+                        _demoDataWriterList.Add(dataWriter);
+                    }
+                }
+            }
 		}
 
 		public void AddDataWriter(ISpecIfDataWriter dataWriter, string id)
@@ -58,10 +61,10 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 		}
 
 
-		public override void AddHierarchy(Node hierarchy)
-		{
-			FindDataWriterForHierarchy(hierarchy).AddHierarchy(hierarchy);
-		}
+		//public override void AddHierarchy(Node hierarchy)
+		//{
+		//	FindDataWriterForHierarchy(hierarchy).AddHierarchy(hierarchy);
+		//}
 
 		//public override void AddNode(Node newNode)
 		//{
@@ -177,10 +180,6 @@ namespace MDD4All.SpecIF.DataProvider.Integration
             throw new NotImplementedException();
         }
 
-        public override Statement SaveStatement(Statement statement)
-        {
-            throw new NotImplementedException();
-        }
 
         protected override IdentifiableElement GetItemWithLatestRevisionInBranch<T>(string id, string branch)
         {
@@ -207,12 +206,24 @@ namespace MDD4All.SpecIF.DataProvider.Integration
             throw new NotImplementedException();
         }
 
-        public override void UpdateProject(DataModels.SpecIF project)
+
+
+        public override void DeleteProject(string projectID)
         {
             throw new NotImplementedException();
         }
 
-        public override void DeleteProject(string projectID)
+        public override Statement SaveStatement(Statement statement, string projectID = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void AddHierarchy(Node hierarchy, string projectID = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void UpdateProject(ISpecIfMetadataWriter metadataWriter, DataModels.SpecIF project)
         {
             throw new NotImplementedException();
         }

@@ -1,6 +1,8 @@
 ﻿/*
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
+using System.Collections.Generic;
+
 namespace MDD4All.SpecIF.DataModels.Service
 {
 	public interface ISpecIfServiceDescription
@@ -31,5 +33,7 @@ namespace MDD4All.SpecIF.DataModels.Service
 		bool DataRead { get; set; }
 
 		bool DataWrite { get; set; }
+
+        List<string> Tags { get; set; }
 	}
 }

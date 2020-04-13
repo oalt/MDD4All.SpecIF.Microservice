@@ -1,15 +1,20 @@
 ﻿/*
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
+using Newtonsoft.Json;
+using System.Collections.Generic;
+
 namespace MDD4All.SpecIF.DataModels.Service
 {
 	public class SpecIfServiceDescription : ISpecIfServiceDescription
 	{
 		public string ServiceName { get; set; }
 
+        [JsonIgnore]
 		public string ServiceAddress { get; set; }
 
-		public int ServicePort { get; set; }
+        [JsonIgnore]
+        public int ServicePort { get; set; }
 
 		public string ServiceDescription { get; set; }
 
@@ -28,5 +33,7 @@ namespace MDD4All.SpecIF.DataModels.Service
 		public string ServiceNativeAccess { get; set; }
 
 		public string ServiceKind { get; set; }
-	}
+
+        public List<string> Tags { get; set; } = new List<string> { "SpecIF-API" };
+    }
 }

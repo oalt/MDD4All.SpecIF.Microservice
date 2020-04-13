@@ -13,27 +13,29 @@ using System.Threading.Tasks;
 
 namespace MDD4All.SpecIF.DataProvider.WebAPI
 {
-	public class SpecIfWebApiDataWriter : AbstractSpecIfDataWriter
-	{
-		private string _connectionURL;
+    public class SpecIfWebApiDataWriter : AbstractSpecIfDataWriter
+    {
+        private string _connectionURL;
 
-		private HttpClient _httpClient = new HttpClient();
+        private HttpClient _httpClient = new HttpClient();
 
-		public SpecIfWebApiDataWriter(string webApiConnectionURL, ISpecIfMetadataReader metadataReader, ISpecIfDataReader dataReader) : 
+        public SpecIfWebApiDataWriter(string webApiConnectionURL, ISpecIfMetadataReader metadataReader, ISpecIfDataReader dataReader) :
             base(metadataReader, dataReader)
-		{
-			_connectionURL = webApiConnectionURL;
-		}
+        {
+            _connectionURL = webApiConnectionURL;
+        }
 
-		public override void AddHierarchy(Node hierarchy)
-		{
-			PostDataAsync(_connectionURL + "/Hierarchy", hierarchy).Wait();
-		}
+        public override void AddHierarchy(Node hierarchy, string projectID = null)
+        {
+            PostDataAsync(_connectionURL + "/Hierarchy", hierarchy).Wait();
+        }
 
-		//public override void AddNode(Node newNode)
-		//{
-		//	PostDataAsync(_connectionURL + "/Node", newNode).Wait();
-		//}
+
+
+        //public override void AddNode(Node newNode)
+        //{
+        //	PostDataAsync(_connectionURL + "/Node", newNode).Wait();
+        //}
 
         public override void AddNode(string parentNodeID, Node newNode)
         {
@@ -46,14 +48,14 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
         }
 
         public override void AddResource(Resource resource)
-		{
-			PostDataAsync(_connectionURL + "/Resource", resource).Wait();
-		}
+        {
+            PostDataAsync(_connectionURL + "/Resource", resource).Wait();
+        }
 
-		public override void AddStatement(Statement statement)
-		{
-			PostDataAsync(_connectionURL + "/Statement", statement).Wait();
-		}
+        public override void AddStatement(Statement statement)
+        {
+            PostDataAsync(_connectionURL + "/Statement", statement).Wait();
+        }
 
         public override void DeleteProject(string projectID)
         {
@@ -61,24 +63,26 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
         }
 
         public override void InitializeIdentificators()
-		{
-			//throw new NotImplementedException();
-		}
+        {
+            //throw new NotImplementedException();
+        }
 
-    public override void MoveNode(string nodeID, string newParentID, string newSiblingId)
-    {
-      throw new NotImplementedException();
-    }
+        public override void MoveNode(string nodeID, string newParentID, string newSiblingId)
+        {
+            throw new NotImplementedException();
+        }
 
-    public override Node SaveHierarchy(Node hierarchyToUpdate, string projectID = null)
+
+
+        public override Node SaveHierarchy(Node hierarchyToUpdate)
         {
             throw new NotImplementedException();
         }
 
         public override void SaveIdentificators()
-		{
-			//throw new NotImplementedException();
-		}
+        {
+            //throw new NotImplementedException();
+        }
 
         public override Node SaveNode(Node nodeToUpdate)
         {
@@ -95,7 +99,9 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
             throw new NotImplementedException();
         }
 
-        public override void UpdateProject(DataModels.SpecIF project)
+
+
+        public override void UpdateProject(ISpecIfMetadataWriter metadataWriter, DataModels.SpecIF project)
         {
             throw new NotImplementedException();
         }
@@ -131,15 +137,15 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
         }
 
         private async Task<HttpResponseMessage> PostDataAsync<T>(string url, T data)
-		{
-			StringContent stringContent = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
-			return await _httpClient.PostAsync(url, stringContent);
-		}
+        {
+            StringContent stringContent = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
+            return await _httpClient.PostAsync(url, stringContent);
+        }
 
-		private async Task<HttpResponseMessage> PutDataAsync<T>(string url, T data)
-		{
-			StringContent stringContent = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
-			return await _httpClient.PutAsync(url, stringContent);
-		}
-	}
+        private async Task<HttpResponseMessage> PutDataAsync<T>(string url, T data)
+        {
+            StringContent stringContent = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
+            return await _httpClient.PutAsync(url, stringContent);
+        }
+    }
 }

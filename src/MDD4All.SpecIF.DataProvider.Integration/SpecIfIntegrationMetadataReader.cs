@@ -28,14 +28,17 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 
 			foreach(SpecIfServiceDescription serviceDescription in serviceDescriptions)
 			{
-				if(serviceDescription.MetadataRead == true)
-				{
-					SpecIfWebApiMetadataReader metadataReader = new SpecIfWebApiMetadataReader(serviceDescription.ServiceAddress + ":" + serviceDescription.ServicePort);
+                if (serviceDescription.ID != "{F8B21340-B442-4040-BEFE-CF455BABB3A5}")
+                {
+                    if (serviceDescription.MetadataRead == true)
+                    {
+                        SpecIfWebApiMetadataReader metadataReader = new SpecIfWebApiMetadataReader(serviceDescription.ServiceAddress + ":" + serviceDescription.ServicePort);
 
-					metadataReader.DataSourceDescription = serviceDescription;
+                        metadataReader.DataSourceDescription = serviceDescription;
 
-					_metadataReaders.Add(serviceDescription.ID, metadataReader);
-				}
+                        _metadataReaders.Add(serviceDescription.ID, metadataReader);
+                    }
+                }
 			}
 		}
 
@@ -265,7 +268,16 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 
         public override List<StatementClass> GetAllStatementClasses()
         {
-            throw new NotImplementedException();
+            List<StatementClass> result = new List<StatementClass>();
+
+            foreach (KeyValuePair<string, ISpecIfMetadataReader> reader in _metadataReaders)
+            {
+                List<StatementClass> part = reader.Value.GetAllStatementClasses();
+
+                result.AddRange(part);
+            }
+
+            return result;
         }
 
         public override List<DataType> GetAllDataTypeRevisions(string dataTypeID)

@@ -16,8 +16,6 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 
         void DeleteProject(string projectID);
 
-		Resource CreateResource(Key resourceClassKey);
-
 		void AddResource(Resource resource);
 
 		Resource SaveResource(Resource resource, string projectID = null);

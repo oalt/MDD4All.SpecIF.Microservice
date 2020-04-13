@@ -27,7 +27,7 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 
 		public override List<DataType> GetAllDataTypes()
 		{
-			Task<List<DataType>> task = GetDataListAsync<DataType>("/SpecIF/DataType");
+			Task<List<DataType>> task = GetDataListAsync<DataType>("/specif/v1.0/dataTypes");
 			task.Wait();
 
 			return task.Result;
@@ -36,7 +36,7 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 
 		public override List<PropertyClass> GetAllPropertyClasses()
 		{
-			Task<List<PropertyClass>> task = GetDataListAsync<PropertyClass>("/SpecIF/PropertyClass");
+			Task<List<PropertyClass>> task = GetDataListAsync<PropertyClass>("/specif/v1.0/propertyClasses");
 			task.Wait();
 
 			return task.Result;
@@ -44,7 +44,7 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 
 		public override List<ResourceClass> GetAllResourceClasses()
 		{
-			Task<List<ResourceClass>> task = GetDataListAsync<ResourceClass>("/SpecIF/ResourceClass");
+			Task<List<ResourceClass>> task = GetDataListAsync<ResourceClass>("/specif/v1.0/resourceClasses");
 			task.Wait();
 
 			return task.Result;
@@ -55,7 +55,7 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 
 		public override ResourceClass GetResourceClassByKey(Key key)
 		{
-			Task<ResourceClass> task = GetDataByKeyAsync<ResourceClass>(key, "/SpecIF/ResourceClass");
+			Task<ResourceClass> task = GetDataByKeyAsync<ResourceClass>(key, "/specif/v1.0/resourceClasses");
 			task.Wait();
 
 			return task.Result;
@@ -63,7 +63,7 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 
 		public override StatementClass GetStatementClassByKey(Key key)
 		{
-			Task<StatementClass> task = GetDataByKeyAsync<StatementClass>(key, "/SpecIF/StatementClass");
+			Task<StatementClass> task = GetDataByKeyAsync<StatementClass>(key, "/specif/v1.0/statementClasses");
 			task.Wait();
 
 			return task.Result;
@@ -71,7 +71,7 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 
 		public override PropertyClass GetPropertyClassByKey(Key key)
 		{
-			Task<PropertyClass> task = GetDataByKeyAsync<PropertyClass>(key, "/SpecIF/PropertyClass");
+			Task<PropertyClass> task = GetDataByKeyAsync<PropertyClass>(key, "/specif/v1.0/propertyClasses");
 			task.Wait();
 
 			return task.Result;
@@ -164,7 +164,10 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 
         public override List<StatementClass> GetAllStatementClasses()
         {
-            throw new NotImplementedException();
+            Task<List<StatementClass>> task = GetDataListAsync<StatementClass>("/specif/v1.0/statementClasses");
+            task.Wait();
+
+            return task.Result;
         }
 
         public override List<DataType> GetAllDataTypeRevisions(string dataTypeID)

@@ -187,7 +187,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
             };
 
             Property nameProperty = new Property("dcterms:title",
-                                         "PC-Name",
+                                         new Key("PC-Name", "1"),
                                          title,
                                          SpecIfGuidGenerator.CreateNewSpecIfGUID(),
                                          DateTime.Now,
@@ -211,7 +211,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
             };
 
             Property nameProperty = new Property("dcterms:title", 
-                                         "PC-Name", 
+                                         new Key("PC-Name", "1"), 
                                          Value.ToSimpleTextString(propertyClass.Title) + " [Property Class]", 
                                          SpecIfGuidGenerator.CreateNewSpecIfGUID(), 
                                          DateTime.Now, 
@@ -228,7 +228,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
             description += "<dd>" + propertyClass.DataType + "</dd>";
 
             Property descriptionProperty = new Property("dcterms:description",
-                                         "PC-Description",
+                                         new Key("PC-Description", "1"),
                                          description,
                                          SpecIfGuidGenerator.CreateNewSpecIfGUID(),
                                          DateTime.Now,
@@ -251,7 +251,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
             };
 
             Property nameProperty = new Property("dcterms:title",
-                                         "PC-Name",
+                                         new Key("PC-Name", "1"),
                                          Value.ToSimpleTextString(resourceClass.Title) + " [Resource Class]",
                                          SpecIfGuidGenerator.CreateNewSpecIfGUID(),
                                          DateTime.Now,
@@ -274,7 +274,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
             }
 
             Property descriptionProperty = new Property("dcterms:description",
-                                         "PC-Description",
+                                         new Key("PC-Description", "1"),
                                          resourceDescription,
                                          SpecIfGuidGenerator.CreateNewSpecIfGUID(),
                                          DateTime.Now,
@@ -297,7 +297,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
             };
 
             Property nameProperty = new Property("dcterms:title",
-                                         "PC-Name",
+                                         new Key("PC-Name", "1"),
                                          Value.ToSimpleTextString(statementClass.Title) + " [Statement Class]",
                                          SpecIfGuidGenerator.CreateNewSpecIfGUID(),
                                          DateTime.Now,
@@ -320,7 +320,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
             }
 
             Property descriptionProperty = new Property("dcterms:description",
-                                         "PC-Description",
+                                         new Key("PC-Description", "1"),
                                          resourceDescription,
                                          SpecIfGuidGenerator.CreateNewSpecIfGUID(),
                                          DateTime.Now,

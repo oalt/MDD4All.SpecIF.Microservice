@@ -255,7 +255,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
             return result;
         }
 
-        private async Task<JwtAccessToken> GenerateToken(ApplicationUser user, int expireMinutes = 20)
+        private async Task<JwtAccessToken> GenerateToken(ApplicationUser user, int expireMinutes = 480)
         {
 
             SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfigurationReader.GetSecret()));

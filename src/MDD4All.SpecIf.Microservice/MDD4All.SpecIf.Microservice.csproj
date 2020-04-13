@@ -14,9 +14,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="MDD4All.SpecIf.Microservice.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="3.1.6" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="MvvmLightLibs" Version="5.4.1.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="4.0.1" />
   </ItemGroup>
@@ -38,8 +43,11 @@
 -->
   <ItemGroup>
     <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.Contracts\MDD4All.SpecIF.DataProvider.Contracts.csproj" />
+    <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.Integration\MDD4All.SpecIF.DataProvider.Integration.csproj" />
+    <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.Jira\MDD4All.SpecIF.DataProvider.Jira.csproj" />
     <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.MongoDB\MDD4All.SpecIF.DataProvider.MongoDB.csproj" />
     <ProjectReference Include="..\MDD4All.SpecIF.ServiceDataProvider\MDD4All.SpecIF.ServiceDataProvider.csproj" />
+    <ProjectReference Include="..\MDD4All.SpecIF.ViewModels.IntegrationService\MDD4All.SpecIF.ViewModels.IntegrationService.csproj" />
   </ItemGroup>
 
 </Project>

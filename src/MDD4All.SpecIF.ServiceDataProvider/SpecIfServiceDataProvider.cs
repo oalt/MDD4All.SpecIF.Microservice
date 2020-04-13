@@ -45,7 +45,7 @@ namespace MDD4All.SpecIF.ServiceDataProvider
 		{
 			List<SpecIfServiceDescription> result = new List<SpecIfServiceDescription>();
 
-			ConsulClient consulClient = new ConsulClient(c => c.Address = new Uri(_consulURL));
+			ConsulClient consulClient = new ConsulClient(/*c => c.Address = new Uri(_consulURL)*/);
 
 			try
 			{
@@ -53,7 +53,7 @@ namespace MDD4All.SpecIF.ServiceDataProvider
 
 				foreach (KeyValuePair<string, AgentService> service in services)
 				{
-					bool isSpecIfApi = service.Value.Tags.Any(tag => tag == "SpecIF-Service");
+					bool isSpecIfApi = service.Value.Tags.Any(tag => tag == "SpecIF-API");
 
 					if (isSpecIfApi)
 					{
@@ -68,7 +68,8 @@ namespace MDD4All.SpecIF.ServiceDataProvider
 						if (serviceDescription != null)
 						{
 
-							//serviceDescription.ServiceURL = serviceURL;
+							serviceDescription.ServiceAddress = service.Value.Address;
+                            serviceDescription.ServicePort = service.Value.Port;
 
 							result.Add(serviceDescription);
 
@@ -88,7 +89,7 @@ namespace MDD4All.SpecIF.ServiceDataProvider
 
 			try
 			{
-				string answer = await _httpClient.GetStringAsync(url + "/SpecIF/ServiceDescription");
+				string answer = await _httpClient.GetStringAsync(url + "/specif/v1.0/serviceDescription");
 
 				result = JsonConvert.DeserializeObject<SpecIfServiceDescription>(answer);
 			}

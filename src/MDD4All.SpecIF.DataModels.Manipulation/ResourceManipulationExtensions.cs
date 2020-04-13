@@ -40,13 +40,18 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 			return result;
 		}
 
-		public static void SetPropertyValue(this Resource resource, string propertyTitle, Value value, ISpecIfMetadataReader dataProvider)
+		public static void SetPropertyValue(this Resource resource, string propertyTitle, object value, ISpecIfMetadataReader dataProvider)
 		{
 			bool propertyFound = false;
 
 			foreach(Property property in resource.Properties)
 			{
-                string title = ""; // property.Title.LanguageValues.First(v => v.Text == propertyTitle).Text;
+                string title = ""; 
+
+                if(property.Title is string)
+                {
+                    title = property.Title.ToString();
+                }
 
 				if (title == propertyTitle)
 				{
@@ -72,9 +77,14 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 
 						if(propertyClass != null)
 						{
-                            string title = ""; // propertyClass.Title.LanguageValues[0].Text;
+                            string title = "";
 
-							if (title == propertyTitle)
+                            if (propertyClass.Title is string)
+                            {
+                                title = propertyClass.Title.ToString();
+                            }
+
+                            if (title == propertyTitle)
 							{
 								matchingPropertyClass = propertyClass;
 								matchingPropertyKey = propertyKey;
@@ -110,7 +120,7 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 			{
 				foreach (Property property in resource.Properties)
 				{
-                    string title = ""; // property.Title.LanguageValues[0].Text;
+                    string title = property.Title.ToString();
 
 					if (title == propertyTitle)
 					{

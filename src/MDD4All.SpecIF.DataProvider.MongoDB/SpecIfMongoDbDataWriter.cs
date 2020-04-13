@@ -15,7 +15,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 {
 	public class SpecIfMongoDbDataWriter : AbstractSpecIfDataWriter
 	{
-		private const string DATABASE_NAME = "specif";
+		private string DATABASE_NAME = "specif";
 
 		private const string SPECIF_ADMIN_DATABASE_NAME = "specifAdmin";
 
@@ -28,8 +28,13 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
         private MongoDBDataAccessor<SpecIfIdentifier> _identifierMongoDbAccessor;
 
 		public SpecIfMongoDbDataWriter(string connectionString, ISpecIfMetadataReader metadataReader, 
-            ISpecIfDataReader dataReader) : base(metadataReader, dataReader)
+            ISpecIfDataReader dataReader, string dataBase = "specif") : base(metadataReader, dataReader)
 		{
+            if(dataBase != null)
+            {
+                DATABASE_NAME = dataBase;
+            }
+
 			_resourceMongoDbAccessor = new MongoDBDataAccessor<Resource>(connectionString, DATABASE_NAME);
 
 			_statementMongoDbAccessor = new MongoDBDataAccessor<Statement>(connectionString, DATABASE_NAME);

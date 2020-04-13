@@ -28,41 +28,6 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
             _dataReader = dataReader;
 		}
 
-		public Resource CreateResource(Key resourceTypeID)
-		{
-			Resource result = new Resource();
-
-			ResourceClass resourceType = _metadataReader.GetResourceClassByKey(resourceTypeID);
-
-			result.ID = SpecIfGuidGenerator.CreateNewSpecIfGUID();
-			result.Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID();
-            result.Properties = new List<Property>();
-
-			result.Class = resourceTypeID;
-
-			foreach (Key propertyClassReference in resourceType.PropertyClasses)
-			{
-
-				PropertyClass propertyClass = _metadataReader.GetPropertyClassByKey(propertyClassReference);
-
-				Property property = new Property()
-				{
-					ID = SpecIfGuidGenerator.CreateNewSpecIfGUID(),
-					Title = propertyClass.Title,
-					PropertyClass = propertyClassReference,
-					Description = propertyClass.Description
-				};
-
-				result.Properties.Add(property);
-			}
-
-			result.ChangedAt = DateTime.Now;
-			// TODO changeBy implementation
-			result.ChangedBy = "";
-
-			return result;
-		}
-
 		public long GetNextSpecIfIdentifier(string prefix)
 		{
 			long result = 0;

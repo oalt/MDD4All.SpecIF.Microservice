@@ -678,19 +678,19 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			operationResource.Properties = new List<Property>();
 
             operationResource.Properties.Add(
-                new Property("dcterms:title", "PC-Name", operation.Name,
+                new Property("dcterms:title", new Key("PC-Name", "1"), operation.Name,
                              EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID + "_NAME"),
                              eaElement.Modified, eaElement.Author));
 
 
             operationResource.Properties.Add(
-                new Property("dcterms:description", "PC-Text", operation.Notes,
+                new Property("dcterms:description", new Key("PC-Text", "1"), operation.Notes,
                              EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID + "_NOTES"),
                              eaElement.Modified, eaElement.Author));
 
 
             operationResource.Properties.Add(
-                new Property("dcterms:type", "PC-Type", "OMG:UML:2.5.1:Operation",
+                new Property("dcterms:type", new Key("PC-Type", "1"), "OMG:UML:2.5.1:Operation",
                              EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID + "_TYPE"),
                              eaElement.Modified, eaElement.Author));
 				
@@ -739,7 +739,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			}
 
             operationResource.Properties.Add(
-                    new Property("SpecIF:Stereotype", "PC-Stereotype", stereotypeValue,
+                    new Property("SpecIF:Stereotype", new Key("PC-Stereotype", "1"), stereotypeValue,
                                  EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID + "_STEREOTYPE"),
                                  eaElement.Modified, eaElement.Author));
 					
@@ -922,7 +922,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
                 if(!string.IsNullOrEmpty(identifierValue))
                 {
                     elementResource.Properties.Add(
-                        new Property("dcterms:identifier", "PC-VisibleId", identifierValue,
+                        new Property("dcterms:identifier", new Key("PC-VisibleId", "1"), identifierValue,
                                      EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID + "_IDENTIFIER"),
                                      eaElement.Modified, eaElement.Author)
                         );

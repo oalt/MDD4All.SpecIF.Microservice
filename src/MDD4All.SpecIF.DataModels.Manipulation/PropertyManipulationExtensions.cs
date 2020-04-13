@@ -108,6 +108,10 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 			}
 			else
 			{
+                if(property.Value is string)
+                {
+                    result = property.Value as string;
+                }
 				//LanguageValue languageValue = property.Value.LanguageValues.FirstOrDefault(val => val.Language == language);
 				
 				//if(languageValue == null)

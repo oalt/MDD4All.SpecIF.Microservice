@@ -9,7 +9,7 @@ namespace MDD4All.SpecIf.Microservice.Helpers
     {
         public JwtConfigurationCreator()
         {
-            MongoDBDataAccessor<JwtConfiguration> jwtMongoDbAccessor = new MongoDBDataAccessor<JwtConfiguration>("mongodb://localhost:27017", "specifAdmin");
+            MongoDBDataAccessor<JwtConfiguration> jwtMongoDbAccessor = new MongoDBDataAccessor<JwtConfiguration>("mongodb+srv://admin:kBjDfIkGO6NYDeA0@specifcluster-ausx9.azure.mongodb.net/test?retryWrites=true", "specifAdmin");
 
             JwtConfiguration jwtConfiguration = new JwtConfiguration()
             {
