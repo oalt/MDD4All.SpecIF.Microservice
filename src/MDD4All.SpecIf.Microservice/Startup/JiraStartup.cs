@@ -27,6 +27,8 @@ namespace MDD4All.SpecIf.Microservice.Startup
 
             string dataConnection = Configuration.GetValue<string>("dataConnection");
 
+            string jiraAuth = Configuration.GetValue<string>("JiraAuthorization");
+
             if (!string.IsNullOrEmpty(dataSource) && !string.IsNullOrEmpty(dataConnection))
             {
 
@@ -74,7 +76,7 @@ namespace MDD4All.SpecIf.Microservice.Startup
 
                 //services.AddScoped<ISpecIfDataReader>(dataProvider => new SpecIfMongoDbDataReader(dataConnection));
 
-                services.AddScoped<ISpecIfDataReader>(dataProvider => new SpecIfJiraDataReader("https://mdd4all.atlassian.net", "Basic b2xpdmVyLmFsdEBtZGQ0YWxsLmRlOnF6eVo0cGg5d1JmRWFWRFFVdTdwREY4OQ==",
+                services.AddScoped<ISpecIfDataReader>(dataProvider => new SpecIfJiraDataReader("https://mdd4all.atlassian.net", jiraAuth,
                     new SpecIfMongoDbMetadataReader(dataConnection)));
 
 
