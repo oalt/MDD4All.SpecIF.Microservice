@@ -150,7 +150,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// <param name="id">The resource class ID.</param>
         [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]
-        public ActionResult DeleteResourceClass(string id)
+        public ActionResult DeleteResourceClass(string id, [FromQuery]string revision)
         {
             ActionResult result = NotFound();
 

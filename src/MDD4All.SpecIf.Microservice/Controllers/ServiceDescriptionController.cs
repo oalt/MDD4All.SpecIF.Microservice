@@ -15,6 +15,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
     [Produces("application/json")]
     [Route("specif/v{version:apiVersion}/serviceDescription")]
     [ApiController]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class ServiceDescriptionController : Controller
     {
 		private ISpecIfServiceDescription _serviceDescription;

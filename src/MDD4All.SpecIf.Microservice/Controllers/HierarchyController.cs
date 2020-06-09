@@ -61,7 +61,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         {
             ActionResult<List<Node>> result = NotFound();
 
-            result = _dataReader.GetAllHierarchyRootNodes();
+            result = _dataReader.GetAllHierarchyRootNodes(project);
 
             return result;
         }
@@ -117,23 +117,33 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         }
 
         /// <summary>
-        /// Add a new hierarchy.
+        /// Create a hierarchy (sub-tree) with supplied nodes; the supplied ID must be unique. 
+        /// If no ID is supplied, it is generated before insertion. 
+        /// Query ?parent=nodeId - the sub-tree will be inserted as first child; 
+        /// query ?predecessor=nodeId - the sub-tree will be inserted after the specified node; 
+        /// no query - the sub-tree will be inserted as first element at root level. 
+        /// Without query string, the node (sub-tree) is inserted as first element at root level.
         /// </summary>
         /// <param name="node">The hierarchy data to add.</param>
-        /// <param name="parentNodeId">An optional parent node id.</param>
+        /// <param name="parent">An optional parent node id. The sub-tree will be inserted as first child.</param>
+        /// <param name="predecessor">An optional prdecessor node id. The sub-tree will be inserted after the specified node.</param>
+        /// <param name="projectId">The projectId. If the id is given, the new hierarchy will be added to the specific project. 
+        /// Only usfull for new hierarchies - no parent or predecessor given.
+        /// </param>
         [Authorize(Roles = "Editor")]
         [HttpPost]
         public void CreateNewHierarchy([FromBody]Node node, 
-                                       [FromQuery]string parentNodeId,
+                                       [FromQuery]string parent,
+                                       [FromQuery]string predecessor,
                                        [FromQuery]string projectId)
         {
-            if (string.IsNullOrEmpty(parentNodeId))
+            if (string.IsNullOrEmpty(parent))
             {
                 _dataWriter.AddHierarchy(node, projectId);
             }
             else
             {
-                _dataWriter.AddNode(parentNodeId, node);
+                _dataWriter.AddNode(parent, node);
             }
         }
 
@@ -141,11 +151,19 @@ namespace MDD4All.SpecIf.Microservice.Controllers
 
         /// <summary>
         /// Update an existing hierarchy node.
+        /// the supplied ID must exist somewhere in any hierarchy. 
+        /// Query ?parent=nodeId - the sub-tree will be moved and inserted as first child; 
+        /// query ?predecessor=nodeId - the sub-tree will be moved and inserted after the specified node. 
+        /// Without query string, the node (sub-tree) is not moved.
         /// </summary>
         /// <param name="node"></param>
+        /// <param name="parent">An optional parent node id. The sub-tree will be inserted as first child.</param>
+        /// <param name="predecessor">An optional prdecessor node id. The sub-tree will be inserted after the specified node.</param>
         [Authorize(Roles = "Editor")]
         [HttpPut]
-        public void UpdateHierarchy([FromBody]Node node)
+        public void UpdateHierarchy([FromBody]Node node,
+                                    [FromQuery]string parent,
+                                    [FromQuery]string predecessor)
         {
             _dataWriter.SaveHierarchy(node);
         }
@@ -165,39 +183,39 @@ namespace MDD4All.SpecIf.Microservice.Controllers
             return result;
         }
 
-        /// <summary>
-        /// Moves an existing node and all child nodes to a new parent.
-        /// </summary>
-        /// <param name="nodeId">The id of the node to move.</param>
-        /// <param name="newParentId">The id of the new parent.</param>
-        /// <param name="newSiblingId">The id of the new sibling. 
-        /// If nothing is set the node will be the first element in the new location list.
-        /// </param>
-        [Authorize(Roles = "Editor")]
-        [HttpPut("move")]
-        public ActionResult MoveNode([FromQuery]string nodeId, [FromQuery]string newParentId, [FromQuery]string newSiblingId)
-        {
-            ActionResult result = new OkResult();
+        ///// <summary>
+        ///// Moves an existing node and all child nodes to a new parent.
+        ///// </summary>
+        ///// <param name="nodeId">The id of the node to move.</param>
+        ///// <param name="newParentId">The id of the new parent.</param>
+        ///// <param name="newSiblingId">The id of the new sibling. 
+        ///// If nothing is set the node will be the first element in the new location list.
+        ///// </param>
+        //[Authorize(Roles = "Editor")]
+        //[HttpPut("move")]
+        //public ActionResult MoveNode([FromQuery]string nodeId, [FromQuery]string newParentId, [FromQuery]string newSiblingId)
+        //{
+        //    ActionResult result = new OkResult();
 
-            if (!string.IsNullOrEmpty(nodeId) && !string.IsNullOrEmpty(newParentId))
-            {
-                try
-                {
-                    _dataWriter.MoveNode(nodeId, newParentId, newSiblingId);
-                }
-                catch (Exception exception)
-                {
-                    result = new BadRequestObjectResult(exception);
-                }
+        //    if (!string.IsNullOrEmpty(nodeId) && !string.IsNullOrEmpty(newParentId))
+        //    {
+        //        try
+        //        {
+        //            _dataWriter.MoveNode(nodeId, newParentId, newSiblingId);
+        //        }
+        //        catch (Exception exception)
+        //        {
+        //            result = new BadRequestObjectResult(exception);
+        //        }
 
-            }
-            else
-            {
-                result = new BadRequestResult();
-            }
+        //    }
+        //    else
+        //    {
+        //        result = new BadRequestResult();
+        //    }
 
 
-            return result;
-        }
+        //    return result;
+        //}
     }
 }

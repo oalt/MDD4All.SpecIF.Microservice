@@ -106,8 +106,9 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// <description>The new resource is added as a new element with a specific revision 
         /// and a specific branch, depended on the given information.
         /// The new resource element is returned as response.</description>
-        /// <param name="resource"></param>
-        /// <returns></returns>
+        /// <param name="resource">The resource data.</param>
+        /// <param name="projectID">The optional project ID. If a project ID is not given, the data is added to a default project.</param>
+        /// <returns>The resulting resource data element.</returns>
         [Authorize(Roles = "Editor")]
         [HttpPost]
         [ProducesResponseType(typeof(Resource), 201)]

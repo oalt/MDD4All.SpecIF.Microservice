@@ -54,9 +54,10 @@ namespace MDD4All.SpecIf.Microservice.Controllers
 
 
         /// <summary>
-        /// Returns the main/latest revision of the statement class with the given ID. 
+        /// Returns the statement class with the given ID and revision. 
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">The statement class ID.</param>
+        /// <param name="revision">The statement class revision identifier.</param>
         /// <returns></returns>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(StatementClass), 200)]
@@ -149,7 +150,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// <param name="id">The statement class ID.</param>
         [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]
-        public ActionResult DeleteStatementClass(string id)
+        public ActionResult DeleteStatementClass(string id, [FromQuery]string revision)
         {
             ActionResult result = NotFound();
 

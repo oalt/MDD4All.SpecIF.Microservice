@@ -130,12 +130,11 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// <summary>
         /// Update the property class; the supplied ID must exist.
         /// </summary>
-        /// <param name="id">The property class ID.</param>
-        /// <param name="revision">The property class revision.</param>
+        /// <param name="propertyClass">The property class data to update.</param>
         /// <returns>The updated property class element.</returns>
         [Authorize(Roles = "Administrator")]
-        [HttpPut("{id}")]
-        public ActionResult UpdatePropertyClass(string id, [FromQuery]string revision)
+        [HttpPut]
+        public ActionResult UpdatePropertyClass([FromQuery]PropertyClass propertyClass)
         {
             ActionResult result = NotFound();
 

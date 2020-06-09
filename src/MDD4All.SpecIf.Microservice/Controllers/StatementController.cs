@@ -30,11 +30,19 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// Returns all statements with all available revisions.
         /// With the optional project ID only the satatements for the project are returned.
         /// </summary>
-        /// <param name="projectID">The project ID.</param>
+        /// <param name="projectID">The optional project ID to filter statements by project.</param>
+        /// <param name="objectID">The optional objectID to filter statements only targeting the element with the given id.</param>
+        /// <param name="objectRevision">An optional object revision. Only usefull toghther with objectId.</param>
+        /// <param name="subjectID">The optional subjectID to filter statements only sourcing the element with the given id.</param>
+        /// <param name="subjectRevision">An optional subject revision. Only usefull toghther with subjectID.</param>
         /// <returns></returns>
         [HttpGet()]
         [ProducesResponseType(typeof(List<Statement>), 200)]
-        public ActionResult<List<Statement>> GetAllStatements([FromQuery]string projectID)
+        public ActionResult<List<Statement>> GetAllStatements([FromQuery]string projectID, 
+                                                              [FromQuery]string subjectID,
+                                                              [FromQuery]string subjectRevision,
+                                                              [FromQuery]string objectID,
+                                                              [FromQuery]string objectRevision)
         {
             ActionResult<List<Statement>> result = NotFound();
 
@@ -79,81 +87,6 @@ namespace MDD4All.SpecIf.Microservice.Controllers
             return result;
         }
 
-        
-
-        /// <summary>
-        /// Returns all statements for the subject resource with the given ID and the given revision.
-        /// </summary>
-        /// <param name="subjectId"></param>
-        /// <param name="revision">The subject revision.</param>
-        /// <returns></returns>
-        [HttpGet("subject/{subjectId}")]
-        [ProducesResponseType(typeof(List<Statement>), 200)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(400)]
-        public ActionResult<List<Statement>> GetStatementsBySubject(string subjectId, [FromQuery]string revision)
-        {
-            ActionResult<List<Statement>> result = NotFound();
-
-
-
-            return result;
-        }
-
-
-       
-
-        /// <summary>
-        /// Returns all statements for the object resource with the given ID and the given object revision.
-        /// </summary>
-        /// <param name="objectId"></param>
-        /// <param name="revision">The object revision.</param>
-        /// <returns></returns>
-        [HttpGet("object/{objectId}")]
-        [ProducesResponseType(typeof(List<Statement>), 200)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(400)]
-        public ActionResult<List<Statement>> GetStatementsByObject(string objectId, [FromQuery]string revision)
-        {
-            ActionResult<List<Statement>> result = NotFound();
-
-
-
-            return result;
-        }
-
-        /// <summary>
-        /// Returns all statements for a resource with a given ID and main/latest revision - resource is uses as subject OR object for the statement.
-        /// </summary>
-        /// <param name="resourceId">The resource element ID.</param>
-        /// <param name="revision">The resource revision.</param>
-        /// <returns>A list of statements for the resource.</returns>
-        [HttpGet("resource/{resourceId}")]
-        [ProducesResponseType(typeof(List<Statement>), 200)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(400)]
-        public ActionResult<List<Statement>> GetAllStatementsForResource(string resourceId, [FromQuery]string revision)
-        {
-            
-            ActionResult<List<Statement>> result = NotFound();
-
-            if (!string.IsNullOrEmpty(resourceId) )
-            {
-                if (!string.IsNullOrEmpty(revision))
-                {
-                    string rev = revision.Replace("%2F", "/");
-
-                    List<Statement> dbResult = _specIfDataReader.GetAllStatementsForResource(new Key() { ID = resourceId, Revision = rev });
-
-                    if (dbResult != null)
-                    {
-                        result = dbResult;
-                    }
-                }
-            }
-
-            return result;
-        }
 
         /// <summary>
         /// Returns all available revisions for the statement wit the given ID.
@@ -186,16 +119,16 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// <summary>
         /// Create a statement; the supplied ID must be unique in the project scope.
         /// </summary>
-        /// <param name="statemenet">The statement to create.</param>
+        /// <param name="statement">The statement to create.</param>
         /// <returns>The created statement data.</returns>
         [Authorize(Roles = "Editor")]
         [HttpPost]
         [ProducesResponseType(typeof(Statement), 201)]
         [ProducesResponseType(400)]
-        public ActionResult<Statement> CreateNewStatement([FromBody]Statement statemenet)
+        public ActionResult<Statement> CreateNewStatement([FromBody]Statement statement)
         {
 
-            ActionResult<Statement> result = _specIfDataWriter.SaveStatement(statemenet);
+            ActionResult<Statement> result = _specIfDataWriter.SaveStatement(statement);
 
             if(result == null)
             {

@@ -49,15 +49,16 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         }
 
         /// <summary>
-        /// Return the project with the given ID; to limit the size only ??? are delivered.
+        /// Return the project with the given ID.
         /// </summary>
         /// <param name="id">The project id.</param>
-        /// <param name="hierarchyFilter">An optional list of hierrahcy IDs to limit the output of selected hierarchies.</param>
-        /// <returns>The project as SpecIF.</returns>
+        /// <param name="hierarchyFilter">An optional comma seperated list of hierarchy root node IDs to limit the output of selected hierarchies.</param>
+        /// <param name="includeMetedata">Set to true if the metadata should be included (e.g. Resource Classes etc.)</param>
+        /// <returns>The project as SpecIF JSON.</returns>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(SpecIF.DataModels.SpecIF), 201)]
         public ActionResult<SpecIF.DataModels.SpecIF> GetProjectByID(string id, 
-                                                                    [FromQuery] List<Key> hierarchyFilter,
+                                                                    [FromQuery] string hierarchyFilter,
                                                                     [FromQuery] bool includeMetedata = true)
         {
             ActionResult result = BadRequest();
@@ -66,7 +67,25 @@ namespace MDD4All.SpecIf.Microservice.Controllers
             {
                 if (id != null)
                 {
-                    SpecIF.DataModels.SpecIF specif = _specIfDataReader.GetProject(_metadataReader, id, hierarchyFilter, includeMetedata);
+                    List<Key> hierarchyKeys = new List<Key>();
+
+                    if (hierarchyFilter != null)
+                    {
+                        char separator = ',';
+
+                        string[] splitResult = hierarchyFilter.Split(separator);
+
+                        foreach(string hierarchyId in splitResult)
+                        {
+                            if(!string.IsNullOrEmpty(hierarchyId))
+                            {
+                                hierarchyKeys.Add(new Key(hierarchyId));
+                            }
+                        }
+                    }
+
+
+                    SpecIF.DataModels.SpecIF specif = _specIfDataReader.GetProject(_metadataReader, id, hierarchyKeys, includeMetedata);
                     result = new OkObjectResult(specif);
                 }
             }
@@ -111,9 +130,9 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// <param name="value">The SpecIF data to include.</param>
         /// <returns></returns>
         [Authorize(Roles = "Editor")]
-        [HttpPut("{id}")]
+        [HttpPut]
         [ProducesResponseType(200)]
-        public ActionResult UpdateProject(string id, [FromBody]SpecIF.DataModels.SpecIF value)
+        public ActionResult UpdateProject([FromBody]SpecIF.DataModels.SpecIF value)
         {
             ActionResult result = BadRequest();
 
