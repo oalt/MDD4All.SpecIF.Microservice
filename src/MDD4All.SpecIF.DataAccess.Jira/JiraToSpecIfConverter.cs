@@ -66,6 +66,7 @@ namespace MDD4All.SpecIF.DataAccess.Jira
             result.SetPropertyValue("dcterms:title", jiraIssue.Fields.Summary, _metadataReader);
 
             string descriptionHtml = _markdown.Transform(jiraIssue.Fields.Description);
+
             result.SetPropertyValue("dcterms:description", descriptionHtml, _metadataReader);
 
             return result;

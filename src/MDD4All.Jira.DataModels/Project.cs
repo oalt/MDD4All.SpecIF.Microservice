@@ -19,6 +19,9 @@ namespace MDD4All.Jira.DataModels
         [JsonProperty("key")]
         public string Key { get; set; }
 
+        [JsonProperty("issueTypes")]
+        public List<IssueType> IssueTypes { get; set; } = new List<IssueType>();
+
         [JsonProperty("name")]
         public string Name { get; set; }
 

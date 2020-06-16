@@ -1,4 +1,6 @@
 ﻿using MDD4All.SpecIf.Microservice.RightsManagement;
+using MDD4All.SpecIF.DataIntegrator.Contracts;
+using MDD4All.SpecIF.DataIntegrator.KafkaListener;
 using MDD4All.SpecIF.DataModels.RightsManagement;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using MDD4All.SpecIF.DataProvider.Contracts.Authorization;
@@ -80,7 +82,9 @@ namespace MDD4All.SpecIf.Microservice.Startup
                 SpecIfIntegrationDataReader dataReader = new SpecIfIntegrationDataReader(specIfServiceDataProvider);
                 services.AddSingleton<ISpecIfDataReader>(dataReader);
 
-                SpecIfIntegrationDataWriter dataWriter = new SpecIfIntegrationDataWriter(specIfServiceDataProvider, metadataReader, dataReader);
+                string integrationApiKey = Configuration.GetValue<string>("IntegrationApiKey");
+
+                SpecIfIntegrationDataWriter dataWriter = new SpecIfIntegrationDataWriter(integrationApiKey, specIfServiceDataProvider, metadataReader, dataReader);
                 services.AddSingleton<ISpecIfDataWriter>(dataWriter);
 
 
@@ -93,7 +97,11 @@ namespace MDD4All.SpecIf.Microservice.Startup
 
                 dataReader.ActivateCache(cacheDataWriter, cacheDataReader);
 
+                services.AddSignalR();
 
+                KafkaSpecIfEventService kafkaSpecIfEventService = new KafkaSpecIfEventService("localhost:9092", "event-listener-group");
+
+                services.AddSingleton<ISpecIfEventService>(kafkaSpecIfEventService);
 
             }
         }

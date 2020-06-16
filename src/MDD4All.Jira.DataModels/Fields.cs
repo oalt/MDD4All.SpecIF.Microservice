@@ -69,7 +69,8 @@ namespace MDD4All.Jira.DataModels
 
         public List<object> versions { get; set; }
 
-        public List<Issuelink> issuelinks { get; set; }
+        [JsonProperty("issuelinks")]
+        public List<IssueLink> IssueLinks { get; set; }
 
         public object assignee { get; set; }
 

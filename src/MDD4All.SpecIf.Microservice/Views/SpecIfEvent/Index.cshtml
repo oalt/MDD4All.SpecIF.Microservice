@@ -1,0 +1,46 @@
+﻿@using MDD4All.SpecIF.ViewModels.SpecIfEvent
+
+@model List<SpecIfEventViewModel>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    ViewData["Title"] = "SpecIfEventView";
+}
+
+<h1>SpecIF Event Log</h1>
+
+<table class="table table-hover">
+
+    <thead>
+        <tr>
+            <th>Timestamp</th>
+            <th>Origin</th>
+            <th>Event Type</th>
+            <th>Class</th>
+            <th>Key</th>
+            
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (SpecIfEventViewModel specifEvent in Model)
+        {
+            <tr>
+                <td>@specifEvent.Timestamp</td>
+                <td>@specifEvent.Origin</td>
+                <td>@specifEvent.EventType</td>
+                <td>@specifEvent.Class</td>
+                <td>
+                    <strong>ID:</strong>@specifEvent.ID<br />
+                    <strong>Rev.:</strong>@specifEvent.Revision
+                </td>
+                
+            </tr>
+        }
+    </tbody>
+
+</table>
+
+
+<script src="~/lib/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/SpecIfEventReveiver.js"></script>

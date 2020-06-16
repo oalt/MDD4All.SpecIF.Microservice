@@ -32,8 +32,6 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 
 		void AddNode(string parentNodeID, Node newNode);
 
-		Node SaveNode(Node nodeToUpdate);
-
         void MoveNode(string nodeID, string newParentID, string newSiblingId);
 
 		long GetNextSpecIfIdentifier(string prefix);

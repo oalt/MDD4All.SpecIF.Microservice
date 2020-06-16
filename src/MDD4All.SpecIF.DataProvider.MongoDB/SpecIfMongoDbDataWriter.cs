@@ -69,30 +69,11 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
                 parentNode.NodeReferences.Add(new Key(newNode.ID, newNode.Revision));
 
-                SaveNode(parentNode);
+                SaveHierarchy(parentNode);
             }
             
 
         }
-
-        public override Node SaveNode(Node nodeToUpdate)
-		{
-            Node result = null;
-
-            Node existingNode = _nodeMongoDbAccessor.GetItemById(nodeToUpdate.ID + "_R_" + nodeToUpdate.Revision);
-
-            if (existingNode != null)
-            {
-                if(existingNode.IsHierarchyRoot)
-                {
-                    nodeToUpdate.IsHierarchyRoot = true;
-                }
-            }
-
-			_nodeMongoDbAccessor.Update(nodeToUpdate, nodeToUpdate.Id);
-
-            return result;
-		}
 
         public override void MoveNode(string nodeID, string newParentID, string newSiblingId)
         {
@@ -141,11 +122,11 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
                 newParent.NodeReferences.Insert(insertIndex, new Key(nodeToMove.ID, nodeToMove.Revision));
 
-                SaveNode(oldParent);
+                SaveHierarchy(oldParent);
 
                 if (oldParent.Id != newParent.Id)
                 {
-                    SaveNode(newParent);
+                    SaveHierarchy(newParent);
                 }
                 
 
@@ -226,7 +207,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
             return result;
         }
 
-		public override Resource SaveResource(Resource resource, string projectID = null)
+        public override Resource SaveResource(Resource resource, string projectID = null)
 		{
             Resource result = null;
 

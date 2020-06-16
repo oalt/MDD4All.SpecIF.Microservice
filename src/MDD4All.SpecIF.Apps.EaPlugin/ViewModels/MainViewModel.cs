@@ -1,5 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using MDD4All.SpecIF.DataIntegrator.EA;
+using MDD4All.SpecIF.DataProvider.Contracts;
 using MDD4All.SpecIF.DataProvider.EA.Converters;
 using MDD4All.SpecIF.DataProvider.File;
 using System;
@@ -13,14 +15,28 @@ namespace MDD4All.SpecIF.Apps.EaPlugin.ViewModels
     {
         private EAAPI.Repository _repository;
 
-        public MainViewModel(EAAPI.Repository repository)
+        private ISpecIfMetadataReader _metadataReader;
+
+        private ProjectIntegrator _projectIntegrator;
+
+        public MainViewModel(EAAPI.Repository repository,
+                             ISpecIfMetadataReader metadataReader)
         {
             _repository = repository;
+            _metadataReader = metadataReader;
+
+            _projectIntegrator = new ProjectIntegrator(_repository, _metadataReader);
 
             ExportToSpecIfCommand = new RelayCommand(ExecuteExportToSpecIfCommand);
+            SynchronizeProjectRootsCommand = new RelayCommand(ExecuteSynchronizeProjectRoots);
+            SynchronizeProjectHierarchyRootsCommand = new RelayCommand(ExecuteSynchronizeProjectHierarchyRoots);
+            SynchronizeHierarchyResourcesCommand = new RelayCommand(ExecuteSynchronizeHierarchyResources);
         }
 
         public ICommand ExportToSpecIfCommand { get; private set; }
+        public ICommand SynchronizeProjectRootsCommand { get; private set; }
+        public ICommand SynchronizeProjectHierarchyRootsCommand { get; private set; }
+        public ICommand SynchronizeHierarchyResourcesCommand { get; private set; }
 
         private void ExecuteExportToSpecIfCommand()
         {
@@ -58,6 +74,23 @@ namespace MDD4All.SpecIF.Apps.EaPlugin.ViewModels
                 }
             }
         }
+
+        private void ExecuteSynchronizeProjectRoots()
+        {
+            _projectIntegrator.SynchronizeProjectRoots();
+        }
+
+        private void ExecuteSynchronizeProjectHierarchyRoots()
+        {
+            _projectIntegrator.SynchronizeProjectHierarchyRoots();
+        }
+
+        private void ExecuteSynchronizeHierarchyResources()
+        {
+            _projectIntegrator.SynchronizeHierarchyResources();
+        }
+
+
 
     }
 }

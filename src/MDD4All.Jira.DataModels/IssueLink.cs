@@ -1,14 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Newtonsoft.Json;
 
 namespace MDD4All.Jira.DataModels
 {
-    public class Issuelink
+    public class IssueLink
     {
-        public string id { get; set; }
-        public string self { get; set; }
-        public Type type { get; set; }
-        public InwardIssue inwardIssue { get; set; }
+        [JsonProperty("id")]
+        public string ID { get; set; }
+
+        [JsonProperty("self")]
+        public string Self { get; set; }
+
+        [JsonProperty("type")]
+        public LinkType Type { get; set; }
+
+        [JsonProperty("inwardIssue")]
+        public InwardIssue InwardIssue { get; set; }
     }
 }

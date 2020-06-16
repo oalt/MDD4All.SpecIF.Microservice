@@ -30,7 +30,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
             {
                 result.ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID);
 
-                result.Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID();
+                result.Revision = "1";
 
                 result.ChangedAt = eaElement.Modified;
 

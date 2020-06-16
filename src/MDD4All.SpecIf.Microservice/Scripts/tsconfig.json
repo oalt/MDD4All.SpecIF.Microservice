@@ -1,0 +1,16 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "module": "None",
+    "target": "ES3",
+    "outDir": "../wwwroot/js",
+    "typeRoots": [
+      "../node_modules/@types"
+    ]
+  },
+  "exclude": [
+    "../node_modules/**",
+    "src/test.ts",
+    "**/*.spec.ts"
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "id": "_fadb9b54_b56f_4d49_bad3_ee7277d72eb0",
+  "title": "Event from Jira.",
+  "description": null,
+  "class": {
+    "id": "RC-SpecIfEvent",
+    "revision": "1"
+  },
+  "language": "en",
+  "properties": [
+    {
+      "id": "_8484da59_6a85_4597_83cd_334eb18c0609",
+      "value": "https://mdd4all.atlassian.net",
+      "title": "SpecIF:specifEventType",
+      "description": null,
+      "class": {
+        "id": "PC-SpecIfEventSource",
+        "revision": "1"
+      },
+      "revision": "87a7081b-81c0-4927-84e5-dc28abfcebb8",
+      "replaces": [],
+      "changedAt": "2020-04-09T23:30:16.0329063+02:00",
+      "changedBy": "Jira"
+    },
+    {
+      "id": "_0e40da5e_3a68_4b8f_ad99_a9e5d6473e24",
+      "value": "TEMPLATE",
+      "title": "SpecIF:project",
+      "description": null,
+      "class": {
+        "id": "PC-SpecIfProject",
+        "revision": "1"
+      },
+      "revision": "055ba73a-8ec5-463c-aee2-7cdf141aa5f9",
+      "replaces": [],
+      "changedAt": "2020-04-09T23:30:16.0342779+02:00",
+      "changedBy": "Jira"
+    },
+    {
+      "id": "_3e006b61_b968_4ce2_84cf_025f181d38bb",
+      "value": "V-SET-ResourceUpdated",
+      "title": "SpecIF:specifEventType",
+      "description": null,
+      "class": {
+        "id": "PC-SpecIfEventType",
+        "revision": "1"
+      },
+      "revision": "abfe04d0-6a63-4458-91d0-81a4a2888136",
+      "replaces": [],
+      "changedAt": "2020-04-09T23:30:16.0342833+02:00",
+      "changedBy": "Jira"
+    },
+    {
+      "id": "_0ac6eddd_4685_4c10_94c8_29a6cee4ee61",
+      "value": "_d383255183995289153c412de3b5bffda9bcf45b_TEMPLATE_9",
+      "title": "SpecIF:id",
+      "description": null,
+      "class": {
+        "id": "PC-SpecIfId",
+        "revision": "1"
+      },
+      "revision": "c06e97d8-b6ec-4278-971b-c38c1681e031",
+      "replaces": [],
+      "changedAt": "2020-04-09T23:30:16.0342874+02:00",
+      "changedBy": "Jira"
+    },
+    {
+      "id": "_a4a504b9_19ca_42e6_b8d2_df94ec34c2fc",
+      "value": "91838b33f603ee178b8a3422b36f8a76c43e7cf5",
+      "title": "SpecIF:revision",
+      "description": null,
+      "class": {
+        "id": "PC-SpecIfRevision",
+        "revision": "1"
+      },
+      "revision": "8c5504d0-da33-426e-83a6-6912edba3b7d",
+      "replaces": [],
+      "changedAt": "2020-04-09T23:30:16.0343021+02:00",
+      "changedBy": "Jira"
+    },
+    {
+      "id": "_89c80acd_5b31_4abf_a384_edb3ea077747",
+      "value": "_d383255183995289153c412de3b5bffda9bcf45b_TEMPLATE_9",
+      "title": "SpecIF:classId",
+      "description": null,
+      "class": {
+        "id": "PC-SpecIfClassId",
+        "revision": "1"
+      },
+      "revision": "19b73421-c7ce-4cea-a606-ba1b0fb8b7ec",
+      "replaces": [],
+      "changedAt": "2020-04-09T23:30:16.0343066+02:00",
+      "changedBy": "Jira"
+    },
+    {
+      "id": "_c4d49158_c69b_4258_ab5b_0da9efdcbc69",
+      "value": "91838b33f603ee178b8a3422b36f8a76c43e7cf5",
+      "title": "SpecIF:classRevision",
+      "description": null,
+      "class": {
+        "id": "PC-SpecIfClassRevision",
+        "revision": "1"
+      },
+      "revision": "1995af0a-f289-44f9-9d78-53df22d5c3c6",
+      "replaces": [],
+      "changedAt": "2020-04-09T23:30:16.0343103+02:00",
+      "changedBy": "Jira"
+    }
+  ],
+  "revision": "_bd7d2c1a_9b84_4c04_88c7_f2f6f98a2174",
+  "replaces": [],
+  "alternativeIds": [],
+  "changedAt": "2020-04-09T23:30:16.0326787+02:00",
+  "changedBy": null
+}

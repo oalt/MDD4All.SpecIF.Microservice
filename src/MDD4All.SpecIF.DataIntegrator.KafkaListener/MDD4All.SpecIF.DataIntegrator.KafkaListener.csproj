@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Confluent.Kafka" Version="1.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MDD4All.Kafka.DataAccess\MDD4All.Kafka.DataAccess.csproj" />
+    <ProjectReference Include="..\MDD4All.SpecIF.DataIntegrator.Contracts\MDD4All.SpecIF.DataIntegrator.Contracts.csproj" />
+    <ProjectReference Include="..\MDD4All.SpecIF.DataModels\MDD4All.SpecIF.DataModels.csproj" />
+  </ItemGroup>
+
+</Project>

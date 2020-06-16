@@ -44,7 +44,7 @@ namespace MDD4All.SpecIF.DataModels
         public string ID { get; set; } = SpecIfGuidGenerator.CreateNewSpecIfGUID();
 
         [JsonProperty(PropertyName = "title", Order = 3)]
-        public object Title { get; set; } = new Value();
+        public object Title { get; set; } = "";
 
         [JsonProperty(PropertyName = "description", Order = 4)]
         public object Description { get; set; }

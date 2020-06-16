@@ -14,4 +14,10 @@
     <ProjectReference Include="..\MDD4All.SpecIF.DataModels\MDD4All.SpecIF.DataModels.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Testdata\json1.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

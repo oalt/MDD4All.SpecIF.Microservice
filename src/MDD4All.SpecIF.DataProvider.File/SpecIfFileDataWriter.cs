@@ -7,13 +7,14 @@ using MDD4All.SpecIF.DataProvider.Contracts;
 using MDD4All.SpecIF.DataProvider.Contracts.DataModels;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace MDD4All.SpecIF.DataProvider.File
 {
 	public class SpecIfFileDataWriter : AbstractSpecIfDataWriter
 	{
-		private DataModels.SpecIF _specIfData;
+		private Dictionary<string, DataModels.SpecIF> _specIfData;
 
 		private string _identificatorFilePath = @"c:\specif\identificators.json";
 
@@ -25,11 +26,16 @@ namespace MDD4All.SpecIF.DataProvider.File
 			_path = path;
 			if (path == null)
 			{
-				_specIfData = new DataModels.SpecIF();
+				_specIfData = new Dictionary<string, DataModels.SpecIF>();
 			}
 			else
 			{
-				_specIfData = SpecIfFileReaderWriter.ReadDataFromSpecIfFile(path);
+                if(dataReader is SpecIfFileDataReader)
+                {
+                    SpecIfFileDataReader fileDataReader = dataReader as SpecIfFileDataReader;
+                    _specIfData = fileDataReader.SpecIfData;
+                }
+				
 			}
 
 			InitializeIdentificators();
@@ -76,14 +82,14 @@ namespace MDD4All.SpecIF.DataProvider.File
 
         public override void AddStatement(Statement statement)
 		{
-			_specIfData?.Statements.Add(statement);
-			SpecIfFileReaderWriter.SaveSpecIfToFile(_specIfData, _path);
+			//_specIfData?.Statements.Add(statement);
+			//SpecIfFileReaderWriter.SaveSpecIfToFile(_specIfData, _path);
 		}
 
         public override void AddResource(Resource resource)
 		{
-			_specIfData?.Resources.Add(resource);
-			SpecIfFileReaderWriter.SaveSpecIfToFile(_specIfData, _path);
+			//_specIfData?.Resources.Add(resource);
+			//SpecIfFileReaderWriter.SaveSpecIfToFile(_specIfData, _path);
 		}
 
         public override void AddNode(string parentNodeId, Node newNode)
@@ -91,15 +97,10 @@ namespace MDD4All.SpecIF.DataProvider.File
 			throw new NotImplementedException();
 		}
 
-		public override Node SaveNode(Node nodeToUpdate)
-		{
-			throw new NotImplementedException();
-		}
-
         public override void AddHierarchy(Node hierarchy, string projectID = null)
 		{
-			_specIfData?.Hierarchies.Add(hierarchy);
-			SpecIfFileReaderWriter.SaveSpecIfToFile(_specIfData, _path);
+			//_specIfData?.Hierarchies.Add(hierarchy);
+			//SpecIfFileReaderWriter.SaveSpecIfToFile(_specIfData, _path);
 		}
 
 		public override Resource SaveResource(Resource resource, string projectID = null)
@@ -111,46 +112,48 @@ namespace MDD4All.SpecIF.DataProvider.File
 		{
             Node result = null;
 
-			string id = hierarchy.ID;
+			//string id = hierarchy.ID;
 
-			int index = -1;
-			for (int counter = 0; counter < _specIfData.Hierarchies.Count; counter++)
-			{
-				if (_specIfData?.Hierarchies[counter].ID == id)
-				{
-					index = counter;
-					break;
-				}
-			}
+			//int index = -1;
+			//for (int counter = 0; counter < _specIfData.Hierarchies.Count; counter++)
+			//{
+			//	if (_specIfData?.Hierarchies[counter].ID == id)
+			//	{
+			//		index = counter;
+			//		break;
+			//	}
+			//}
 
-			if (index != -1)
-			{
-				_specIfData.Hierarchies[index] = hierarchy;
-				SpecIfFileReaderWriter.SaveSpecIfToFile(_specIfData, _path);
-			}
-			else
-			{
-				// new hierarchy
-				_specIfData.Hierarchies.Add(hierarchy);
-				SpecIfFileReaderWriter.SaveSpecIfToFile(_specIfData, _path);
-			}
+			//if (index != -1)
+			//{
+			//	_specIfData.Hierarchies[index] = hierarchy;
+			//	SpecIfFileReaderWriter.SaveSpecIfToFile(_specIfData, _path);
+			//}
+			//else
+			//{
+			//	// new hierarchy
+			//	_specIfData.Hierarchies.Add(hierarchy);
+			//	SpecIfFileReaderWriter.SaveSpecIfToFile(_specIfData, _path);
+			//}
 
             return result;
 		}
 
 		public override Statement SaveStatement(Statement statement, string projectID = null)
 		{
-			Statement existingStatement = _specIfData?.Statements.Find(st => st.ID == statement.ID && st.Revision == statement.Revision);
 
-			if(existingStatement != null)
-			{
-				existingStatement = statement;
-			}
-			else
-			{
-				AddStatement(statement);
-			}
-			SpecIfFileReaderWriter.SaveSpecIfToFile(_specIfData, _path);
+
+			//Statement existingStatement = _specIfData?.Statements.Find(st => st.ID == statement.ID && st.Revision == statement.Revision);
+
+			//if(existingStatement != null)
+			//{
+			//	existingStatement = statement;
+			//}
+			//else
+			//{
+			//	AddStatement(statement);
+			//}
+			//SpecIfFileReaderWriter.SaveSpecIfToFile(_specIfData, _path);
 
             return statement;
 		}

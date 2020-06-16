@@ -29,6 +29,8 @@ namespace MDD4All.SpecIf.Microservice.Startup
 
             string jiraAuth = Configuration.GetValue<string>("JiraAuthorization");
 
+            string jiraServer = Configuration.GetValue<string>("JiraServer");
+
             if (!string.IsNullOrEmpty(dataSource) && !string.IsNullOrEmpty(dataConnection))
             {
 
@@ -74,14 +76,17 @@ namespace MDD4All.SpecIf.Microservice.Startup
                 services.AddScoped<ISpecIfMetadataReader>(dataProvider => new SpecIfMongoDbMetadataReader(dataConnection));
                 services.AddScoped<ISpecIfMetadataWriter>(dataProvider => new SpecIfMongoDbMetadataWriter(dataConnection));
 
-                //services.AddScoped<ISpecIfDataReader>(dataProvider => new SpecIfMongoDbDataReader(dataConnection));
+                ISpecIfDataReader specIfDataReader = new SpecIfJiraDataReader(jiraServer, 
+                                                                              jiraAuth,
+                                                                              new SpecIfMongoDbMetadataReader(dataConnection));
 
-                services.AddScoped<ISpecIfDataReader>(dataProvider => new SpecIfJiraDataReader("https://mdd4all.atlassian.net", jiraAuth,
-                    new SpecIfMongoDbMetadataReader(dataConnection)));
+                services.AddScoped<ISpecIfDataReader>(dataProvider => specIfDataReader);
 
 
-                services.AddScoped<ISpecIfDataWriter>(dataProvider => new SpecIfMongoDbDataWriter(dataConnection, new SpecIfMongoDbMetadataReader(dataConnection),
-                    new SpecIfMongoDbDataReader(dataConnection)));
+                services.AddScoped<ISpecIfDataWriter>(dataProvider => new SpecIfJiraDataWriter(jiraServer, 
+                                                                                               jiraAuth, 
+                                                                                               new SpecIfMongoDbMetadataReader(dataConnection),
+                                                                                               specIfDataReader));
 
             }
         }

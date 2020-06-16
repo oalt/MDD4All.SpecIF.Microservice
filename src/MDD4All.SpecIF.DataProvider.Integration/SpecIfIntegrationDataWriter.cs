@@ -3,43 +3,52 @@
  */
 using MDD4All.SpecIF.DataModels;
 using MDD4All.SpecIF.DataModels.BaseTypes;
+using MDD4All.SpecIF.DataModels.RightsManagement;
 using MDD4All.SpecIF.DataModels.Service;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using MDD4All.SpecIF.DataProvider.WebAPI;
 using MDD4All.SpecIF.ServiceDataProvider;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace MDD4All.SpecIF.DataProvider.Integration
 {
-	public class SpecIfIntegrationDataWriter : AbstractSpecIfDataWriter
+    public class SpecIfIntegrationDataWriter : AbstractSpecIfDataWriter
 	{
 		private SpecIfServiceDataProvider _descriptionProvider;
 
-		private Dictionary<string, ISpecIfDataWriter> _dataWriters = new Dictionary<string, ISpecIfDataWriter>();
+        private Dictionary<string, ISpecIfDataWriter> _dataWriters = new Dictionary<string, ISpecIfDataWriter>();
 
 		// just for demo
 		private List<ISpecIfDataWriter> _demoDataWriterList = new List<ISpecIfDataWriter>();
 
-		public SpecIfIntegrationDataWriter(SpecIfServiceDataProvider specIfServiceDataProvider, SpecIfIntegrationMetadataReader metadataReader,
+		public SpecIfIntegrationDataWriter(string integrationApiKey,
+                                           SpecIfServiceDataProvider specIfServiceDataProvider, 
+                                           SpecIfIntegrationMetadataReader metadataReader,
                                            SpecIfIntegrationDataReader dataReader) : base(metadataReader, dataReader)
 		{
 			_descriptionProvider = specIfServiceDataProvider;
-			InitializeWriters();
+			InitializeWriters(integrationApiKey);
 		}
 
-		private void InitializeWriters()
+		private void InitializeWriters(string integrationApiKey)
 		{
 			List<SpecIfServiceDescription> serviceDescriptions = _descriptionProvider.GetAvailableServices();
 
             foreach (SpecIfServiceDescription serviceDescription in serviceDescriptions)
             {
-                if (serviceDescription.ID != "{F8B21340-B442-4040-BEFE-CF455BABB3A5}")
+                if (serviceDescription.ID != "{F8B21340-B442-4040-BEFE-CF455BABB3A5}") // exclude integration service 
                 {
                     if (serviceDescription.DataWrite == true)
                     {
+                        LoginData loginData = new LoginData
+                        {
+                            UserName = "integrationServiceUser",
+                            Password = integrationApiKey
+                        };
+
                         SpecIfWebApiDataWriter dataWriter = new SpecIfWebApiDataWriter(serviceDescription.ServiceAddress + ":" + serviceDescription.ServicePort,
+                                                                                       loginData,
                                                                                        _metadataReader,
                                                                                        _dataReader);
 
@@ -52,6 +61,8 @@ namespace MDD4All.SpecIF.DataProvider.Integration
             }
 		}
 
+        
+
 		public void AddDataWriter(ISpecIfDataWriter dataWriter, string id)
 		{
 			if (!_dataWriters.ContainsKey(id))
@@ -59,17 +70,6 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 				_dataWriters.Add(id, dataWriter);
 			}
 		}
-
-
-		//public override void AddHierarchy(Node hierarchy)
-		//{
-		//	FindDataWriterForHierarchy(hierarchy).AddHierarchy(hierarchy);
-		//}
-
-		//public override void AddNode(Node newNode)
-		//{
-		//	FindDataProviderForNode(newNode).AddNode(newNode);
-		//}
 
 		public override void AddResource(Resource resource)
 		{
@@ -80,36 +80,6 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 		{
 			FindDataProviderForStatement(statement).AddStatement(statement);
 		}
-
-		//public override void UpdateHierarchy(Node hierarchyToUpdate)
-		//{
-		//	ISpecIfDataWriter writer = FindDataWriterForHierarchy(hierarchyToUpdate);
-
-		//	if (writer != null)
-		//	{
-		//		writer.UpdateHierarchy(hierarchyToUpdate);
-		//	}
-		//}
-
-		//public override void UpdateNode(Node nodeToUpdate)
-		//{
-		//	ISpecIfDataWriter provider = FindDataProviderForNode(nodeToUpdate);
-
-		//	if (provider != null)
-		//	{
-		//		provider.UpdateNode(nodeToUpdate);
-		//	}
-		//}
-
-		//public override void UpdateResource(Resource resource)
-		//{
-		//	ISpecIfDataWriter provider = FindDataProviderForResource(resource);
-
-		//	if (provider != null)
-		//	{
-		//		provider.UpdateResource(resource);
-		//	}
-		//}
 
 		public override void InitializeIdentificators()
 		{
@@ -135,11 +105,30 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 
 		private ISpecIfDataWriter FindDataProviderForResource(Resource resource)
 		{
-			return _demoDataWriterList[0];
+            ISpecIfDataWriter result = null;
 
-			ISpecIfDataWriter result = _dataWriters[resource.DataSource.ID];
+            //TODO Replace hard coded types
+            if (resource.Class.ID == "RC-Requirement")
+            {
+                ISpecIfDataWriter jiraDataWriter = _dataWriters["{DFFE5123-E1D0-4E24-B37C-8CF019BEB7EE}"];
 
-			return result;
+                if (jiraDataWriter != null)
+                {
+                    result = jiraDataWriter;
+                }
+            }
+
+            if (result == null)
+            {
+                ISpecIfDataWriter mongodbDataWriter = _dataWriters["{67FE892C-7EB1-45AD-9259-6BE910841A3A}"];
+
+                if (mongodbDataWriter != null)
+                {
+                    result = mongodbDataWriter;
+                }
+            }
+
+            return result;
 		}
 
 		private ISpecIfDataWriter FindDataProviderForStatement(Statement statement)
@@ -167,17 +156,30 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 
         public override Node SaveHierarchy(Node hierarchyToUpdate)
         {
-            throw new NotImplementedException();
-        }
+            Node result = null;
 
-        public override Node SaveNode(Node nodeToUpdate)
-        {
-            throw new NotImplementedException();
+            ISpecIfDataWriter mongodbDataWriter = _dataWriters["{67FE892C-7EB1-45AD-9259-6BE910841A3A}"];
+
+            if (mongodbDataWriter != null)
+            {
+                result = mongodbDataWriter.SaveHierarchy(hierarchyToUpdate);
+            }
+
+            return result;
         }
 
         public override Resource SaveResource(Resource resource, string projectID = null)
         {
-            throw new NotImplementedException();
+            Resource result = null;
+
+            ISpecIfDataWriter specIfDataWriter = FindDataProviderForResource(resource);
+
+            if(specIfDataWriter != null)
+            {
+                result = specIfDataWriter.SaveResource(resource, projectID);
+            }
+
+            return result;
         }
 
 
@@ -188,17 +190,60 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 
         public override void AddNode(string parentNodeID, Node newNode)
         {
-            throw new NotImplementedException();
+            ISpecIfDataWriter mongodbDataWriter = _dataWriters["{67FE892C-7EB1-45AD-9259-6BE910841A3A}"];
+
+            if (mongodbDataWriter != null)
+            {
+                mongodbDataWriter.AddNode(parentNodeID, newNode);
+            }
+        }
+
+        public override void AddHierarchy(Node hierarchy, string projectID = null)
+        {
+            ISpecIfDataWriter mongodbDataWriter = _dataWriters["{67FE892C-7EB1-45AD-9259-6BE910841A3A}"];
+
+            if (mongodbDataWriter != null)
+            {
+                mongodbDataWriter.AddHierarchy(hierarchy, projectID);
+            }
         }
 
         public override void MoveNode(string nodeID, string newParentID, string newSiblingId)
         {
-            throw new NotImplementedException();
+            ISpecIfDataWriter mongodbDataWriter = _dataWriters["{67FE892C-7EB1-45AD-9259-6BE910841A3A}"];
+
+            if (mongodbDataWriter != null)
+            {
+                mongodbDataWriter.MoveNode(nodeID, newParentID, newSiblingId);
+            }
         }
 
         public override Resource UpdateResource(Resource resource)
         {
-            throw new NotImplementedException();
+            Resource result = null;
+
+            //TODO Replace hard coded types
+            if (resource.Class.ID == "RC-Requirement")
+            {
+                ISpecIfDataWriter jiraDataWriter = _dataWriters["{DFFE5123-E1D0-4E24-B37C-8CF019BEB7EE}"];
+
+                if (jiraDataWriter != null)
+                {
+                    result = jiraDataWriter.UpdateResource(resource);
+                }
+            }
+
+            if (result == null)
+            {
+                ISpecIfDataWriter mongodbDataWriter = _dataWriters["{67FE892C-7EB1-45AD-9259-6BE910841A3A}"];
+
+                if (mongodbDataWriter != null)
+                {
+                    result = mongodbDataWriter.UpdateResource(resource);
+                }
+            }
+
+            return result;
         }
 
         public override void AddProject(ISpecIfMetadataWriter metadataWriter, DataModels.SpecIF project, string integrationID = null)
@@ -218,10 +263,7 @@ namespace MDD4All.SpecIF.DataProvider.Integration
             throw new NotImplementedException();
         }
 
-        public override void AddHierarchy(Node hierarchy, string projectID = null)
-        {
-            throw new NotImplementedException();
-        }
+        
 
         public override void UpdateProject(ISpecIfMetadataWriter metadataWriter, DataModels.SpecIF project)
         {

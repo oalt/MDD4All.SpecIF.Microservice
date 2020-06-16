@@ -9,8 +9,10 @@ namespace MDD4All.SpecIF.DataModels.Test
     {
         static void Main(string[] args)
         {
-			SpecIfTest1 test1 = new SpecIfTest1();
+            //SpecIfTest1 test1 = new SpecIfTest1();
+            JsonTest jsonTest = new JsonTest();
 
+            jsonTest.Test1();
 		}
 	}
 }

@@ -30,9 +30,10 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 		/// Constructor
 		/// </summary>
 		/// <param name="repository">The EA repository.</param>
-		public EaUmlToSpecIfConverter(EAAPI.Repository repository)
+		public EaUmlToSpecIfConverter(EAAPI.Repository repository, ISpecIfMetadataReader metadataReader)
 		{
 			_repository = repository;
+            _metadataReader = metadataReader;
 
 			InitializePrimitiveTypes();
 		}
@@ -806,7 +807,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			return result;
 		}
 
-		private Resource ConvertElement(EAAPI.Element eaElement)
+		public Resource ConvertElement(EAAPI.Element eaElement)
 		{
 			Resource result = null;
 

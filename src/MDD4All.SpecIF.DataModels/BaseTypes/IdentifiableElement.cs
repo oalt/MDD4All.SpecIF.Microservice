@@ -14,7 +14,7 @@ namespace MDD4All.SpecIF.DataModels.BaseTypes
 		public IdentifiableElement()
 		{
 			ID = SpecIfGuidGenerator.CreateNewSpecIfGUID();
-			Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID();
+			Revision = SpecIfGuidGenerator.CreateNewRevsionGUID();
 		}
 
         /// <summary>

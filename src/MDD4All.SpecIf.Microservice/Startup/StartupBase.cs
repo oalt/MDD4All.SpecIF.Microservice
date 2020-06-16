@@ -1,12 +1,16 @@
 ﻿using Consul;
 using MDD4All.SpecIf.Microservice.DocumentFilters;
+using MDD4All.SpecIf.Microservice.Hubs;
 using MDD4All.SpecIf.Microservice.OperationFilters;
+using MDD4All.SpecIF.DataIntegrator.Contracts;
+using MDD4All.SpecIF.DataIntegrator.KafkaListener;
 using MDD4All.SpecIF.DataModels.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Internal;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
@@ -74,7 +78,7 @@ namespace MDD4All.SpecIf.Microservice.Startup
 
                 options.SwaggerDoc("v1.0", new Info
                 {
-                    Title = "SpecIF API (" + _serviceDescription.ServiceName + ")",
+                    Title = "SpecIF API", // (" + _serviceDescription.ServiceName + ")",
                     Version = "v1.0",
                     Description = "Web API for the Specification Integration Facility (SpecIF).",
                     Contact = new Contact
@@ -139,8 +143,12 @@ namespace MDD4All.SpecIf.Microservice.Startup
             // Consul
             services.AddSingleton(_serviceDescription);
 
+            
 
+            
         }
+
+        
 
 
 
@@ -211,6 +219,19 @@ namespace MDD4All.SpecIf.Microservice.Startup
             {
                 Console.WriteLine("Unable to register in consul.");
             }
+
+            try
+            {
+                app.UseSignalR(routes =>
+                {
+                    routes.MapHub<SpecIfEventHub>("/specifEventHub");
+                });
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine("Unable to start signalR.");
+            }
+
         }
 
         public abstract void ConfigureSpecIfDataServices(IServiceCollection services);

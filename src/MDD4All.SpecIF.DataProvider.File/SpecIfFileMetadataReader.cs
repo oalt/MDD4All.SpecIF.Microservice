@@ -4,12 +4,15 @@
 using MDD4All.SpecIF.DataModels;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace MDD4All.SpecIF.DataProvider.File
 {
 	public class SpecIfFileMetadataReader : AbstractSpecIfMetadataReader
 	{
+
+        private string _metadataRootPath = "";
 
 		private DataModels.SpecIF _metaData;
 
@@ -21,6 +24,46 @@ namespace MDD4All.SpecIF.DataProvider.File
         public SpecIfFileMetadataReader(DataModels.SpecIF metaData)
         {
             _metaData = metaData;
+        }
+
+        public SpecIfFileMetadataReader(string metadataRootPath)
+        {
+            _metadataRootPath = metadataRootPath;
+            InitializeMetadata();
+        }
+
+        private void InitializeMetadata()
+        {
+            _metaData = new DataModels.SpecIF();
+
+            InitializeMetadataRecusrsively(_metadataRootPath);
+        }
+
+        private void InitializeMetadataRecusrsively(string currentPath)
+        {
+            DirectoryInfo directoryInfo = new DirectoryInfo(currentPath);
+            FileInfo[] specifFiles = directoryInfo.GetFiles("*.specif");
+
+            foreach(FileInfo fileInfo in specifFiles)
+            {
+                DataModels.SpecIF currentSepcIF = SpecIfFileReaderWriter.ReadDataFromSpecIfFile(fileInfo.FullName);
+
+                _metaData.DataTypes.AddRange(currentSepcIF.DataTypes);
+
+                _metaData.PropertyClasses.AddRange(currentSepcIF.PropertyClasses);
+
+                _metaData.ResourceClasses.AddRange(currentSepcIF.ResourceClasses);
+
+                _metaData.StatementClasses.AddRange(currentSepcIF.StatementClasses);
+            }
+
+            foreach (DirectoryInfo subDirectoryInfo in directoryInfo.GetDirectories())
+            {
+                InitializeMetadataRecusrsively(subDirectoryInfo.FullName);
+            }
+
+
+
         }
 
         public override List<DataType> GetAllDataTypes()

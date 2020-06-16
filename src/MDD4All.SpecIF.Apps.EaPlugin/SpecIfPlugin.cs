@@ -1,7 +1,10 @@
 ﻿using MDD4All.SpecIF.Apps.EaPlugin.ViewModels;
+using MDD4All.SpecIF.DataProvider.Contracts;
+using MDD4All.SpecIF.DataProvider.MongoDB;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using EAAPI = EA;
 
@@ -12,13 +15,25 @@ namespace MDD4All.SpecIF.Apps.EaPlugin
         private const string MAIN_MENU = "-&SpecIF";
 
         private const string EXPORT_MENU = "&Export to SpecIF...";
+
+        private const string SYNC_PROJECT_ROOTS_MENU = "&Synchronize project roots";
+
+        private const string SYNC_HIERARHY_ROOTS_MENU = "&Synchronize hierarchy roots";
+
+        private const string SYNC_HIERARHY_MENU = "&Synchronize hierarchy";
+
         private const string ABOUT_MENU = "&About FMC4SE...";
 
         private MainViewModel _mainViewModel;
 
         public string EA_Connect(EAAPI.Repository repository)
         {
-            _mainViewModel = new MainViewModel(repository);
+            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+
+            ISpecIfMetadataReader metadataReader = new SpecIfMongoDbMetadataReader("mongodb://localhost:27017");
+
+            _mainViewModel = new MainViewModel(repository, metadataReader);
 
             return "";
         }
@@ -43,7 +58,10 @@ namespace MDD4All.SpecIF.Apps.EaPlugin
                     if (Location == "TreeView")
                     {
                         menuEntries.Add(EXPORT_MENU);
-
+                        menuEntries.Add("-");
+                        menuEntries.Add(SYNC_PROJECT_ROOTS_MENU);
+                        menuEntries.Add(SYNC_HIERARHY_ROOTS_MENU);
+                        menuEntries.Add(SYNC_HIERARHY_MENU);
                         
                     }
                     result = menuEntries.ToArray();
@@ -70,7 +88,7 @@ namespace MDD4All.SpecIF.Apps.EaPlugin
                     break;
 
                 default:
-                    IsEnabled = false;
+                    IsEnabled = true;
                     break;
             }
 
@@ -89,12 +107,29 @@ namespace MDD4All.SpecIF.Apps.EaPlugin
                         _mainViewModel.ExportToSpecIfCommand.Execute(null);
                         break;
 
+                    case SYNC_PROJECT_ROOTS_MENU:
+                        _mainViewModel.SynchronizeProjectRootsCommand.Execute(null);
+                        break;
+
+                    case SYNC_HIERARHY_ROOTS_MENU:
+                        _mainViewModel.SynchronizeProjectHierarchyRootsCommand.Execute(null);
+                        break;
+
+                    case SYNC_HIERARHY_MENU:
+                        _mainViewModel.SynchronizeHierarchyResourcesCommand.Execute(null);
+                        break;
+
                     default:
 
                         break;
                 }
             }
 
+        }
+
+        public void EA_OnNotifyContextItemModified(EAAPI.Repository repository, string guid, EAAPI.ObjectType objectType)
+        {
+            ;
         }
     }
 }

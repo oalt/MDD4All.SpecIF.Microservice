@@ -175,7 +175,6 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
         public abstract void InitializeIdentificators();
         public abstract void SaveIdentificators();
         public abstract Node SaveHierarchy(Node hierarchyToUpdate);
-        public abstract Node SaveNode(Node nodeToUpdate);
         public abstract Resource SaveResource(Resource resource, string projectID = null);
         public abstract Statement SaveStatement(Statement statement, string projectID = null);
 

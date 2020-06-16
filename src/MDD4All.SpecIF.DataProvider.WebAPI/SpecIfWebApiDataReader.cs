@@ -90,13 +90,6 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 			return task.Result;
 		}
 
-		//public override Revision GetLatestResourceRevision(string resourceID)
-		//{
-		//	Task<Revision> task = GetLatestRevisionAsync<Resource>(resourceID, "SpecIF/Resource/");
-		//	task.Wait();
-
-		//	return task.Result;
-		//}
 
 		public override string GetLatestStatementRevision(string statementID)
 		{
@@ -257,7 +250,16 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 
         public override List<ProjectDescriptor> GetProjectDescriptions()
         {
-            throw new NotImplementedException();
+            List<ProjectDescriptor> result;
+
+            UriBuilder uriBuilder = new UriBuilder(_connectionURL + "/specif/v1.0/projects");
+            
+            Task<List<ProjectDescriptor>> task = GetDataFromServiceAsync<List<ProjectDescriptor>>(uriBuilder.Uri);
+            task.Wait();
+
+            result = task.Result;
+
+            return task.Result;
         }
 
         public override List<Node> GetAllHierarchyRootNodes(string projectID = null)
@@ -291,7 +293,27 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 
         public override DataModels.SpecIF GetProject(ISpecIfMetadataReader metadataReader, string projectID, List<Key> hierarchyFilter = null, bool includeMetadata = true)
         {
-            throw new NotImplementedException();
+            DataModels.SpecIF result;
+
+            UriBuilder uriBuilder = new UriBuilder(_connectionURL + "/specif/v1.0/projects/" + projectID);
+
+            System.Collections.Specialized.NameValueCollection parameters = HttpUtility.ParseQueryString(string.Empty);
+
+            parameters["includeMetedata"] = includeMetadata.ToString();
+
+            uriBuilder.Query = parameters.ToString();
+
+            Uri finalUrl = uriBuilder.Uri;
+
+            Debug.WriteLine(finalUrl);
+
+            Task<DataModels.SpecIF> task = GetDataFromServiceAsync<DataModels.SpecIF>(finalUrl);
+            task.Wait();
+
+            result = task.Result;
+
+
+            return task.Result;
         }
     }
 }

@@ -1,25 +1,29 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace MDD4All.Jira.DataModels
 {
     public class IssueType
     {
-        public string self { get; set; }
+        [JsonProperty("self")]
+        public string Self { get; set; }
 
         [JsonProperty("id")]
         public string ID { get; set; }
 
-        public string description { get; set; }
-        public string iconUrl { get; set; }
+        [JsonProperty("description")]
+        public string Description { get; set; }
+
+        [JsonProperty("iconUrl")]
+        public string IconURL { get; set; }
 
         [JsonProperty("name")]
         public string Name { get; set; }
 
-        public bool? subtask { get; set; } = null;
-        public int? avatarId { get; set; } = null;
+        [JsonProperty("subtask")]
+        public bool? Subtask { get; set; } = null;
+
+        [JsonProperty("avatarId")]
+        public int? AvatarID { get; set; } = null;
     }
    
 }

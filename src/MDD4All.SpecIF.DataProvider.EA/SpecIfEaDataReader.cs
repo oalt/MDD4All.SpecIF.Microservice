@@ -15,33 +15,39 @@ namespace MDD4All.SpecIF.DataProvider.EA
 	{
 		private EAAPI.Repository _eaRepository;
 
-        public bool RepositoryIsOpen { get; set; }
+        private ISpecIfMetadataReader _metadataReader;
 
-        public SpecIfEaDataReader(EAAPI.Repository eaRepository)
+        //public bool RepositoryIsOpen { get; set; }
+
+        public SpecIfEaDataReader(EAAPI.Repository eaRepository, ISpecIfMetadataReader metadataReader)
 		{
 			_eaRepository = eaRepository;
+            _metadataReader = metadataReader;
 		}
 
         public override List<Node> GetAllHierarchies()
         {
             List<Node> result = new List<Node>();
 
-            if (RepositoryIsOpen)
-            {
-                EaToSpecIfConverter converter = new EaToSpecIfConverter(_eaRepository);
+            
+            //EaToSpecIfConverter converter = new EaToSpecIfConverter(_eaRepository);
 
 
 
-                // TODO remove hardcoded test
-                EAAPI.Package fctsysPackage = _eaRepository.GetPackageByGuid("{5D647B1D-D622-4a45-90EB-5FC6ECCD405C}");
+            //// TODO remove hardcoded test
+            //EAAPI.Package fctsysPackage = _eaRepository.GetPackageByGuid("{5D647B1D-D622-4a45-90EB-5FC6ECCD405C}");
 
-                if (fctsysPackage != null)
-                {
-                    Node hierarchy = converter.ConvertPackageToHierarchy(fctsysPackage);
+            //if (fctsysPackage != null)
+            //{
+            //    Node hierarchy = converter.ConvertPackageToHierarchy(fctsysPackage);
 
-                    result.Add(hierarchy);
-                }
-            }
+            //    result.Add(hierarchy);
+            //}
+
+            SpecificationToHierarchyConverter converter = new SpecificationToHierarchyConverter(_eaRepository);
+
+            result = converter.GetAllHierarchies();
+            
 
             return result;
         }
@@ -57,18 +63,24 @@ namespace MDD4All.SpecIF.DataProvider.EA
         {
             Node result = null;
 
-            EaToSpecIfConverter converter = new EaToSpecIfConverter(_eaRepository);
+            //EaToSpecIfConverter converter = new EaToSpecIfConverter(_eaRepository);
 
-            string eaGuid = EaSpecIfGuidConverter.ConvertSpecIfGuidToEaGuid(id.ID);
+            //string eaGuid = EaSpecIfGuidConverter.ConvertSpecIfGuidToEaGuid(id.ID);
 
-            EAAPI.Package fctsysPackage = _eaRepository.GetPackageByGuid(eaGuid);
+            //EAAPI.Package fctsysPackage = _eaRepository.GetPackageByGuid(eaGuid);
 
-            if (fctsysPackage != null)
-            {
-                Node hierarchy = converter.ConvertPackageToHierarchy(fctsysPackage);
+            //if (fctsysPackage != null)
+            //{
+            //    Node hierarchy = converter.ConvertPackageToHierarchy(fctsysPackage);
 
-                result = hierarchy;
-            }
+            //    result = hierarchy;
+            //}
+
+            SpecificationToHierarchyConverter converter = new SpecificationToHierarchyConverter(_eaRepository);
+
+            List<Node> allHierarchies = converter.GetAllHierarchies();
+
+            result = allHierarchies.Find(hierarchy => hierarchy.ID == id.ID);
 
             return result;
         }
@@ -86,13 +98,13 @@ namespace MDD4All.SpecIF.DataProvider.EA
 
             try
             {
-                EaToSpecIfConverter converter = new EaToSpecIfConverter(_eaRepository);
+                EaUmlToSpecIfConverter converter = new EaUmlToSpecIfConverter(_eaRepository, _metadataReader);
 
                 EAAPI.Element eaElement = _eaRepository.GetElementByGuid(EaSpecIfGuidConverter.ConvertSpecIfGuidToEaGuid(key.ID));
 
                 if (eaElement != null)
                 {
-                    result = converter.ConvertElementToResource(eaElement);
+                    result = converter.ConvertElement(eaElement);
                 }
                 else
                 {
@@ -136,7 +148,20 @@ namespace MDD4All.SpecIF.DataProvider.EA
 
         public override List<Node> GetAllHierarchyRootNodes(string projectID = null)
         {
-            throw new NotImplementedException();
+            List<Node> result = new List<Node>();
+
+            SpecificationToHierarchyConverter converter = new SpecificationToHierarchyConverter(_eaRepository);
+
+            List<Node> allHierarchies = converter.GetAllHierarchies();
+
+            foreach(Node rootNode in allHierarchies)
+            {
+                rootNode.Nodes = new List<Node>();
+            }
+
+            result = allHierarchies;
+
+            return result;
         }
 
         public override List<Resource> GetAllResourceRevisions(string resourceID)

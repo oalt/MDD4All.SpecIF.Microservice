@@ -14,6 +14,7 @@
   <ItemGroup>
     <PackageReference Include="MDD4All.EnterpriseArchitect.Manipulations" Version="2.4.0.116" />
     <PackageReference Include="System.Drawing.Common" Version="4.5.1" />
+    <PackageReference Include="MDD4All.EnterpriseArchitect.DataModels" Version="2.0.0.140" />
   </ItemGroup>
 
   <ItemGroup>

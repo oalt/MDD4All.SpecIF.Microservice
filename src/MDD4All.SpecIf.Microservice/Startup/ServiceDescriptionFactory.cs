@@ -62,6 +62,38 @@ namespace MDD4All.SpecIf.Microservice.Startup
 
                     break;
 
+                case "ea":
+
+                    result = new SpecIfServiceDescription()
+                    {
+                        ID = "{E3FB9ADE-F348-427C-94B0-97384043BEBF}",
+                        DataRead = true,
+                        DataWrite = false,
+                        MetadataRead = false,
+                        MetadataWrite = false,
+                        ServiceName = "SpecIF-EA-Service",
+                        ServiceDescription = "This service provides SpecIF data from Enterprise Architect.",
+                        IconURL = "/images/EnterpriseArchitect_logo.jpg",
+                        Tags = new List<string> { "SpecIF-API", "EA" }
+                    };
+
+                    break;
+
+                case "file":
+                    result = new SpecIfServiceDescription()
+                    {
+                        ID = "{606D0B77-4429-4443-A362-9ADE7DA77321}",
+                        DataRead = true,
+                        DataWrite = true,
+                        MetadataRead = true,
+                        MetadataWrite = false,
+                        ServiceName = "SpecIF-File-Service",
+                        ServiceDescription = "This service provides SpecIF data from SpecIF files.",
+                        IconURL = "/images/MongoDB_Logo.png",
+                        Tags = new List<string> { "SpecIF-API", "File" }
+                    };
+                    break;
+
                 case "mongodb":
                 default:
                 

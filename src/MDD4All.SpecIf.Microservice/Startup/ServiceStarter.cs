@@ -1,4 +1,5 @@
-﻿using MDD4All.SpecIF.DataModels.Service;
+﻿using MDD4All.SpecIF.DataIntegrator.EA;
+using MDD4All.SpecIF.DataModels.Service;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
@@ -36,7 +37,7 @@ namespace MDD4All.SpecIf.Microservice.Startup
 
                 ICollection<string> addresses = webHost.ServerFeatures.Get<IServerAddressesFeature>().Addresses;
 
-                if (addresses.Count > 0)
+                if (addresses.Count > 0) // Consul registration
                 {
                     ISpecIfServiceDescription serviceDescription = ServiceDescriptionFactory.Create(ServiceStarter.Type, addresses.ToArray()[0]);
 
@@ -46,6 +47,8 @@ namespace MDD4All.SpecIf.Microservice.Startup
                         serviceRegistrator.RegisterService(serviceDescription);
                     }
                 }
+
+                
 
                 webHost.WaitForShutdown();
             }
@@ -84,9 +87,29 @@ namespace MDD4All.SpecIf.Microservice.Startup
                                                     .UseUrls(Startup.StartupBase.Urls.ToArray())
                                                     .Build();
             }
+            else if (type == "ea")
+            {
+                Startup.StartupBase.Urls = new List<string> { "https://localhost:444", "http://localhost:443" };
+
+                result = WebHost.CreateDefaultBuilder(args)
+                                                    .UseStartup<EaStartup>()
+                                                    .UseUrls(Startup.StartupBase.Urls.ToArray())
+                                                    .Build();
 
 
+                
+            }
+            else if(type == "file")
+            {
+                Startup.StartupBase.Urls = new List<string> { "https://localhost:666", "http://localhost:665" };
 
+                result = WebHost.CreateDefaultBuilder(args)
+                                                    .UseStartup<FileStartup>()
+                                                    .UseUrls(Startup.StartupBase.Urls.ToArray())
+                                                    .Build();
+
+
+            }
 
 
             return result;

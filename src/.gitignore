@@ -199,10 +199,14 @@ $RECYCLE.BIN/
 **/node_modules/*
 **/wwwroot/*
 
+**/PublishProfiles/*
+
 # SpecFlow specific
 *.feature.cs
 *.feature.xlsx.*
 *.Specs_*.html
+
+*.bak
 
 #####
 # End of core ignore list, below put you custom 'per project' settings (patterns or path)
