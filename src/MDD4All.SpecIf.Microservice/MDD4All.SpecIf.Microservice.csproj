@@ -17,6 +17,11 @@
   <ItemGroup>
     <None Remove="MDD4All.SpecIf.Microservice.xml" />
     <None Remove="Scripts\SpecIfEventReveiver.ts" />
+    <None Remove="Scripts\tsconfig.json.bak" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Scripts\tsconfig.json.bak" />
   </ItemGroup>
 
   <ItemGroup>
