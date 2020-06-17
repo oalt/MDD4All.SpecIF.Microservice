@@ -1,4 +1,4 @@
-﻿/// import * as signalR from "@microsoft/signalr";
+﻿/// <reference types="@microsoft/signalr" />
 
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("/specifEventHub")
