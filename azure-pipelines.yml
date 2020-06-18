@@ -60,6 +60,11 @@ steps:
         get-childitem -recurse |? {$_.Name -eq $file} | Update-SourceVersion $(build.buildnumber) ;
     }
    
+- task: Npm@1
+  inputs:
+    command: 'ci'
+    workingDir: 'MDD4All.SpecIf.Microservice'
+
 - task: VSBuild@1
   inputs:
     solution: '$(solution)'
