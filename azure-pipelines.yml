@@ -63,7 +63,7 @@ steps:
 - task: Npm@1
   inputs:
     command: 'ci'
-    workingDir: 'MDD4All.SpecIf.Microservice'
+    workingDir: 'src/MDD4All.SpecIf.Microservice'
 
 - task: VSBuild@1
   inputs:
