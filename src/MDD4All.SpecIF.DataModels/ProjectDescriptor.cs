@@ -33,7 +33,7 @@ namespace MDD4All.SpecIF.DataModels
 
         [BsonElement("schema")]
         [JsonProperty(PropertyName = "$schema", Order = 1)]
-        public object Schema { get; set; } = "https://specif.de/v1.0/schema.json";
+        public object Schema { get; set; } = "https://specif.de/v1.1/schema.json";
 
         /// <summary>
         /// Project ID.

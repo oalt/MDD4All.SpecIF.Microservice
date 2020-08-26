@@ -92,7 +92,7 @@ namespace MDD4All.SpecIF.DataProvider.File
 			//SpecIfFileReaderWriter.SaveSpecIfToFile(_specIfData, _path);
 		}
 
-        public override void AddNode(string parentNodeId, Node newNode)
+        public override void AddNodeAsFirstChild(string parentNodeId, Node newNode)
 		{
 			throw new NotImplementedException();
 		}
@@ -108,7 +108,7 @@ namespace MDD4All.SpecIF.DataProvider.File
 			throw new NotImplementedException();
 		}
 
-		public override Node SaveHierarchy(Node hierarchy)
+		public override Node UpdateHierarchy(Node hierarchy, string parentID = null, string predecessorID = null)
 		{
             Node result = null;
 
@@ -184,6 +184,16 @@ namespace MDD4All.SpecIF.DataProvider.File
         }
 
         public override void DeleteProject(string projectID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void AddNodeAsPredecessor(string predecessorID, Node newNode)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DeleteNode(string nodeID)
         {
             throw new NotImplementedException();
         }

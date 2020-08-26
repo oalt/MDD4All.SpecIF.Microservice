@@ -24,15 +24,24 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 
 		void AddHierarchy(Node hierarchy, string projectID = null);
 
-		Node SaveHierarchy(Node hierarchyToUpdate);
+		Node UpdateHierarchy(Node hierarchyToUpdate, string parentID = null, string predecessorID = null);
 
 		void AddStatement(Statement statement);
 
 		Statement SaveStatement(Statement statement, string projectID = null);
 
-		void AddNode(string parentNodeID, Node newNode);
+		void AddNodeAsFirstChild(string parentNodeID, Node newNode);
+
+        /// <summary>
+        /// Add node as predecessor of existing node in the same hierarchy level.
+        /// </summary>
+        /// <param name="predecessorID">The node id of an existing predecessor.</param>
+        /// <param name="newNode">The new node to add.</param>
+        void AddNodeAsPredecessor(string predecessorID, Node newNode);
 
         void MoveNode(string nodeID, string newParentID, string newSiblingId);
+
+        void DeleteNode(string nodeID);
 
 		long GetNextSpecIfIdentifier(string prefix);
 

@@ -46,7 +46,7 @@ namespace MDD4All.SpecIF.DataProvider.Jira
             throw new NotImplementedException();
         }
 
-        public override void AddNode(string parentNodeID, Node newNode)
+        public override void AddNodeAsFirstChild(string parentNodeID, Node newNode)
         {
             //throw new NotImplementedException();
         }
@@ -204,7 +204,7 @@ namespace MDD4All.SpecIF.DataProvider.Jira
             throw new NotImplementedException();
         }
 
-        public override Node SaveHierarchy(Node hierarchyToUpdate)
+        public override Node UpdateHierarchy(Node hierarchyToUpdate, string parentID = null, string predecessorID = null)
         {
             throw new NotImplementedException();
         }
@@ -230,6 +230,16 @@ namespace MDD4All.SpecIF.DataProvider.Jira
         }
 
         protected override IdentifiableElement GetItemWithLatestRevisionInBranch<T>(string id, string branch)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void AddNodeAsPredecessor(string predecessorID, Node newNode)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DeleteNode(string nodeID)
         {
             throw new NotImplementedException();
         }

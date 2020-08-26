@@ -154,7 +154,7 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 		//	FindDataProviderForStatement(statement).UpdateStatement(statement);
 		//}
 
-        public override Node SaveHierarchy(Node hierarchyToUpdate)
+        public override Node UpdateHierarchy(Node hierarchyToUpdate, string parentID = null, string predecessorID = null)
         {
             Node result = null;
 
@@ -162,7 +162,7 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 
             if (mongodbDataWriter != null)
             {
-                result = mongodbDataWriter.SaveHierarchy(hierarchyToUpdate);
+                result = mongodbDataWriter.UpdateHierarchy(hierarchyToUpdate);
             }
 
             return result;
@@ -188,13 +188,13 @@ namespace MDD4All.SpecIF.DataProvider.Integration
             throw new NotImplementedException();
         }
 
-        public override void AddNode(string parentNodeID, Node newNode)
+        public override void AddNodeAsFirstChild(string parentNodeID, Node newNode)
         {
             ISpecIfDataWriter mongodbDataWriter = _dataWriters["{67FE892C-7EB1-45AD-9259-6BE910841A3A}"];
 
             if (mongodbDataWriter != null)
             {
-                mongodbDataWriter.AddNode(parentNodeID, newNode);
+                mongodbDataWriter.AddNodeAsFirstChild(parentNodeID, newNode);
             }
         }
 
@@ -266,6 +266,16 @@ namespace MDD4All.SpecIF.DataProvider.Integration
         
 
         public override void UpdateProject(ISpecIfMetadataWriter metadataWriter, DataModels.SpecIF project)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void AddNodeAsPredecessor(string predecessorID, Node newNode)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DeleteNode(string nodeID)
         {
             throw new NotImplementedException();
         }

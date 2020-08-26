@@ -128,7 +128,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// <param name="parent">An optional parent node id. The sub-tree will be inserted as first child.</param>
         /// <param name="predecessor">An optional prdecessor node id. The sub-tree will be inserted after the specified node.</param>
         /// <param name="projectId">The projectId. If the id is given, the new hierarchy will be added to the specific project. 
-        /// Only usfull for new hierarchies - no parent or predecessor given.
+        /// Only usefull for new hierarchies - no parent or predecessor given.
         /// </param>
         [Authorize(Roles = "Editor")]
         [HttpPost]
@@ -137,13 +137,20 @@ namespace MDD4All.SpecIf.Microservice.Controllers
                                        [FromQuery]string predecessor,
                                        [FromQuery]string projectId)
         {
-            if (string.IsNullOrEmpty(parent))
+            if (string.IsNullOrEmpty(parent) && string.IsNullOrEmpty(predecessor))
             {
                 _dataWriter.AddHierarchy(node, projectId);
             }
             else
             {
-                _dataWriter.AddNode(parent, node);
+                if (string.IsNullOrEmpty(predecessor) && !string.IsNullOrEmpty(parent))
+                {
+                    _dataWriter.AddNodeAsFirstChild(parent, node);
+                }
+                else if(!string.IsNullOrEmpty(predecessor))
+                {
+                    _dataWriter.AddNodeAsPredecessor(predecessor, node);
+                }
             }
         }
 
@@ -165,7 +172,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
                                     [FromQuery]string parent,
                                     [FromQuery]string predecessor)
         {
-            _dataWriter.SaveHierarchy(node);
+            _dataWriter.UpdateHierarchy(node, parent, predecessor);
         }
 
         /// <summary>
@@ -174,11 +181,13 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// <param name="id"></param>
         /// <param name="revision"></param>
         /// <returns></returns>
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Editor")]
         [HttpDelete("{id}")]
         public ActionResult DeleteHierarchy(string id, [FromQuery]string revision)
         {
-            ActionResult result = NotFound();
+            ActionResult result = Ok();
+
+            _dataWriter.DeleteNode(id);
 
             return result;
         }

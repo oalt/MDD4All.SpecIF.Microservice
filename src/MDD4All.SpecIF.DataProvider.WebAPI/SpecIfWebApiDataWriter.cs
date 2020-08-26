@@ -71,7 +71,7 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
             PostDataAsync<Node, Node>(uriBuilder.Uri, hierarchy).Wait();
         }
 
-        public override void AddNode(string parentNodeID, Node newNode)
+        public override void AddNodeAsFirstChild(string parentNodeID, Node newNode)
         {
             UriBuilder uriBuilder = new UriBuilder(_connectionURL + "/specif/v1.0/hierarchies/");
 
@@ -150,7 +150,7 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 
 
 
-        public override Node SaveHierarchy(Node hierarchyToUpdate)
+        public override Node UpdateHierarchy(Node hierarchyToUpdate, string parentID = null, string predecessorID = null)
         {
             Node result = null;
 
@@ -304,6 +304,16 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
             }
 
             return result;
+        }
+
+        public override void AddNodeAsPredecessor(string predecessorID, Node newNode)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DeleteNode(string nodeID)
+        {
+            throw new NotImplementedException();
         }
     }
 }

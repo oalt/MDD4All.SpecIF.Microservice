@@ -49,7 +49,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
             InitializeIdentificators();
 		}
 
-        public override void AddNode(string parentNodeId, Node newNode)
+        public override void AddNodeAsFirstChild(string parentNodeId, Node newNode)
 		{
             Node parentNode = _nodeMongoDbAccessor.GetItemWithLatestRevision(parentNodeId);
 
@@ -67,12 +67,166 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
                 
                 _nodeMongoDbAccessor.Add(newNode);
 
-                parentNode.NodeReferences.Add(new Key(newNode.ID, newNode.Revision));
+                parentNode.NodeReferences.Insert(0, new Key(newNode.ID, newNode.Revision));
 
-                SaveHierarchy(parentNode);
+                _hierarchyMongoDbAccessor.Update(parentNode, parentNode.Id);
+
+               
             }
             
 
+        }
+
+        public override void AddNodeAsPredecessor(string predecessorID, Node newNode)
+        {
+            Node parentNode = _dataReader.GetParentNode(new Key { ID = predecessorID, Revision = null });
+
+            Node predecessor = _dataReader.GetNodeByKey(new Key { ID = predecessorID, Revision = null });
+
+            if (parentNode != null && predecessor != null)
+            {
+
+                if (string.IsNullOrEmpty(newNode.Revision))
+                {
+                    newNode.Revision = SpecIfGuidGenerator.CreateNewRevsionGUID();
+                }
+
+                if (string.IsNullOrEmpty(newNode.ID))
+                {
+                    newNode.ID = SpecIfGuidGenerator.CreateNewSpecIfGUID();
+                }
+
+                int index = 0;
+
+                foreach (Key nodeKey in parentNode.NodeReferences)
+                {
+                    if (nodeKey.ID == predecessor.ID)
+                    {
+                        break;
+                    }
+                    index++;
+                }
+
+                _nodeMongoDbAccessor.Add(newNode);
+
+                parentNode.NodeReferences.Insert(index + 1, new Key(newNode.ID, newNode.Revision));
+
+                _hierarchyMongoDbAccessor.Update(parentNode, parentNode.Id);
+
+
+            }
+        }
+
+        public override Node UpdateHierarchy(Node hierarchyToUpdate, string parentID = null, string predecessorID = null)
+        {
+
+            Node result = hierarchyToUpdate;
+
+            Node nodeToUpdate = _hierarchyMongoDbAccessor.GetItemById(hierarchyToUpdate.Id);
+
+            if (nodeToUpdate != null)
+            {
+                hierarchyToUpdate.IsHierarchyRoot = nodeToUpdate.IsHierarchyRoot;
+            }
+
+            Node oldParent = _dataReader.GetParentNode(new Key { ID = hierarchyToUpdate.ID, Revision = null });
+
+
+
+            if (parentID != null)
+            {
+                Node newParent = _dataReader.GetNodeByKey(new Key { ID = parentID, Revision = null });
+
+                if (newParent != null)
+                {
+
+                    if (oldParent.Id == newParent.Id)
+                    {
+                        newParent = oldParent;
+                    }
+
+                    int removeIndex = 0;
+
+                    foreach (Key nodeKey in oldParent.NodeReferences)
+                    {
+                        if (nodeKey.ID == nodeToUpdate.ID)
+                        {
+                            break;
+                        }
+                        removeIndex++;
+                    }
+
+
+                    oldParent.NodeReferences.RemoveAt(removeIndex);
+
+                    // insert as first child at new parent
+                    newParent.NodeReferences.Insert(0, new Key(nodeToUpdate.ID, nodeToUpdate.Revision));
+
+                    _hierarchyMongoDbAccessor.Update(oldParent, oldParent.Id);
+
+                    if (oldParent.Id != newParent.Id)
+                    {
+                        _hierarchyMongoDbAccessor.Update(newParent, newParent.Id);
+                    }
+
+
+                }
+            }
+            else if(predecessorID != null)
+            {
+                Node predecessor = _dataReader.GetNodeByKey(new Key { ID = predecessorID, Revision = null });
+
+                if(predecessor != null)
+                {
+                    Node newParent = _dataReader.GetParentNode(new Key { ID = predecessor.ID, Revision = null });
+
+                    if(newParent != null)
+                    {
+                        if (oldParent.Id == newParent.Id)
+                        {
+                            newParent = oldParent;
+                        }
+
+                        int removeIndex = 0;
+
+                        foreach (Key nodeKey in oldParent.NodeReferences)
+                        {
+                            if (nodeKey.ID == nodeToUpdate.ID)
+                            {
+                                break;
+                            }
+                            removeIndex++;
+                        }
+
+                        oldParent.NodeReferences.RemoveAt(removeIndex);
+
+                        int index = 0;
+
+                        foreach (Key nodeKey in newParent.NodeReferences)
+                        {
+                            if (nodeKey.ID == predecessor.ID)
+                            {
+                                break;
+                            }
+                            index++;
+                        }
+
+
+                        newParent.NodeReferences.Insert(index + 1, new Key(nodeToUpdate.ID, nodeToUpdate.Revision));
+
+                        _hierarchyMongoDbAccessor.Update(oldParent, oldParent.Id);
+
+                        if (oldParent.Id != newParent.Id)
+                        {
+                            _hierarchyMongoDbAccessor.Update(newParent, newParent.Id);
+                        }
+                    }
+                }
+            }
+
+            _hierarchyMongoDbAccessor.Update(hierarchyToUpdate, hierarchyToUpdate.Id);
+
+            return result;
         }
 
         public override void MoveNode(string nodeID, string newParentID, string newSiblingId)
@@ -122,11 +276,11 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
                 newParent.NodeReferences.Insert(insertIndex, new Key(nodeToMove.ID, nodeToMove.Revision));
 
-                SaveHierarchy(oldParent);
+                UpdateHierarchy(oldParent);
 
                 if (oldParent.Id != newParent.Id)
                 {
-                    SaveHierarchy(newParent);
+                    UpdateHierarchy(newParent);
                 }
                 
 
@@ -134,6 +288,42 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
             catch (Exception exception)
             {
                 throw exception;
+            }
+        }
+
+        public override void DeleteNode(string nodeID)
+        {
+            // we do not delete the element from the database, just remove the reference.
+
+            Node nodeToDelete = _dataReader.GetNodeByKey(new Key { ID = nodeID, Revision = null });
+
+            Node parent = _dataReader.GetParentNode(new Key { ID = nodeID, Revision = null });
+
+            if(nodeToDelete != null && parent != null)
+            {
+
+                int index = -1;
+
+                for (int counter = 0; counter < parent.NodeReferences.Count; counter++)
+                {
+                    
+                    if(parent.NodeReferences[counter].ID == nodeID)
+                    {
+                        index = counter;
+                        break;
+                    }
+                }
+
+                if(index > -1)
+                {
+                    parent.NodeReferences.RemoveAt(index);
+                }
+
+                _hierarchyMongoDbAccessor.Update(parent, parent.Id);
+            }
+            else if(nodeToDelete != null && nodeToDelete.IsHierarchyRoot)
+            {
+                _hierarchyMongoDbAccessor.Delete(nodeToDelete.Id);
             }
         }
 
@@ -190,22 +380,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
             }
         }
 
-		public override Node SaveHierarchy(Node hierarchyToUpdate)
-		{
-            
-            Node result = hierarchyToUpdate;
-
-            Node oldNode = _hierarchyMongoDbAccessor.GetItemById(hierarchyToUpdate.Id);
-
-            if(oldNode != null)
-            {
-                hierarchyToUpdate.IsHierarchyRoot = oldNode.IsHierarchyRoot;
-            }
-
-            _hierarchyMongoDbAccessor.Update(hierarchyToUpdate, hierarchyToUpdate.Id);
-
-            return result;
-        }
+		
 
         public override Resource SaveResource(Resource resource, string projectID = null)
 		{
@@ -360,5 +535,7 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
         {
             throw new NotImplementedException();
         }
+
+        
     }
 }

@@ -174,7 +174,7 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 
         public abstract void InitializeIdentificators();
         public abstract void SaveIdentificators();
-        public abstract Node SaveHierarchy(Node hierarchyToUpdate);
+        public abstract Node UpdateHierarchy(Node hierarchyToUpdate, string parentID = null, string predecessorID = null);
         public abstract Resource SaveResource(Resource resource, string projectID = null);
         public abstract Statement SaveStatement(Statement statement, string projectID = null);
 
@@ -182,11 +182,13 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
         public abstract void AddResource(Resource resource);
         public abstract void AddStatement(Statement statement);
         protected abstract IdentifiableElement GetItemWithLatestRevisionInBranch<T>(string id, string branch);
-        public abstract void AddNode(string parentNodeID, Node newNode);
+        public abstract void AddNodeAsFirstChild(string parentNodeID, Node newNode);
+        public abstract void AddNodeAsPredecessor(string predecessorID, Node newNode);
         public abstract void MoveNode(string nodeID, string newParentID, string newSiblingId);
         public abstract Resource UpdateResource(Resource resource);
         public abstract void AddProject(ISpecIfMetadataWriter metadataWriter, SpecIF.DataModels.SpecIF project, string integrationID = null);
         public abstract void UpdateProject(ISpecIfMetadataWriter metadataWriter, SpecIF.DataModels.SpecIF project);
         public abstract void DeleteProject(string projectID);
+        public abstract void DeleteNode(string nodeID);
     }
 }

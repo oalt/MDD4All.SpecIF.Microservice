@@ -177,11 +177,11 @@ namespace MDD4All.SpecIF.Converters
 		{
 			if (!overrideExistingData)
 			{
-				dataWriter.SaveHierarchy(node);
+				dataWriter.UpdateHierarchy(node);
 			}
 			else
 			{
-				dataWriter.SaveHierarchy(node);
+				dataWriter.UpdateHierarchy(node);
 			}
 
 			foreach (Node childNode in node.Nodes)
