@@ -90,6 +90,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SpecIF.DataIntegrat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SpecIF.ViewModels.SpecIfEvent", "MDD4All.SpecIF.ViewModels.SpecIfEvent\MDD4All.SpecIF.ViewModels.SpecIfEvent.csproj", "{5F559492-E586-434C-826A-217B98578B6E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDD4All.SpecIF.Apps.MongoDbInitializer", "MDD4All.SpecIF.Apps.MongoDbInitializer\MDD4All.SpecIF.Apps.MongoDbInitializer.csproj", "{B3BA335B-4356-4FAD-877F-1578A2122AF0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -204,6 +206,10 @@ Global
 		{5F559492-E586-434C-826A-217B98578B6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F559492-E586-434C-826A-217B98578B6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F559492-E586-434C-826A-217B98578B6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3BA335B-4356-4FAD-877F-1578A2122AF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3BA335B-4356-4FAD-877F-1578A2122AF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3BA335B-4356-4FAD-877F-1578A2122AF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3BA335B-4356-4FAD-877F-1578A2122AF0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -241,6 +247,7 @@ Global
 		{A3F9F1E3-8EEF-4F02-8D56-7B3B0D8E63EE} = {6625B47F-2449-4B53-9F55-D45C813DF411}
 		{A0BC20FF-9AA9-4AFD-9421-BBDE4FA8EB46} = {6625B47F-2449-4B53-9F55-D45C813DF411}
 		{5F559492-E586-434C-826A-217B98578B6E} = {958B5E9B-FC18-49A1-B52A-0C582AACD86F}
+		{B3BA335B-4356-4FAD-877F-1578A2122AF0} = {09BFA16E-6238-44C4-88D6-E0C2F182AF4F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C8F9327E-C222-4E00-A62F-20527B230190}
