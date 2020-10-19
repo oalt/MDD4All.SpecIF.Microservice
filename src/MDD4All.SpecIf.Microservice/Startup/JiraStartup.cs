@@ -11,13 +11,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace MDD4All.SpecIf.Microservice.Startup
 {
     public class JiraStartup : StartupBase
     {
-        public JiraStartup(IConfiguration configuration) : base(configuration)
+        public JiraStartup(IConfiguration configuration, ILogger<JiraStartup> logger) : base(configuration, logger)
         {
         }
 

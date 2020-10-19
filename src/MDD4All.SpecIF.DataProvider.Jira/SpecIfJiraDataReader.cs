@@ -97,7 +97,7 @@ namespace MDD4All.SpecIF.DataProvider.Jira
 
                     if(projectInfo != null)
                     {
-                        string specIfProjectID = JiraGuidConverter.ConvertToSpecIfGuid(projectInfo.Self, projectInfo.Key);
+                        string specIfProjectID = JiraGuidConverter.ConvertToSpecIfGuid(projectInfo.Self, projectInfo.ID);
 
                         _projectInformations.Add(specIfProjectID, projectInfo);
                     }
@@ -149,70 +149,82 @@ namespace MDD4All.SpecIF.DataProvider.Jira
         {
             List<Node> result = new List<Node>();
 
-            ProjectRootResources = new List<Resource>();
-
-            ProjectSearchResponse projectSearchResponse = await GetJiraProjectsAsync();
-
-
-
-            foreach (Project project in projectSearchResponse.Values)
+            try
             {
-                string projectID = JiraGuidConverter.ConvertToSpecIfGuid(project.Self, project.Key);
+
+                ProjectRootResources = new List<Resource>();
+
+                ProjectSearchResponse projectSearchResponse = await GetJiraProjectsAsync();
 
 
-                if (projectFilter == null || (projectFilter != null && projectID == projectFilter))
+
+                foreach (Project project in projectSearchResponse.Values)
                 {
-                    string projectResourceID = "_" + SpecIfGuidGenerator.CalculateSha1Hash(project.Key);
-
-                    Key resourceClass = new Key("RC-Hierarchy", "1");
-
-                    Resource projectHierarchyResource = SpecIfElementCreator.CreateResource(resourceClass, _metadataReader);
-
-                    projectHierarchyResource.ID = projectResourceID;
-                    projectHierarchyResource.Revision = "1";
-
-                    projectHierarchyResource.SetPropertyValue("dcterms:title", "Jira Project " + project.Key, _metadataReader);
-
-                    projectHierarchyResource.SetPropertyValue("dcterms:description", project.Name, _metadataReader);
+                    string projectID = JiraGuidConverter.ConvertToSpecIfGuid(project.Self, project.ID);
 
 
-                    ProjectRootResources.Add(projectHierarchyResource);
-
-
-                    Node projectNode = new Node
+                    if (projectFilter == null || (projectFilter != null && projectID == projectFilter))
                     {
-                        ID = projectResourceID + "_Node",
-                        Revision = "1",
-                        IsHierarchyRoot = true,
-                        ProjectID = project.Key,
-                        ResourceObject = new Key(projectHierarchyResource.ID, projectHierarchyResource.Revision)
-                    };
+                        string projectResourceID = "_" + SpecIfGuidGenerator.CalculateSha1Hash(project.Key);
 
-                    result.Add(projectNode);
+                        Key resourceClass = new Key("RC-Hierarchy", "1");
 
-                    if (!rootNodesOnly)
-                    {
-                        IssueSearchResponse issueSearchResponse = await GetProjectIssuesAsync(project.Key);
+                        Resource projectHierarchyResource = SpecIfElementCreator.CreateResource(resourceClass, _metadataReader);
 
-                        foreach (Issue issue in issueSearchResponse.Issues)
+                        projectHierarchyResource.ID = projectResourceID;
+                        projectHierarchyResource.Revision = "1";
+
+                        projectHierarchyResource.SetPropertyValue("dcterms:title", "Jira Project " + project.Key, _metadataReader);
+
+                        projectHierarchyResource.SetPropertyValue("dcterms:description", project.Name, _metadataReader);
+
+
+                        ProjectRootResources.Add(projectHierarchyResource);
+
+
+                        Node projectNode = new Node
                         {
-                            string issueResourceID = JiraGuidConverter.ConvertToSpecIfGuid(issue.Self, issue.Key);
+                            ID = projectResourceID + "_Node",
+                            Revision = "1",
+                            IsHierarchyRoot = true,
+                            ProjectID = project.Key,
+                            ResourceObject = new Key(projectHierarchyResource.ID, projectHierarchyResource.Revision)
+                        };
 
-                            string issueRevision = SpecIfGuidGenerator.ConvertDateToRevision(issue.Fields.Updated.Value);
+                        result.Add(projectNode);
 
-                            Node requirementNode = new Node
+                        if (!rootNodesOnly)
+                        {
+                            IssueSearchResponse issueSearchResponse = await GetProjectIssuesAsync(project.Key);
+
+                            if (issueSearchResponse != null)
                             {
-                                ID = issueResourceID + "_Node",
-                                Revision = "1",
-                                IsHierarchyRoot = false,
-                                ProjectID = project.Key,
-                                ResourceObject = new Key(issueResourceID, issueRevision)
-                            };
 
-                            projectNode.Nodes.Add(requirementNode);
+                                foreach (Issue issue in issueSearchResponse.Issues)
+                                {
+                                    string issueResourceID = JiraGuidConverter.ConvertToSpecIfGuid(issue.Self, issue.ID);
+
+                                    string issueRevision = SpecIfGuidGenerator.ConvertDateToRevision(issue.Fields.Updated.Value);
+
+                                    Node requirementNode = new Node
+                                    {
+                                        ID = issueResourceID + "_Node",
+                                        Revision = "1",
+                                        IsHierarchyRoot = false,
+                                        ProjectID = project.Key,
+                                        ResourceObject = new Key(issueResourceID, issueRevision)
+                                    };
+
+                                    projectNode.Nodes.Add(requirementNode);
+                                }
+                            }
                         }
                     }
                 }
+            }
+            catch(Exception exception)
+            {
+                Debug.WriteLine(exception);
             }
 
             return result;
@@ -221,6 +233,8 @@ namespace MDD4All.SpecIF.DataProvider.Jira
 
         private async Task<IssueSearchResponse> GetProjectIssuesAsync(string projectID)
         {
+            IssueSearchResponse result = null;
+
             string restString = "";
 
             if (projectID != null)
@@ -236,11 +250,19 @@ namespace MDD4All.SpecIF.DataProvider.Jira
                 restString = _url + "/rest/api/2/search";
             }
 
-           
+            try
+            {
 
-            string response = await _httpClient.GetStringAsync(restString);
+                string response = await _httpClient.GetStringAsync(restString);
 
-            IssueSearchResponse result = JsonConvert.DeserializeObject<IssueSearchResponse>(response);
+                result = JsonConvert.DeserializeObject<IssueSearchResponse>(response);
+
+            }
+            catch(Exception exception)
+            {
+                Debug.WriteLine("Error getting data from project " + projectID);
+                Debug.WriteLine(exception);
+            }
 
             return result;
         }
@@ -327,7 +349,7 @@ namespace MDD4All.SpecIF.DataProvider.Jira
             {
                 foreach(Project jiraProject in projectSearchResponse.Values)
                 {
-                    string projectID = JiraGuidConverter.ConvertToSpecIfGuid(jiraProject.Self, jiraProject.Key);
+                    string projectID = JiraGuidConverter.ConvertToSpecIfGuid(jiraProject.Self, jiraProject.ID);
 
                     ProjectDescriptor projectDescriptor = new ProjectDescriptor
                     {

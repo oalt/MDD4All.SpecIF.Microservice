@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using EAAPI = EA;
 
@@ -21,7 +22,7 @@ namespace MDD4All.SpecIf.Microservice.Startup
 {
     public class EaStartup : StartupBase
     {
-        public EaStartup(IConfiguration configuration) : base(configuration)
+        public EaStartup(IConfiguration configuration, ILogger<EaStartup> logger) : base(configuration, logger)
         {
         }
 

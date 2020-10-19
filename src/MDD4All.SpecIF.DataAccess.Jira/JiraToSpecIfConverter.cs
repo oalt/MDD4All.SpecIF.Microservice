@@ -33,7 +33,7 @@ namespace MDD4All.SpecIF.DataAccess.Jira
 
             result = SpecIfElementCreator.CreateResource(classKey, _metadataReader);
 
-            string specIfGuid = JiraGuidConverter.ConvertToSpecIfGuid(jiraIssue.Self, jiraIssue.Key);
+            string specIfGuid = JiraGuidConverter.ConvertToSpecIfGuid(jiraIssue.Self, jiraIssue.ID);
 
             result.ID = specIfGuid;
 

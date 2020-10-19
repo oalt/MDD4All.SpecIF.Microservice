@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -20,7 +21,7 @@ namespace MDD4All.SpecIf.Microservice.Startup
 {
     public class IntegrationStartup : StartupBase
     {
-        public IntegrationStartup(IConfiguration configuration) : base(configuration)
+        public IntegrationStartup(IConfiguration configuration, ILogger<IntegrationStartup> logger) : base(configuration, logger)
         {
         }
 

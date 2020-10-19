@@ -112,7 +112,7 @@ namespace MDD4All.SpecIF.DataProvider.Jira
 
                         if(newJiraResultIssue != null)
                         {
-                            string newIssueGuid = JiraGuidConverter.ConvertToSpecIfGuid(newJiraResultIssue.Self, newJiraResultIssue.Key);
+                            string newIssueGuid = JiraGuidConverter.ConvertToSpecIfGuid(newJiraResultIssue.Self, newJiraResultIssue.ID);
 
                             result = _dataReader.GetResourceByKey(new Key(newIssueGuid));
 

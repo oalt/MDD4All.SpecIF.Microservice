@@ -49,7 +49,7 @@ namespace MDD4All.SpecIF.Microservice.JiraWebhook.Controllers
                     eventType = "V-SET-ResourceCreated";
                 }
 
-                string resourceID = JiraGuidConverter.ConvertToSpecIfGuid(jiraWebhookObject.Issue.Self, jiraWebhookObject.Issue.Key);
+                string resourceID = JiraGuidConverter.ConvertToSpecIfGuid(jiraWebhookObject.Issue.Self, jiraWebhookObject.Issue.ID);
 
                 string resourceRevision = SpecIfGuidGenerator.ConvertDateToRevision(jiraWebhookObject.Issue.Fields.Updated.Value);
 

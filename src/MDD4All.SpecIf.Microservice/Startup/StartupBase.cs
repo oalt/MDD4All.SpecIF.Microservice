@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
@@ -24,15 +25,19 @@ namespace MDD4All.SpecIf.Microservice.Startup
 {
     public abstract class StartupBase
     {
+        protected readonly ILogger _logger;
+
         public IConfiguration Configuration { get; }
 
         private ISpecIfServiceDescription _serviceDescription;
 
         public static List<string> Urls = new List<string> { "https://localhost:888", "http://localhost:887" };
 
-        public StartupBase(IConfiguration configuration)
+        public StartupBase(IConfiguration configuration, ILogger<StartupBase> logger)
         {
             Configuration = configuration;
+
+            _logger = logger;
 
             _serviceDescription = ServiceDescriptionFactory.Create(ServiceStarter.Type, null);
 
@@ -217,7 +222,7 @@ namespace MDD4All.SpecIf.Microservice.Startup
             }
             catch (Exception exception)
             {
-                Console.WriteLine("Unable to register in consul.");
+                _logger.LogWarning("Unable to register in consul.");
             }
 
             try
@@ -229,7 +234,7 @@ namespace MDD4All.SpecIf.Microservice.Startup
             }
             catch (Exception exception)
             {
-                Console.WriteLine("Unable to start signalR.");
+                _logger.LogWarning("Unable to start signalR.");
             }
 
         }

@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -24,8 +25,8 @@ namespace MDD4All.SpecIf.Microservice.Startup
     public class MongoDbStartup : StartupBase
 	{
 		
-		public MongoDbStartup(IConfiguration configuration) : 
-            base(configuration)
+		public MongoDbStartup(IConfiguration configuration, ILogger<MongoDbStartup> logger) : 
+            base(configuration, logger)
 		{
 
 		}

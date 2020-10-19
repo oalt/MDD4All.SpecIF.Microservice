@@ -1,5 +1,6 @@
 ﻿using Consul;
 using MDD4All.SpecIF.DataModels.Service;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace MDD4All.SpecIf.Microservice.Startup
 {
     public class ServiceRegistrator
     {
-        public void RegisterService(ISpecIfServiceDescription specIfServiceDescription)
+        public void RegisterService(ISpecIfServiceDescription specIfServiceDescription, ILogger logger)
         {
             // register with consul
             try
@@ -36,7 +37,7 @@ namespace MDD4All.SpecIf.Microservice.Startup
             }
             catch (Exception exception)
             {
-                Console.WriteLine("Unable to register in consul.");
+                logger.LogWarning("Unable to register in consul.");
             }
         }
     }

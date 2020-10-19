@@ -3,6 +3,8 @@ using MDD4All.SpecIF.DataModels.Service;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,6 +37,8 @@ namespace MDD4All.SpecIf.Microservice.Startup
             {
                 webHost.Start();
 
+                ILogger<ServiceStarter> logger = webHost.Services.GetRequiredService<ILogger<ServiceStarter>>();
+
                 ICollection<string> addresses = webHost.ServerFeatures.Get<IServerAddressesFeature>().Addresses;
 
                 if (addresses.Count > 0) // Consul registration
@@ -44,7 +48,7 @@ namespace MDD4All.SpecIf.Microservice.Startup
                     if(serviceDescription != null)
                     {
                         ServiceRegistrator serviceRegistrator = new ServiceRegistrator();
-                        serviceRegistrator.RegisterService(serviceDescription);
+                        serviceRegistrator.RegisterService(serviceDescription, logger);
                     }
                 }
 
@@ -76,7 +80,10 @@ namespace MDD4All.SpecIf.Microservice.Startup
                 result = WebHost.CreateDefaultBuilder(args)
                                                     .UseStartup<JiraStartup>()
                                                     .UseUrls(Startup.StartupBase.Urls.ToArray())
+                                                    .ConfigureLogging(ConfigureLoggingAction)
                                                     .Build();
+                
+
             }
             else if(type == "integration")
             {
@@ -111,8 +118,29 @@ namespace MDD4All.SpecIf.Microservice.Startup
 
             }
 
+            if(result != null)
+            {
+                ILogger<ServiceStarter> logger = result.Services.GetRequiredService<ILogger<ServiceStarter>>();
+
+                string urls = "";
+                
+                foreach(string url in StartupBase.Urls)
+                {
+                    urls += url + " ";
+                }
+
+                logger.LogInformation("Start SpecIF API [" + type + "] on " + urls);
+            }
 
             return result;
+        }
+
+        private void ConfigureLoggingAction(ILoggingBuilder loggingBuilder)
+        {
+            loggingBuilder.ClearProviders();
+            loggingBuilder.AddConsole();
+            loggingBuilder.AddDebug();
+            loggingBuilder.AddEventSourceLogger();
         }
     }
 }
