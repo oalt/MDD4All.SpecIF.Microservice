@@ -87,6 +87,10 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 					}
 					else
 					{
+						if(property.Value is string)
+                        {
+							result = property.Value.ToString();
+                        }
 						//if (property.Value.LanguageValues?.FirstOrDefault() != null)
 						//{
 						//	string enumId = property.Value.LanguageValues[0].Text;

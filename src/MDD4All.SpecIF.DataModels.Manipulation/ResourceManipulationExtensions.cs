@@ -11,9 +11,9 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 {
     public static class ResourceManipulationExtensions
     {
-		public static LanguageValue GetTypeName(this Resource resource, ISpecIfMetadataReader dataProvider)
+		public static string GetTypeName(this Resource resource, ISpecIfMetadataReader dataProvider)
 		{
-			LanguageValue result = new LanguageValue();
+			string result = "";
 
 			try
 			{
@@ -21,6 +21,10 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 
 				if (resourceType != null)
 				{
+					if(resourceType.Title is string)
+                    {
+						result = resourceType.Title.ToString();
+                    }
 					//result = resourceType.Title.LanguageValues[0];
 				}
 			}
