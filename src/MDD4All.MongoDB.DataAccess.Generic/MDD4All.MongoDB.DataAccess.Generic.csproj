@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -11,10 +11,6 @@
 
   <ItemGroup>
     <PackageReference Include="MongoDB.Driver" Version="2.8.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\MDD4All.SpecIF.DataModels\MDD4All.SpecIF.DataModels.csproj" />
   </ItemGroup>
 
 </Project>
