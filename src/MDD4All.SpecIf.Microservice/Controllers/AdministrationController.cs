@@ -189,6 +189,9 @@ namespace MDD4All.SpecIf.Microservice.Controllers
             return result;
         }
 
+
+        
+
         /// <summary>
         /// Change password. This endpoint is usable by all authenticated users.
         /// </summary>
@@ -201,30 +204,59 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         {
             ActionResult result = BadRequest();
 
+            ApplicationUser user = null;
+
             if (userLogin != null)
             {
+                UpperInvariantLookupNormalizer lookupNormalizer = new UpperInvariantLookupNormalizer();
+
+                string normalizedUserName = lookupNormalizer.Normalize(userLogin.UserName);
+
+
                 ClaimsPrincipal currentUser = HttpContext.User;
+                                
 
                 if (currentUser.HasClaim(claim => claim.Type == ClaimTypes.Name))
                 {
-                    string normalizedUserName = currentUser.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Name).Value;
+                    string normalizedCurrentUserName = currentUser.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Name).Value;
 
-                    ApplicationUser user = await _userStore.FindByNameAsync(normalizedUserName, CancellationToken.None);
+                    ApplicationUser currentApplicationUser = await _userStore.FindByNameAsync(normalizedCurrentUserName, 
+                                                                                   CancellationToken.None);
 
-                    if (user != null)
+                    
+                    if(currentApplicationUser.NormalizedUserName == normalizedUserName)
                     {
-                        PasswordHasher<ApplicationUser> passwordHasher = new PasswordHasher<ApplicationUser>();
-                        user.PasswordHash = passwordHasher.HashPassword(user, userLogin.Password);
-
-                        await _userStore.UpdateAsync(user, CancellationToken.None);
-
-                        result = new OkResult();
+                        user = currentApplicationUser;
                     }
                     else
                     {
-                        result = NotFound();
+                        if(currentUser.HasClaim(roleClaim => roleClaim.Type == ClaimTypes.Role))
+                        {
+                            bool isAdmin = await _roleStore.IsInRoleAsync(currentApplicationUser, "Administrator", CancellationToken.None);
+                            
+                            if(isAdmin)
+                            {
+                                user = await _userStore.FindByNameAsync(normalizedUserName, CancellationToken.None);
+                            }
+                        }
                     }
+
                 }
+                
+                if (user != null)
+                {
+                    PasswordHasher<ApplicationUser> passwordHasher = new PasswordHasher<ApplicationUser>();
+                    user.PasswordHash = passwordHasher.HashPassword(user, userLogin.Password);
+
+                    await _userStore.UpdateAsync(user, CancellationToken.None);
+
+                    result = new OkResult();
+                }
+                else
+                {
+                    result = NotFound();
+                }
+                
             }
 
             return result;
