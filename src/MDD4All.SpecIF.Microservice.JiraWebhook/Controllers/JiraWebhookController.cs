@@ -57,7 +57,7 @@ namespace MDD4All.SpecIF.Microservice.JiraWebhook.Controllers
 
                 string origin = "Atlassian Jira " + jiraWebhookObject.Issue.Self.Substring(0, restIndex);
 
-                string project = jiraWebhookObject.Issue.Fields.Project.Key;
+                string project = JiraGuidConverter.ConvertToSpecIfGuid(jiraWebhookObject.Issue.Self, jiraWebhookObject.Issue.Fields.Project.ID);
 
                 string apiURL = _configuration.GetValue<string>("JiraSpecIfAPI"); 
 
