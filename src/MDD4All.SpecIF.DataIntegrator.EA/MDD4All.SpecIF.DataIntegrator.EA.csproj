@@ -18,6 +18,8 @@
     <ProjectReference Include="..\MDD4All.SpecIF.DataIntegrator.Contracts\MDD4All.SpecIF.DataIntegrator.Contracts.csproj" />
     <ProjectReference Include="..\MDD4All.SpecIF.DataIntegrator.KafkaListener\MDD4All.SpecIF.DataIntegrator.KafkaListener.csproj" />
     <ProjectReference Include="..\MDD4All.SpecIF.DataModels.Manipulation\MDD4All.SpecIF.DataModels.Manipulation.csproj" />
+    <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.EA\MDD4All.SpecIF.DataProvider.EA.csproj" />
+    <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.Jira\MDD4All.SpecIF.DataProvider.Jira.csproj" />
     <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.WebAPI\MDD4All.SpecIF.DataProvider.WebAPI.csproj" />
   </ItemGroup>
 

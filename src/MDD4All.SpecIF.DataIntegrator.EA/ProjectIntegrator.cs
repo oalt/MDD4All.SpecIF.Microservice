@@ -7,6 +7,10 @@ using MDD4All.EnterpriseArchitect.Manipulations;
 using MDD4All.SpecIF.DataProvider.WebAPI;
 using MDD4All.SpecIF.DataIntegrator.EA.Extensions;
 using MDD4All.SpecIF.DataProvider.Contracts;
+using MDD4All.SpecIF.DataModels.RightsManagement;
+using MDD4All.SpecIF.DataProvider.EA.Converters;
+using MDD4All.SpecIF.DataProvider.Jira;
+using MDD4All.SpecIF.DataModels.Manipulation;
 
 namespace MDD4All.SpecIF.DataIntegrator.EA
 {
@@ -17,12 +21,13 @@ namespace MDD4All.SpecIF.DataIntegrator.EA
 
         private EAAPI.Repository _repository;
         private ISpecIfMetadataReader _metadataReader;
-
+        
 
         public ProjectIntegrator(EAAPI.Repository repository, ISpecIfMetadataReader metadataReader)
         {
             _repository = repository;
             _metadataReader = metadataReader;
+        
 
             AddSearches();
         }
@@ -192,6 +197,35 @@ namespace MDD4All.SpecIF.DataIntegrator.EA
             }
         }
 
+        public Resource AddRequirementToSpecIF(string url, LoginData loginData, EAAPI.Element reqiuirement, string projectID)
+        {
+            Resource result = null;
+
+            SpecIfWebApiDataReader specIfWebApiDataReader = new SpecIfWebApiDataReader(url);
+
+            
+            SpecIfWebApiDataWriter webApiDataWriter = new SpecIfWebApiDataWriter(url, loginData, _metadataReader, specIfWebApiDataReader);
+
+
+
+            EaToSpecIfConverter eaToSpecIfConverter = new EaToSpecIfConverter(_repository);
+
+            Resource resource = eaToSpecIfConverter.ConvertElementToResource(reqiuirement);
+
+            result = webApiDataWriter.SaveResource(resource, projectID);
+
+            if (result != null)
+            {
+                reqiuirement.SetTaggedValueString("specifId", result.ID, false);
+                reqiuirement.SetTaggedValueString("specifRevision", result.Revision, false);
+                string key = result.GetPropertyValue("dcterms:identifier", _metadataReader);
+
+                reqiuirement.SetTaggedValueString("identifier", key, false);
+            }
+
+            return result;
+        }
+
         private void AddSearches()
         {
             if(_searchesDefined == false)
@@ -199,6 +233,7 @@ namespace MDD4All.SpecIF.DataIntegrator.EA
                 _repository.AddDefinedSearches(Searches.SEARCH_SPECIF_PROJECT);
                 _repository.AddDefinedSearches(Searches.SEARCH_HIERARCHY_ROOT_PACKAGE);
                 _repository.AddDefinedSearches(Searches.SPECIF_ELEMENT_SEARCH);
+                _repository.AddDefinedSearches(Searches.SPECIF_INTEGRATION_PACKAGE_SEARCH);
 
                 _searchesDefined = true;
             }
