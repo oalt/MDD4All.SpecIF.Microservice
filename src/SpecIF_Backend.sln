@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.271
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30503.244
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4_Converters", "4_Converters", "{7D0FA414-B3D2-4264-A91F-EAA551CA5A5D}"
 EndProject
@@ -90,7 +90,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SpecIF.DataIntegrat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SpecIF.ViewModels.SpecIfEvent", "MDD4All.SpecIF.ViewModels.SpecIfEvent\MDD4All.SpecIF.ViewModels.SpecIfEvent.csproj", "{5F559492-E586-434C-826A-217B98578B6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDD4All.SpecIF.Apps.MongoDbInitializer", "MDD4All.SpecIF.Apps.MongoDbInitializer\MDD4All.SpecIF.Apps.MongoDbInitializer.csproj", "{B3BA335B-4356-4FAD-877F-1578A2122AF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SpecIF.Apps.MongoDbInitializer", "MDD4All.SpecIF.Apps.MongoDbInitializer\MDD4All.SpecIF.Apps.MongoDbInitializer.csproj", "{B3BA335B-4356-4FAD-877F-1578A2122AF0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDD4All.SpecIF.Apps.ServiceStarter", "MDD4All.SpecIF.Apps.ServiceStarter\MDD4All.SpecIF.Apps.ServiceStarter.csproj", "{F842AFB5-41A1-4576-B438-A1B04B3D6A40}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -210,6 +212,10 @@ Global
 		{B3BA335B-4356-4FAD-877F-1578A2122AF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3BA335B-4356-4FAD-877F-1578A2122AF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3BA335B-4356-4FAD-877F-1578A2122AF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F842AFB5-41A1-4576-B438-A1B04B3D6A40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F842AFB5-41A1-4576-B438-A1B04B3D6A40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F842AFB5-41A1-4576-B438-A1B04B3D6A40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F842AFB5-41A1-4576-B438-A1B04B3D6A40}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -248,6 +254,7 @@ Global
 		{A0BC20FF-9AA9-4AFD-9421-BBDE4FA8EB46} = {6625B47F-2449-4B53-9F55-D45C813DF411}
 		{5F559492-E586-434C-826A-217B98578B6E} = {958B5E9B-FC18-49A1-B52A-0C582AACD86F}
 		{B3BA335B-4356-4FAD-877F-1578A2122AF0} = {09BFA16E-6238-44C4-88D6-E0C2F182AF4F}
+		{F842AFB5-41A1-4576-B438-A1B04B3D6A40} = {09BFA16E-6238-44C4-88D6-E0C2F182AF4F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C8F9327E-C222-4E00-A62F-20527B230190}
