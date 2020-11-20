@@ -75,12 +75,11 @@ steps:
   inputs:
     command: publish
     zipAfterPublish: true
-    arguments: '/p:PublishProfile=SpecIfMicroservice_Standalone'
+    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) /p:PublishProfile=SpecIfMicroservice_Standalone'
     projects: 'src\MDD4All.SpecIF.Microservice\MDD4All.SpecIF.Microservice.csproj'
     versioningScheme: byBuildNumber
-    configuration: '$(buildConfiguration)'
     workingDirectory: 'src\MDD4All.SpecIF.Microservice'
-    packDirectory: '$(Build.ArtifactStagingDirectory)'
+    
 
 - task: NuGetCommand@2
   inputs:
