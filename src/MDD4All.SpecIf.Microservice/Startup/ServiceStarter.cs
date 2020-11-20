@@ -33,7 +33,7 @@ namespace MDD4All.SpecIf.Microservice.Startup
 
             if (webHost != null)
             {
-                webHost.Run();
+                webHost.Start();
 
                 ILogger<ServiceStarter> logger = webHost.Services.GetRequiredService<ILogger<ServiceStarter>>();
 

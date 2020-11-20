@@ -68,6 +68,8 @@ namespace MDD4All.SpecIf.Microservice.Startup
 
             });
 
+            services.AddSwaggerGenNewtonsoftSupport();
+
             // CORS
             services.AddCors(o => o.AddPolicy("ActivateCorsPolicy", builder =>
             {
@@ -184,6 +186,7 @@ namespace MDD4All.SpecIf.Microservice.Startup
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
+            
 
             if (env.IsDevelopment())
             {
@@ -208,6 +211,8 @@ namespace MDD4All.SpecIf.Microservice.Startup
             app.UseStaticFiles();
 
             app.UseRouting();
+            
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
@@ -230,7 +235,17 @@ namespace MDD4All.SpecIf.Microservice.Startup
                         defaults: new { controller = "Home", action = "Index" });
                 }
 
-                
+                try
+                {
+                    endpoints.MapHub<SpecIfEventHub>("/specifEventHub");
+                    
+                }
+                catch (Exception exception)
+                {
+                    _logger.LogWarning("Unable to start signalR.");
+                }
+
+
 
             });
 
@@ -249,17 +264,7 @@ namespace MDD4All.SpecIf.Microservice.Startup
                 _logger.LogWarning("Unable to register in consul.");
             }
 
-            try
-            {
-                app.UseSignalR(routes =>
-                {
-                    routes.MapHub<SpecIfEventHub>("/specifEventHub");
-                });
-            }
-            catch (Exception exception)
-            {
-                _logger.LogWarning("Unable to start signalR.");
-            }
+            
 
         }
 
