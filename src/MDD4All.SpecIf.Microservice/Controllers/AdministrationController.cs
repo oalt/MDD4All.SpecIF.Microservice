@@ -105,7 +105,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
                 ApplicationUser applicationUser = new ApplicationUser()
                 {
                     UserName = user.UserName,
-                    NormalizedUserName = lookupNormalizer.Normalize(user.UserName),
+                    NormalizedUserName = lookupNormalizer.NormalizeName(user.UserName),
                     Roles = new List<string>()
                 };
 
@@ -210,7 +210,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
             {
                 UpperInvariantLookupNormalizer lookupNormalizer = new UpperInvariantLookupNormalizer();
 
-                string normalizedUserName = lookupNormalizer.Normalize(userLogin.UserName);
+                string normalizedUserName = lookupNormalizer.NormalizeName(userLogin.UserName);
 
 
                 ClaimsPrincipal currentUser = HttpContext.User;
@@ -270,7 +270,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
 
             UpperInvariantLookupNormalizer lookupNormalizer = new UpperInvariantLookupNormalizer();
 
-            ApplicationUser user = await _userStore.FindByNameAsync(lookupNormalizer.Normalize(loginData.UserName), 
+            ApplicationUser user = await _userStore.FindByNameAsync(lookupNormalizer.NormalizeName(loginData.UserName), 
                                                                     CancellationToken.None);
 
             PasswordHasher<ApplicationUser> passwordHasher = new PasswordHasher<ApplicationUser>();

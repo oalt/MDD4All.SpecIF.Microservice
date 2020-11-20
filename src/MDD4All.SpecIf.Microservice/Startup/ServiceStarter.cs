@@ -1,14 +1,12 @@
-﻿using MDD4All.SpecIF.DataIntegrator.EA;
-using MDD4All.SpecIF.DataModels.Service;
+﻿using MDD4All.SpecIF.DataModels.Service;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MDD4All.SpecIf.Microservice.Startup
 {
@@ -35,7 +33,7 @@ namespace MDD4All.SpecIf.Microservice.Startup
 
             if (webHost != null)
             {
-                webHost.Start();
+                webHost.Run();
 
                 ILogger<ServiceStarter> logger = webHost.Services.GetRequiredService<ILogger<ServiceStarter>>();
 
@@ -45,14 +43,14 @@ namespace MDD4All.SpecIf.Microservice.Startup
                 {
                     ISpecIfServiceDescription serviceDescription = ServiceDescriptionFactory.Create(ServiceStarter.Type, addresses.ToArray()[0]);
 
-                    if(serviceDescription != null)
+                    if (serviceDescription != null)
                     {
                         ServiceRegistrator serviceRegistrator = new ServiceRegistrator();
                         serviceRegistrator.RegisterService(serviceDescription, logger);
                     }
                 }
 
-                
+
 
                 webHost.WaitForShutdown();
             }
@@ -69,9 +67,10 @@ namespace MDD4All.SpecIf.Microservice.Startup
                 Startup.StartupBase.Urls = new List<string> { "https://localhost:888", "http://localhost:887" };
 
                 result = WebHost.CreateDefaultBuilder(args)
-                                .UseStartup<MongoDbStartup>()
-                                .UseUrls(Startup.StartupBase.Urls.ToArray())
-                                .Build();
+                                                    .UseStartup<MongoDbStartup>()
+                                                    .UseUrls(Startup.StartupBase.Urls.ToArray())
+                                                    .ConfigureLogging(ConfigureLoggingAction)
+                                                    .Build();
             }
             else if (type == "jira")
             {
@@ -82,26 +81,26 @@ namespace MDD4All.SpecIf.Microservice.Startup
                                                     .UseUrls(Startup.StartupBase.Urls.ToArray())
                                                     .ConfigureLogging(ConfigureLoggingAction)
                                                     .Build();
-                
+
 
             }
             else if(type == "integration")
             {
                 Startup.StartupBase.Urls = new List<string> { "https://localhost:555", "http://localhost:554" };
 
-                result = WebHost.CreateDefaultBuilder(args)
-                                                    .UseStartup<IntegrationStartup>()
-                                                    .UseUrls(Startup.StartupBase.Urls.ToArray())
-                                                    .Build();
+                //result = WebHost.CreateDefaultBuilder(args)
+                //                                    .UseStartup<IntegrationStartup>()
+                //                                    .UseUrls(Startup.StartupBase.Urls.ToArray())
+                //                                    .Build();
             }
             else if (type == "ea")
             {
                 Startup.StartupBase.Urls = new List<string> { "https://localhost:444", "http://localhost:443" };
 
-                result = WebHost.CreateDefaultBuilder(args)
-                                                    .UseStartup<EaStartup>()
-                                                    .UseUrls(Startup.StartupBase.Urls.ToArray())
-                                                    .Build();
+                //result = WebHost.CreateDefaultBuilder(args)
+                //                                    .UseStartup<EaStartup>()
+                //                                    .UseUrls(Startup.StartupBase.Urls.ToArray())
+                //                                    .Build();
 
 
                 
@@ -110,10 +109,10 @@ namespace MDD4All.SpecIf.Microservice.Startup
             {
                 Startup.StartupBase.Urls = new List<string> { "https://localhost:666", "http://localhost:665" };
 
-                result = WebHost.CreateDefaultBuilder(args)
-                                                    .UseStartup<FileStartup>()
-                                                    .UseUrls(Startup.StartupBase.Urls.ToArray())
-                                                    .Build();
+                //result = WebHost.CreateDefaultBuilder(args)
+                //                                    .UseStartup<FileStartup>()
+                //                                    .UseUrls(Startup.StartupBase.Urls.ToArray())
+                //                                    .Build();
 
 
             }

@@ -2,19 +2,14 @@
 using MDD4All.SpecIf.Microservice.DocumentFilters;
 using MDD4All.SpecIf.Microservice.Hubs;
 using MDD4All.SpecIf.Microservice.OperationFilters;
-using MDD4All.SpecIF.DataIntegrator.Contracts;
-using MDD4All.SpecIF.DataIntegrator.KafkaListener;
 using MDD4All.SpecIF.DataModels.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Server.Features;
-using Microsoft.AspNetCore.Internal;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
@@ -50,12 +45,28 @@ namespace MDD4All.SpecIf.Microservice.Startup
         public void ConfigureServices(IServiceCollection services)
         {
             // MVC
-            services.AddMvc().AddJsonOptions(options =>
+            services.AddMvc().AddNewtonsoftJson().AddJsonOptions(options =>
             {
-                options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+                options.JsonSerializerOptions.IgnoreNullValues = true;
+            });  
+
+            services.AddControllers().AddNewtonsoftJson().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.IgnoreNullValues = true;
 
             });
 
+            services.AddControllersWithViews().AddNewtonsoftJson().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.IgnoreNullValues = true;
+
+            });
+
+            services.AddRazorPages().AddNewtonsoftJson().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.IgnoreNullValues = true;
+
+            });
 
             // CORS
             services.AddCors(o => o.AddPolicy("ActivateCorsPolicy", builder =>
@@ -81,20 +92,20 @@ namespace MDD4All.SpecIf.Microservice.Startup
             {
                 options.DescribeAllParametersInCamelCase();
 
-                options.SwaggerDoc("v1.0", new Info
+                options.SwaggerDoc("v1.0", new Microsoft.OpenApi.Models.OpenApiInfo
                 {
                     Title = "SpecIF API", // (" + _serviceDescription.ServiceName + ")",
                     Version = "v1.0",
                     Description = "Web API for the Specification Integration Facility (SpecIF).",
-                    Contact = new Contact
+                    Contact = new Microsoft.OpenApi.Models.OpenApiContact
                     {
                         Name = "The SpecIF team at Gesellschaft für Systems Engineering (GfSE) e.V.",
-                        Url = "https://specif.de"
+                        Url = new Uri("https://specif.de")
                     },
-                    License = new License
+                    License = new Microsoft.OpenApi.Models.OpenApiLicense
                     {
                         Name = "Apache License 2.0",
-                        Url = "http://www.apache.org/licenses/LICENSE-2.0"
+                        Url = new Uri("http://www.apache.org/licenses/LICENSE-2.0")
                     }
                 });
 
@@ -104,11 +115,11 @@ namespace MDD4All.SpecIf.Microservice.Startup
                 // Ensure the routes are added to the right Swagger doc
                 options.DocInclusionPredicate((version, desc) =>
                 {
-                    var versions = desc.ControllerAttributes()
+                    var versions = desc.CustomAttributes()
                         .OfType<ApiVersionAttribute>()
                         .SelectMany(attr => attr.Versions);
 
-                    var maps = desc.ActionAttributes()
+                    var maps = desc.CustomAttributes()
                         .OfType<MapToApiVersionAttribute>()
                         .SelectMany(attr => attr.Versions)
                         .ToArray();
@@ -122,22 +133,32 @@ namespace MDD4All.SpecIf.Microservice.Startup
                 string filePath = Path.Combine(System.AppContext.BaseDirectory, "MDD4All.SpecIf.Microservice.xml");
                 options.IncludeXmlComments(filePath);
 
-                var security = new Dictionary<string, IEnumerable<string>>
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    {"Bearer", new string[] { }},
-                };
-
-                options.AddSecurityDefinition("Bearer", new ApiKeyScheme
-                {
-                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
                     Name = "Authorization",
-                    In = "header",
-                    Type = "apiKey"
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\""
                 });
 
-                options.AddSecurityRequirement(security);
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                          new OpenApiSecurityScheme
+                            {
+                                Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "Bearer"
+                                }
+                            },
+                            new string[] {}
 
-                
+                    }
+                });
+
             });
 
 
@@ -186,29 +207,32 @@ namespace MDD4All.SpecIf.Microservice.Startup
 
             app.UseStaticFiles();
 
-            app.UseMvc(routes =>
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
+                endpoints.MapControllerRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
 
                 if (ServiceStarter.Type == "integration")
                 {
-                    routes.MapRoute(
+                    endpoints.MapControllerRoute(
                         name: "services",
-                        template: "services",
+                        pattern: "services",
                         defaults: new { controller = "Service", action = "Index" });
                 }
                 else
                 {
-                    routes.MapRoute(
+                    endpoints.MapControllerRoute(
                         name: "services",
-                        template: "services",
+                        pattern: "services",
                         defaults: new { controller = "Home", action = "Index" });
                 }
-            });
 
-            
+                
+
+            });
 
             // register with consul
             try
