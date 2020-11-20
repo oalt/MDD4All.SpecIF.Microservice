@@ -4,6 +4,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Diagnostics;
 
 namespace MDD4All.SpecIF.DataModels.Converters
 {
@@ -25,10 +26,18 @@ namespace MDD4All.SpecIF.DataModels.Converters
 			}
 			else
 			{
-				JObject keyJObject = JObject.Load(reader);
+				try
+				{
+					var val = reader.Value;
+					JObject keyJObject = JObject.Load(reader);
 
-				result.ID = keyJObject["id"].ToString();
-				result.Revision = keyJObject["revision"].ToString();
+					result.ID = keyJObject["id"].ToString();
+					result.Revision = keyJObject["revision"].ToString();
+				}
+				catch(Exception exception)
+                {
+					Debug.WriteLine(exception);
+                }
 			}
 			
 			return result;

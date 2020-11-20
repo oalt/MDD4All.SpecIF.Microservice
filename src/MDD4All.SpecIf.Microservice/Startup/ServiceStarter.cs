@@ -88,31 +88,34 @@ namespace MDD4All.SpecIf.Microservice.Startup
             {
                 Startup.StartupBase.Urls = new List<string> { "https://localhost:555", "http://localhost:554" };
 
-                //result = WebHost.CreateDefaultBuilder(args)
-                //                                    .UseStartup<IntegrationStartup>()
-                //                                    .UseUrls(Startup.StartupBase.Urls.ToArray())
-                //                                    .Build();
+                result = WebHost.CreateDefaultBuilder(args)
+                                                    .UseStartup<IntegrationStartup>()
+                                                    .UseUrls(Startup.StartupBase.Urls.ToArray())
+                                                    .ConfigureLogging(ConfigureLoggingAction)
+                                                    .Build();
             }
             else if (type == "ea")
             {
                 Startup.StartupBase.Urls = new List<string> { "https://localhost:444", "http://localhost:443" };
 
-                //result = WebHost.CreateDefaultBuilder(args)
-                //                                    .UseStartup<EaStartup>()
-                //                                    .UseUrls(Startup.StartupBase.Urls.ToArray())
-                //                                    .Build();
+                result = WebHost.CreateDefaultBuilder(args)
+                                                    .UseStartup<EaStartup>()
+                                                    .UseUrls(Startup.StartupBase.Urls.ToArray())
+                                                    .ConfigureLogging(ConfigureLoggingAction)
+                                                    .Build();
 
 
-                
+
             }
             else if(type == "file")
             {
                 Startup.StartupBase.Urls = new List<string> { "https://localhost:666", "http://localhost:665" };
 
-                //result = WebHost.CreateDefaultBuilder(args)
-                //                                    .UseStartup<FileStartup>()
-                //                                    .UseUrls(Startup.StartupBase.Urls.ToArray())
-                //                                    .Build();
+                result = WebHost.CreateDefaultBuilder(args)
+                                                    .UseStartup<FileStartup>()
+                                                    .UseUrls(Startup.StartupBase.Urls.ToArray())
+                                                    .ConfigureLogging(ConfigureLoggingAction)
+                                                    .Build();
 
 
             }
