@@ -2,12 +2,8 @@
 using MDD4All.SpecIF.Apps.EaPlugin.ViewModels;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using MDD4All.SpecIF.DataProvider.MongoDB;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Net;
-using System.Text;
 using EAAPI = EA;
 
 namespace MDD4All.SpecIF.Apps.EaPlugin
@@ -33,6 +29,8 @@ namespace MDD4All.SpecIF.Apps.EaPlugin
         private MainViewModel _mainViewModel;
 
         private string _specIfURL = "";
+
+        
 
         public string EA_Connect(EAAPI.Repository repository)
         {

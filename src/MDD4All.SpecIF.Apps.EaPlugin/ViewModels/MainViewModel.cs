@@ -13,9 +13,9 @@ using System.Collections.ObjectModel;
 using System.Windows.Forms;
 using System.Windows.Input;
 using EAAPI = EA;
-using MDD4All.SpecIF.DataProvider.EA.Cache;
-using EADM = MDD4All.EnterpriseArchitect.DataModels.Contracts;
+using EADM = MDD4All.EAFacade.DataModels.Contracts;
 using System.Collections.Generic;
+using MDD4All.EAFacade.DataAccess.Cached;
 
 namespace MDD4All.SpecIF.Apps.EaPlugin.ViewModels
 {
@@ -186,7 +186,7 @@ namespace MDD4All.SpecIF.Apps.EaPlugin.ViewModels
 
             if(treeSelectedPackage.Element.Stereotype == "specification")
             {
-                EaCacheDataProvider eaCacheDataProvider = new EaCacheDataProvider(_repository);
+                CachedDataProvider eaCacheDataProvider = new CachedDataProvider(_repository);
 
                 EADM.Element cachedSpecification = eaCacheDataProvider.GetCachedSpecification(treeSelectedPackage);
 

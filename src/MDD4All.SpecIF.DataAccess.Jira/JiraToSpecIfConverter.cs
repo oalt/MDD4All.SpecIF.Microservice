@@ -1,5 +1,6 @@
 ﻿using MarkdownSharp;
 using MDD4All.Jira.DataModels;
+using Jira3 = MDD4All.Jira.DataModels.V3;
 using MDD4All.SpecIF.DataModels;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using MDD4All.SpecIF.DataModels.Manipulation;
@@ -20,7 +21,7 @@ namespace MDD4All.SpecIF.DataAccess.Jira
             _metadataReader = metadataReader;
         }
 
-        public Resource ConvertToResource(Issue jiraIssue)
+        public Resource ConvertToResource(Jira3.Issue jiraIssue)
         {
             Resource result = null;
 
@@ -54,7 +55,7 @@ namespace MDD4All.SpecIF.DataAccess.Jira
 
             if(jiraIssue.ChangeLog.Total > 1)
             {
-                History predecessor = jiraIssue.ChangeLog.Histories[1];
+                Jira3.History predecessor = jiraIssue.ChangeLog.Histories[1];
 
                 string preRevision = SpecIfGuidGenerator.ConvertDateToRevision(predecessor.Created);
 
@@ -65,14 +66,18 @@ namespace MDD4All.SpecIF.DataAccess.Jira
 
             result.SetPropertyValue("dcterms:title", jiraIssue.Fields.Summary, _metadataReader);
 
-            string descriptionHtml = _markdown.Transform(jiraIssue.Fields.Description);
+            AdfToXhtmlConverter adfToXhtmlConverter = new AdfToXhtmlConverter();
+
+            string descriptionHtml = adfToXhtmlConverter.ConvertAdfToXhtml(jiraIssue.Fields.Description);
+
+            //string descriptionHtml = _markdown.Transform(jiraIssue.Fields.Description.ToString());
 
             result.SetPropertyValue("dcterms:description", descriptionHtml, _metadataReader);
 
             return result;
         }
 
-        public Resource ConvertToResource(JiraWebhookObject jiraWebhookObject)
+        public Resource ConvertToResource(Jira3.JiraWebhookObject jiraWebhookObject)
         {
             Resource result;
 

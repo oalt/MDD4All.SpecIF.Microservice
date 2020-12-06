@@ -11,7 +11,7 @@
     </PropertyGroup>
     
   <ItemGroup>
-    <PackageReference Include="MDD4All.EnterpriseArchitect.Manipulations" Version="2.4.0.116" />
+    <PackageReference Include="MDD4All.EnterpriseArchitect.Manipulations" Version="3.0.0.185" />
   </ItemGroup>
 
   <ItemGroup>

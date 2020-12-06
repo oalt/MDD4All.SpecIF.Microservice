@@ -38,6 +38,7 @@
 
             <ComboBox Grid.Row="0"
                   Grid.Column="1"
+                      Margin="5"
                   ItemsSource="{Binding Projects}"
                   SelectedItem="{Binding SelectedProject}"/>
 

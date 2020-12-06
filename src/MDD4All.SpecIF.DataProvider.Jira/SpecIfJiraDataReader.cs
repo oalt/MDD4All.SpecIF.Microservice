@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MDD4All.SpecIF.DataModels.Manipulation;
 using System.Diagnostics;
+using Jira3 = MDD4All.Jira.DataModels.V3;
 
 namespace MDD4All.SpecIF.DataProvider.Jira
 {
@@ -410,7 +411,7 @@ namespace MDD4All.SpecIF.DataProvider.Jira
 
                 response = task.Result;
 
-                Issue issue = JsonConvert.DeserializeObject<Issue>(response);
+                Jira3.Issue issue = JsonConvert.DeserializeObject<Jira3.Issue>(response);
 
                 //TODO: Get specific revision
 
@@ -418,7 +419,7 @@ namespace MDD4All.SpecIF.DataProvider.Jira
 
                 result = jiraToSpecIfConverter.ConvertToResource(issue);
             }
-            catch(Exception)
+            catch(Exception exception)
             {
                 foreach(Resource resource in ProjectRootResources)
                 {
@@ -436,7 +437,7 @@ namespace MDD4All.SpecIF.DataProvider.Jira
 
         private async Task<string> GetJiraIssueAsync(string issueID)
         {
-            string response = await _httpClient.GetStringAsync(_url + "/rest/api/2/issue/" + issueID + "?expand=changelog");
+            string response = await _httpClient.GetStringAsync(_url + "/rest/api/3/issue/" + issueID + "?expand=changelog");
 
             return response;
         }

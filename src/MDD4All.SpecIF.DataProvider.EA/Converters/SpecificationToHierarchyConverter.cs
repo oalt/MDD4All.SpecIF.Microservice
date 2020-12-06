@@ -1,13 +1,9 @@
-﻿using MDD4All.EnterpriseArchitect.DataModels;
+﻿using MDD4All.EAFacade.DataAccess.Cached;
 using MDD4All.SpecIF.DataModels;
-using MDD4All.SpecIF.DataProvider.EA.Cache;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Xml.Linq;
 using EAAPI = EA;
-using EADM = MDD4All.EnterpriseArchitect.DataModels.Contracts;
+using EADM = MDD4All.EAFacade.DataModels.Contracts;
 
 namespace MDD4All.SpecIF.DataProvider.EA.Converters
 {
@@ -43,7 +39,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
                     EAAPI.Package package = _repository.GetPackageByGuid(packageElement.ElementGUID);
 
-                    EaCacheDataProvider eaCacheDataProvider = new EaCacheDataProvider(_repository);
+                    CachedDataProvider eaCacheDataProvider = new CachedDataProvider(_repository);
 
                     EADM.Element specificationPackageElement = eaCacheDataProvider.GetCachedSpecification(package);
 

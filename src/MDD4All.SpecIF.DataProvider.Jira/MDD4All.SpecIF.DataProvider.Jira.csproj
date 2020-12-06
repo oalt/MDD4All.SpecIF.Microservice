@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MDD4All.Jira.DataModels.V3\MDD4All.Jira.DataModels.V3.csproj" />
     <ProjectReference Include="..\MDD4All.Jira.DataModels\MDD4All.Jira.DataModels.csproj" />
     <ProjectReference Include="..\MDD4All.SpecIF.DataAccess.Jira\MDD4All.SpecIF.DataAccess.Jira.csproj" />
     <ProjectReference Include="..\MDD4All.SpecIF.DataModels.Manipulation\MDD4All.SpecIF.DataModels.Manipulation.csproj" />
