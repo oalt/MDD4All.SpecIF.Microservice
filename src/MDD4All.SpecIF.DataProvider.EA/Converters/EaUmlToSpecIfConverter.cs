@@ -10,6 +10,13 @@ using System.IO;
 using System.Drawing;
 using MDD4All.SpecIF.DataModels.Helpers;
 using MDD4All.SpecIF.DataProvider.Contracts;
+using MDD4All.EnterpriseArchitect.SvgGenerator;
+using MDD4All.SVG.DataModels;
+using System.Xml.Serialization;
+using System.Xml;
+using MDD4All.SpecIF.DataModels.DiagramInterchange;
+using MDD4All.SpecIF.DataModels.DiagramInterchange.BaseElements;
+using Newtonsoft.Json;
 
 namespace MDD4All.SpecIF.DataProvider.EA.Converters
 {
@@ -17,9 +24,16 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 	public class EaUmlToSpecIfConverter
 	{
+		// IDs for primitive types
+		private const string INTEGER_GUID = "{239A1D1D-046D-4902-87B1-4D86FB6B7D76}";
+		private const string BOOLEAN_GUID = "{26844644-6F52-40A8-BDA8-43A61276B197}";
+		private const string STRING_GUID = "{4CEEB645-62E8-44B0-A97E-694FF01C25E4}";
+		private const string UNLIMITED_NATURAL_GUID = "{C35A5389-2CBF-47FB-B987-A540E71B0BFC}";
+		private const string REAL_GUID = "{ABA6441D-268A-457D-A775-484C7301AF21}";
+
 		private EAAPI.Repository _repository;
 
-		private Dictionary<string, Resource> _primitiveTypes = new Dictionary<string, Resource>();
+		//private Dictionary<string, Resource> _primitiveTypes = new Dictionary<string, Resource>();
 
 		private Dictionary<string, Resource> _resources = new Dictionary<string, Resource>();
 		private Dictionary<string, Statement> _statements = new Dictionary<string, Statement>();
@@ -35,6 +49,13 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			_repository = repository;
             _metadataReader = metadataReader;
 
+			InitializePrimitiveTypes();
+		}
+
+		private void ResetCache()
+        {
+			_resources = new Dictionary<string, Resource>();
+			_statements = new Dictionary<string, Statement>();
 			InitializePrimitiveTypes();
 		}
 
@@ -57,11 +78,6 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 			result.Hierarchies.Add(node);
 
-			foreach (KeyValuePair<string, Resource> keyValuePair in _primitiveTypes)
-			{
-				result.Resources.Add(keyValuePair.Value);
-			}
-
 			foreach (KeyValuePair<string, Resource> keyValuePair in _resources)
 			{
 				result.Resources.Add(keyValuePair.Value);
@@ -76,14 +92,27 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			return result;
 		}
 
-		public Resource GetResourceByID(string id)
+		public Resource GetResourceByKey(Key key)
 		{
 			Resource result = null;
 
-			if(_resources.ContainsKey(id))
+			if(_resources.ContainsKey(key.ID))
 			{
-				result = _resources[id];
+				result = _resources[key.ID];
 			}
+			if(result == null)
+            {
+				string cacheKey = key.ID + "_R_" + key.Revision;
+				if (_resources.ContainsKey(cacheKey))
+                {
+					result = _resources[cacheKey];
+                }
+            }
+			
+			if(result == null)
+            {
+				;
+            }
 
 			return result;
 		}
@@ -97,6 +126,66 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				result = _statements[id];
 			}
 
+			return result;
+		}
+
+		public List<Statement> GetAllStatementsForResource(Key resourceKey)
+        {
+			List<Statement> result = new List<Statement>();
+
+			Dictionary<string, Statement> foundStatements = new Dictionary<string, Statement>();
+
+			foreach(KeyValuePair<string, Statement> keyValuePair in _statements)
+            {
+				Statement statement = keyValuePair.Value;
+
+				if(
+					(statement.StatementSubject.ID == resourceKey.ID && 
+				     statement.StatementSubject.Revision == resourceKey.Revision) 
+				    ||
+				    (statement.StatementObject.ID == resourceKey.ID &&
+				     statement.StatementObject.Revision == resourceKey.Revision)
+				   )
+                {
+					if(!foundStatements.ContainsKey(statement.ID))
+                    {
+						foundStatements.Add(statement.ID, statement);
+						result.Add(statement);
+                    }
+                }
+            }
+
+			return result;
+        }
+
+		private Node _hierarchy = null;
+
+		public Node GetHierarchy()
+        {
+			Node result = null;
+
+			Node node = new Node();
+
+			ResetCache();
+
+			//if (_hierarchy == null)
+			//{
+				EAAPI.Package package = _repository.GetPackageByGuid("{45A143E0-D43A-4f51-ACA6-FF695EEE3256}");
+
+				GetModelHierarchyRecursively(package, node, null);
+
+				_hierarchy = node;
+				result = _hierarchy;
+
+			string json = JsonConvert.SerializeObject(node);
+
+			System.IO.File.WriteAllText(@"d:\test\specif\hierarchy.json", json);
+
+			//}
+			//else
+   //         {
+			//	result = _hierarchy;
+   //         }
 			return result;
 		}
 
@@ -117,11 +206,35 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
             if(parentResource != null)
             {
                 Statement containsStatement = GetContainsStatement(parentResource, packageResource);
-                _statements.Add(containsStatement.ID, containsStatement);
+				if (!_statements.ContainsKey(containsStatement.ID))
+				{
+					_statements.Add(containsStatement.ID, containsStatement);
+				}
             }
 
-            // recursive call for child packages
-            for (short packageCounter = 0; packageCounter < currentPackage.Packages.Count; packageCounter++)
+			// diagrams
+			for (short diagramCounter = 0; diagramCounter < currentPackage.Diagrams.Count; diagramCounter++)
+			{
+				EAAPI.Diagram diagram = currentPackage.Diagrams.GetAt(diagramCounter) as EAAPI.Diagram;
+
+				Resource diagramResource = AddDiagram(diagram);
+				Statement containsStatement = GetContainsStatement(packageResource, diagramResource);
+				if (!_statements.ContainsKey(containsStatement.ID))
+				{
+					_statements.Add(containsStatement.ID, containsStatement);
+				}
+
+				Node node = new Node()
+				{
+					ResourceReference = new Key(diagramResource.ID, diagramResource.Revision),
+					Description = new Value("Diagram: " + diagram.Name)
+				};
+
+				currentNode.Nodes.Add(node);
+			}
+
+			// recursive call for child packages
+			for (short packageCounter = 0; packageCounter < currentPackage.Packages.Count; packageCounter++)
 			{
 				EAAPI.Package childPackage = currentPackage.Packages.GetAt(packageCounter) as EAAPI.Package;
 
@@ -138,24 +251,6 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				
 			}
 
-			// diagrams
-			for(short diagramCounter = 0; diagramCounter < currentPackage.Diagrams.Count; diagramCounter++)
-			{
-				EAAPI.Diagram diagram = currentPackage.Diagrams.GetAt(diagramCounter) as EAAPI.Diagram;
-
-				Resource diagramResource = AddDiagram(diagram);
-				Statement containsStatement = GetContainsStatement(packageResource, diagramResource);
-				_statements.Add(containsStatement.ID, containsStatement);
-
-				Node node = new Node()
-				{
-					ResourceReference = new Key(diagramResource.ID, diagramResource.Revision),
-					Description = new Value("Diagram: " + diagram.Name)
-				};
-
-				currentNode.Nodes.Add(node);
-			}
-
 			// elements
 			for (short elementCounter = 0; elementCounter < currentPackage.Elements.Count; elementCounter++)
 			{
@@ -166,7 +261,10 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				Resource elementResource = AddElement(element);
 				Statement containsStatement = GetContainsStatement(packageResource, elementResource);
 
-				_statements.Add(containsStatement.ID, containsStatement);
+				if (!_statements.ContainsKey(containsStatement.ID))
+				{
+					_statements.Add(containsStatement.ID, containsStatement);
+				}
 
 				GetElementHierarchyRecursively(element, currentNode, elementResource);
 			}
@@ -176,9 +274,11 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 		{
 			string specIfElementID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(currentElement.ElementGUID);
 
+			string specIfElemenRevision = EaDateToRevisionConverter.ConvertDateToRevision(currentElement.Modified);
+
 			Node node = new Node()
 			{
-				ResourceReference = new Key(specIfElementID, "1"),
+				ResourceReference = new Key(specIfElementID, specIfElemenRevision),
 				Description = new Value("Element: " + currentElement.Name)
 			};
 
@@ -191,7 +291,10 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 				Resource diagramResource = AddDiagram(diagram);
 				Statement containsStatement = GetContainsStatement(currentResource, diagramResource);
-				_statements.Add(containsStatement.ID, containsStatement);
+				if (!_statements.ContainsKey(containsStatement.ID))
+				{
+					_statements.Add(containsStatement.ID, containsStatement);
+				}
 
 				string specIfDiagramID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID);
 
@@ -214,7 +317,10 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				{
 					Resource subElementResource = AddElement(subElement);
 					Statement containsStatement = GetContainsStatement(currentResource, subElementResource);
-					_statements.Add(containsStatement.ID, containsStatement);
+					if (!_statements.ContainsKey(containsStatement.ID))
+					{
+						_statements.Add(containsStatement.ID, containsStatement);
+					}
 
 					// recursive call
 					GetElementHierarchyRecursively(subElement, node, subElementResource);
@@ -231,13 +337,15 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 				Resource embeddedElementResource = AddElement(embeddedElement);
 				Statement containsStatement = GetContainsStatement(currentResource, embeddedElementResource);
-				_statements.Add(containsStatement.ID, containsStatement);
 
-				string specIfEmbeddedElementID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(embeddedElement.ElementGUID);
+				if (!_statements.ContainsKey(containsStatement.ID))
+				{
+					_statements.Add(containsStatement.ID, containsStatement);
+				}
 
 				Node embeddedElementNode = new Node()
 				{
-					ResourceReference = new Key(specIfEmbeddedElementID, "1"),
+					ResourceReference = new Key(embeddedElementResource.ID, embeddedElementResource.Revision),
 					Description = new Value("Embedded element: " + embeddedElement.Name)
 				};
 
@@ -249,29 +357,52 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 		#region DATA_ADDITION
 
+		private string GetCacheKey(Resource resource)
+        {
+			string result = resource.ID + "_R_" + resource.Revision;
+
+			return result;
+        }
+
+		private string GetCacheKeyForElement(EAAPI.Element element)
+        {
+			string result = "";
+
+			result += EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(element.ElementGUID);
+
+			result += "_R_" + EaDateToRevisionConverter.ConvertDateToRevision(element.Modified);
+
+			return result;
+        }
+
 		private Resource AddElement(EAAPI.Element eaElement)
 		{
 			Resource result = ConvertElement(eaElement);
 
-			if(_resources.ContainsKey(result.ID))
+			if (_resources.ContainsKey(GetCacheKey(result)))
 			{
 				Console.WriteLine("Element still in collection " + result.ID);
 			}
-			_resources.Add(result.ID, result);
+			else
+			{
+				_resources.Add(GetCacheKey(result), result);
 
-			AddClassifier(eaElement, result);
+				AddClassifier(eaElement, result);
 
-			AddTaggedValues(eaElement, result);
+				AddTaggedValues(eaElement, result);
 
-			AddAttributes(eaElement, result);
+				AddAttributes(eaElement, result);
 
-			AddOperations(eaElement, result);
+				AddOperations(eaElement, result);
 
-			AddElementConstraints(eaElement, result);
+				AddElementConstraints(eaElement, result);
 
-			//AddUmlConnectors(eaElement);
+				AddUmlConnectors(eaElement);
+			}
 
-            return result;
+
+
+			return result;
 		}
 
 		private void AddClassifier(EAAPI.Element element, Resource elementResource)
@@ -303,21 +434,32 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
                 Resource classifierResource = null;
 
-				if(!_resources.ContainsKey(classifierSpecIfID))
+				string cacheKey = GetCacheKeyForElement(classifierElement);
+
+				if (!_resources.ContainsKey(cacheKey))
 				{
 					classifierResource = AddElement(classifierElement);
+
+					classifierStatement = GetClassifierStatement(classifierResource, elementResource);
+
+					if (classifierStatement != null && !_statements.ContainsKey(classifierStatement.ID))
+					{
+						_statements.Add(classifierStatement.ID, classifierStatement);
+					}
 				}
                 else
                 {
-                    classifierResource = _resources[classifierSpecIfID];
-                }
+                    classifierResource = _resources[cacheKey];
 
-				classifierStatement = GetClassifierStatement(classifierResource, elementResource);
+					classifierStatement = GetClassifierStatement(classifierResource, elementResource);
 
-				if (classifierStatement != null)
-				{
-					_statements.Add(classifierStatement.ID, classifierStatement);
+					if (classifierStatement != null && !_statements.ContainsKey(classifierStatement.ID))
+					{
+						_statements.Add(classifierStatement.ID, classifierStatement);
+					}
 				}
+
+				
 			}
 			
 		}
@@ -325,13 +467,20 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 		private void AddTaggedValues(EAAPI.Element eaElement, Resource elementResource)
 		{
 			List<Resource> tagResources = ConvertElementTaggedValues(eaElement);
-            
+
 			foreach (Resource tagResource in tagResources)
 			{
-                _resources.Add(tagResource.ID, tagResource);
+				if (!_resources.ContainsKey(tagResource.ID))
+				{
+					_resources.Add(tagResource.ID, tagResource);
+				}
 
-                Statement tagContainsStatement = GetContainsStatement(elementResource, tagResource);
-				_statements.Add(tagContainsStatement.ID, tagContainsStatement);
+				Statement tagContainsStatement = GetContainsStatement(elementResource, tagResource);
+
+				if (!_statements.ContainsKey(tagContainsStatement.ID))
+				{
+					_statements.Add(tagContainsStatement.ID, tagContainsStatement);
+				}
 			}
 		}
 
@@ -344,11 +493,18 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				if(attribute != null)
 				{
 					Resource attributeResource = ConvertAttribute(attribute, eaElement, elementResource.Revision);
-					_resources.Add(attributeResource.ID, attributeResource);
+
+					if (!_resources.ContainsKey(attributeResource.ID))
+					{
+						_resources.Add(attributeResource.ID, attributeResource);
+					}
 
 					// add contains statement
 					Statement containsStatement = GetContainsStatement(elementResource, attributeResource);
-					_statements.Add(containsStatement.ID, containsStatement);
+					if (!_statements.ContainsKey(containsStatement.ID))
+					{
+						_statements.Add(containsStatement.ID, containsStatement);
+					}
 
 					if (attribute.ClassifierID == 0 && !string.IsNullOrEmpty(attribute.Type))
 					{
@@ -356,31 +512,38 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 						if (primitiveClassifier != null)
 						{
-                            Statement classifierStatement = GetClassifierStatement(primitiveClassifier, attributeResource);
-                            _statements.Add(classifierStatement.ID, classifierStatement);
+							Statement classifierStatement = GetClassifierStatement(primitiveClassifier, attributeResource);
+
+							if (!_statements.ContainsKey(classifierStatement.ID))
+							{
+								_statements.Add(classifierStatement.ID, classifierStatement);
+							}
 						}
 					}
 					else if (attribute.ClassifierID != 0)
 					{
-                        EAAPI.Element classifierElement = attribute.GetClassifier(_repository);
+						EAAPI.Element classifierElement = attribute.GetClassifier(_repository);
 
-                        string classifierSpecIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(classifierElement.ElementGUID);
+						string classifierSpecIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(classifierElement.ElementGUID);
 
-                        Resource classifierResource = null;
+						Resource classifierResource = null;
 
-                        if (!_resources.ContainsKey(classifierSpecIfID))
-                        {
-                            classifierResource = AddElement(classifierElement);
-                        }
-                        else
-                        {
-                            classifierResource = _resources[classifierSpecIfID];
-                        }
+						if (!_resources.ContainsKey(classifierSpecIfID))
+						{
+							classifierResource = AddElement(classifierElement);
+						}
+						else
+						{
+							classifierResource = _resources[classifierSpecIfID];
+						}
 
 
-                        Statement classifierStatement = GetClassifierStatement(classifierResource, attributeResource);
+						Statement classifierStatement = GetClassifierStatement(classifierResource, attributeResource);
 
-						_statements.Add(classifierStatement.ID, classifierStatement);
+						if (!_statements.ContainsKey(classifierStatement.ID))
+						{
+							_statements.Add(classifierStatement.ID, classifierStatement);
+						}
 					}
 					
 				}
@@ -397,10 +560,18 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				if (operation != null)
 				{
 					Resource operationResource = ConvertOperation(operation, eaElement, elementResource.Revision);
-					_resources.Add(operationResource.ID, operationResource);
+					
+					if (!_resources.ContainsKey(operationResource.ID))
+					{
+						_resources.Add(operationResource.ID, operationResource);
+					}
 
 					Statement containsStatement = GetContainsStatement(elementResource, operationResource);
-					_statements.Add(containsStatement.ID, containsStatement);
+
+					if (!_statements.ContainsKey(containsStatement.ID))
+					{
+						_statements.Add(containsStatement.ID, containsStatement);
+					}
 
 					Console.WriteLine("Operation " + operation.Name + " classifierID=" + operation.ClassifierID);
 
@@ -410,15 +581,12 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 						if (primitiveClassifier != null)
 						{
-							Statement classifierStatement = new Statement()
+							Statement classifierStatement = GetClassifierStatement(primitiveClassifier, operationResource);
+							
+							if (!_statements.ContainsKey(classifierStatement.ID))
 							{
-								Title = new Value("rdf:type"),
-								Class = new Key("SC-Classifier", "1"),
-								StatementSubject = new Key(operationResource.ID, operationResource.Revision),
-								StatementObject = new Key(primitiveClassifier.ID, primitiveClassifier.Revision)
-							};
-
-							_statements.Add(classifierStatement.ID, classifierStatement);
+								_statements.Add(classifierStatement.ID, classifierStatement);
+							}
 						}
 					}
 					else if (operation.ClassifierID != "0")
@@ -427,24 +595,32 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 						Console.WriteLine("Operation complex classifier. ID=" + classifierID);
 
-                        EAAPI.Element classifierElement = operation.GetClassifier(_repository);
+						EAAPI.Element classifierElement = operation.GetClassifier(_repository);
 
-                        string classifierSpecIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(classifierElement.ElementGUID);
+						string cacheKey = GetCacheKeyForElement(classifierElement);
 
-                        Resource classifierResource = null;
+						if (!_resources.ContainsKey(cacheKey))
+						{
+							Resource classifierResource = AddElement(classifierElement);
 
-                        if (!_resources.ContainsKey(classifierSpecIfID))
+							Statement classifierStatement = GetClassifierStatement(classifierResource, operationResource);
+
+							if (!_statements.ContainsKey(classifierStatement.ID))
+							{
+								_statements.Add(classifierStatement.ID, classifierStatement);
+							}
+						}
+						else
                         {
-                            classifierResource = AddElement(classifierElement);
-                        }
-                        else
-                        {
-                            classifierResource = _resources[classifierSpecIfID];
-                        }
+							Resource classifierResource = _resources[cacheKey];
 
-                        Statement classifierStatement = GetClassifierStatement(classifierResource, operationResource);
+							Statement classifierStatement = GetClassifierStatement(classifierResource, operationResource);
 
-						_statements.Add(classifierStatement.ID, classifierStatement);
+							if (!_statements.ContainsKey(classifierStatement.ID))
+							{
+								_statements.Add(classifierStatement.ID, classifierStatement);
+							}
+						}
 					}
 					
 
@@ -454,10 +630,17 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 						Resource operationParameterResource = ConvertOperationParameter(parameterEA, eaElement, elementResource.Revision);
 
-						_resources.Add(operationParameterResource.ID, operationParameterResource);
+						if (!_resources.ContainsKey(operationParameterResource.ID))
+						{
+							_resources.Add(operationParameterResource.ID, operationParameterResource);
+						}
 
 						Statement paramaterConatinmentStatement = GetContainsStatement(operationResource, operationParameterResource);
-						_statements.Add(paramaterConatinmentStatement.ID, paramaterConatinmentStatement);
+
+						if (!_statements.ContainsKey(paramaterConatinmentStatement.ID))
+						{
+							_statements.Add(paramaterConatinmentStatement.ID, paramaterConatinmentStatement);
+						}
 
 						if (parameterEA.ClassifierID == "0" && !string.IsNullOrEmpty(parameterEA.Type))
 						{
@@ -465,15 +648,13 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 							if (primitiveClassifier != null)
 							{
-								Statement classifierStatement = new Statement()
-								{
-									Title = new Value("rdf:type"),
-									Class = new Key("SC-Classifier", "1"),
-									StatementSubject = new Key(operationParameterResource.ID, operationParameterResource.Revision),
-									StatementObject = new Key(primitiveClassifier.ID, primitiveClassifier.Revision)
-								};
 
-								_statements.Add(classifierStatement.ID, classifierStatement);
+								Statement classifierStatement = GetClassifierStatement(primitiveClassifier, operationParameterResource);
+								
+								if (!_statements.ContainsKey(classifierStatement.ID))
+								{
+									_statements.Add(classifierStatement.ID, classifierStatement);
+								}
 							}
 						}
 						else if (parameterEA.ClassifierID != "0")
@@ -495,7 +676,10 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
                             Statement classifierStatement = GetClassifierStatement(classifierResource, operationParameterResource);
 
-							_statements.Add(classifierStatement.ID, classifierStatement);
+							if (!_statements.ContainsKey(classifierStatement.ID))
+							{
+								_statements.Add(classifierStatement.ID, classifierStatement);
+							}
 						}
 						
 					}
@@ -519,13 +703,16 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					if (!_resources.ContainsKey(connectorConstraint.ID))
 					{
 						_resources.Add(connectorConstraint.ID, connectorConstraint);
-
-						Statement constraintContainsStatement = GetContainsStatementFromSpecIfID(new Key(elementResource.ID, elementResource.Revision), 
-                            new Key(connectorConstraint.ID));
-
-						_statements.Add(constraintContainsStatement.ID, constraintContainsStatement);
-
 					}
+
+					Statement constraintContainsStatement = GetContainsStatementFromSpecIfID(new Key(elementResource.ID, elementResource.Revision),
+						new Key(connectorConstraint.ID));
+
+					if (!_statements.ContainsKey(constraintContainsStatement.ID))
+					{
+						_statements.Add(constraintContainsStatement.ID, constraintContainsStatement);
+					}
+
 
 				}
 			}
@@ -540,14 +727,16 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 				Statement umlConnector = ConvertUmlConnector(connectorEA);
 
-				if (!_statements.ContainsKey(umlConnector.ID))
+				if (umlConnector != null)
 				{
-					_statements.Add(umlConnector.ID, umlConnector);
+					if (!_statements.ContainsKey(umlConnector.ID))
+					{
+						_statements.Add(umlConnector.ID, umlConnector);
+					}
 				}
+				//AddConnectorConstraints(connectorEA, umlConnector);
 
-				AddConnectorConstraints(connectorEA, umlConnector);
-
-				AddConnectorTaggedValues(connectorEA, umlConnector);
+				//AddConnectorTaggedValues(connectorEA, umlConnector);
 
 			}
 		}
@@ -555,7 +744,11 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 		private Resource AddDiagram(EAAPI.Diagram diagram)
 		{
 			Resource diagramResource = ConvertDiagram(diagram);
-			_resources.Add(diagramResource.ID, diagramResource);
+
+			if (!_resources.ContainsKey(diagramResource.ID))
+			{
+				_resources.Add(diagramResource.ID, diagramResource);
+			}
 
 			AddShowsStatements(diagram, diagramResource);
 
@@ -575,26 +768,35 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				if (elementOnDiagram != null)
 				{
 					string elementSpecIfGuid = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(elementOnDiagram.ElementGUID);
+					string elementSpecIfRevision = EaDateToRevisionConverter.ConvertDateToRevision(elementOnDiagram.Modified);
 
-					Statement statement = GetShowsStatementFromSpecIfID(new Key(diagramResource.ID, diagramResource.Revision), new Key(elementSpecIfGuid));
-					_statements.Add(statement.ID, statement);
+
+					Statement statement = GetShowsStatementFromSpecIfID(new Key(diagramResource.ID, diagramResource.Revision), 
+																		new Key(elementSpecIfGuid, elementSpecIfRevision));
+
+					if (!_statements.ContainsKey(statement.ID))
+					{
+						_statements.Add(statement.ID, statement);
+					}
+
+					AddElement(elementOnDiagram);
 				}
 			}
 
-			for (short counter = 0; counter < diagram.DiagramLinks.Count; counter++)
-			{
-				EAAPI.DiagramLink link = diagram.DiagramLinks.GetAt(counter) as EAAPI.DiagramLink;
+			//for (short counter = 0; counter < diagram.DiagramLinks.Count; counter++)
+			//{
+			//	EAAPI.DiagramLink link = diagram.DiagramLinks.GetAt(counter) as EAAPI.DiagramLink;
 
-				EAAPI.Connector connectorOnDiagram = _repository.GetConnectorByID(link.ConnectorID);
+			//	EAAPI.Connector connectorOnDiagram = _repository.GetConnectorByID(link.ConnectorID);
 
-				if (connectorOnDiagram != null)
-				{
-					string connectorSpecIfGuid = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(connectorOnDiagram.ConnectorGUID);
+			//	if (connectorOnDiagram != null)
+			//	{
+			//		string connectorSpecIfGuid = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(connectorOnDiagram.ConnectorGUID);
 
-					Statement statement = GetShowsStatementFromSpecIfID(new Key(diagramResource.ID, diagramResource.Revision), new Key(connectorSpecIfGuid));
-					_statements.Add(statement.ID, statement);
-				}
-			}
+			//		Statement statement = GetShowsStatementFromSpecIfID(new Key(diagramResource.ID, diagramResource.Revision), new Key(connectorSpecIfGuid));
+			//		_statements.Add(statement.ID, statement);
+			//	}
+			//}
 		}
 
 		private void AddConnectorConstraints(EAAPI.Connector connectorEA, Statement connectorStatement)
@@ -613,13 +815,16 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					if (!_resources.ContainsKey(connectorConstraint.ID))
 					{
 						_resources.Add(connectorConstraint.ID, connectorConstraint);
-
-						Statement constraintContainsStatement = GetContainsStatementFromSpecIfID(new Key(connectorStatement.ID, connectorStatement.Revision), 
-                                                                                                 new Key(connectorConstraint.ID));
-
-						_statements.Add(constraintContainsStatement.ID, constraintContainsStatement);
-
 					}
+
+					Statement constraintContainsStatement = GetContainsStatementFromSpecIfID(new Key(connectorStatement.ID, connectorStatement.Revision),
+																							 new Key(connectorConstraint.ID));
+
+					if (!_statements.ContainsKey(constraintContainsStatement.ID))
+					{
+						_statements.Add(constraintContainsStatement.ID, constraintContainsStatement);
+					}
+
 
 				}
 			}
@@ -633,10 +838,13 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				if (!_resources.ContainsKey(guardResource.ID))
 				{
 					_resources.Add(guardResource.ID, guardResource);
+				}
 
-					Statement guardContainsStatement = GetContainsStatementFromSpecIfID(new Key(connectorStatement.ID, connectorStatement.Revision), 
-                                                                                        new Key(guardResource.ID));
+				Statement guardContainsStatement = GetContainsStatementFromSpecIfID(new Key(connectorStatement.ID, connectorStatement.Revision),
+																					new Key(guardResource.ID));
 
+				if (!_statements.ContainsKey(guardContainsStatement.ID))
+				{
 					_statements.Add(guardContainsStatement.ID, guardContainsStatement);
 				}
 			}
@@ -647,15 +855,21 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 		private void AddConnectorTaggedValues(EAAPI.Connector eaConnector, Statement connectorStatement)
 		{
 			List<Resource> tagResources = ConvertConnectorTaggedValues(eaConnector);
-            
+
 			foreach (Resource tagResource in tagResources)
 			{
-                _resources.Add(tagResource.ID, tagResource);
+				if (!_resources.ContainsKey(tagResource.ID))
+				{
+					_resources.Add(tagResource.ID, tagResource);
+				}
 
-                Statement tagContainsStatement = GetContainsStatement(connectorStatement, 
+				Statement tagContainsStatement = GetContainsStatement(connectorStatement,
 																	  tagResource);
 
-				_statements.Add(tagContainsStatement.ID, tagContainsStatement);
+				if (!_statements.ContainsKey(tagContainsStatement.ID))
+				{
+					_statements.Add(tagContainsStatement.ID, tagContainsStatement);
+				}
 			}
 		}
 
@@ -665,273 +879,359 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 		private Resource ConvertOperation(EAAPI.Method operation, EAAPI.Element eaElement, string elementRevision)
 		{
-            
-			Resource operationResource = new Resource()
+
+			Resource result;
+
+			string specIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID);
+
+			if (!_resources.ContainsKey(specIfID))
 			{
-				ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID),
-				Class = new Key("RC-Actor", "1"),
-				ChangedAt = eaElement.Modified,
-				ChangedBy = eaElement.Author,
-				Revision = elementRevision,
-				Title = new Value(operation.Name)
-			};
 
-			operationResource.Properties = new List<Property>();
-
-            operationResource.Properties.Add(
-                new Property("dcterms:title", new Key("PC-Name", "1"), operation.Name,
-                             EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID + "_NAME"),
-                             eaElement.Modified, eaElement.Author));
-
-
-            operationResource.Properties.Add(
-                new Property("dcterms:description", new Key("PC-Text", "1"), operation.Notes,
-                             EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID + "_NOTES"),
-                             eaElement.Modified, eaElement.Author));
-
-
-            operationResource.Properties.Add(
-                new Property("dcterms:type", new Key("PC-Type", "1"), "OMG:UML:2.5.1:Operation",
-                             EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID + "_TYPE"),
-                             eaElement.Modified, eaElement.Author));
-				
-
-			string namespc = "";
-			string stereotype = "";
-
-			ParseFullQualifiedName(operation.FQStereotype, out namespc, out stereotype);
-
-			string stereotypeValue = "";
-
-			if (namespc != "EAUML" && !string.IsNullOrWhiteSpace(namespc))
-			{
-				stereotypeValue = namespc + ":";
-			}
-			else if(namespc == "EAUML" && stereotype != "")
-			{
-				stereotypeValue = "UML:";
-			}
-
-			stereotypeValue += stereotype;
-			
-			if(operation.ReturnType == "entry")
-			{
-				if(stereotypeValue != "")
+				Resource operationResource = new Resource()
 				{
-					stereotypeValue += ",";
-				}
-				stereotypeValue += "entry";
-			}
-			else if(operation.ReturnType == "exit")
-			{
-				if (stereotypeValue != "")
+					ID = specIfID,
+					Class = new Key("RC-Actor", "1"),
+					ChangedAt = eaElement.Modified,
+					ChangedBy = eaElement.Author,
+					Revision = elementRevision,
+					Title = new Value(operation.Name)
+				};
+
+				operationResource.Properties = new List<Property>();
+
+				operationResource.Properties.Add(
+					new Property("dcterms:title", new Key("PC-Name", "1"), operation.Name,
+								 EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID + "_NAME"),
+								 eaElement.Modified, eaElement.Author));
+
+
+				operationResource.Properties.Add(
+					new Property("dcterms:description", new Key("PC-Description", "1"), operation.Notes,
+								 EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID + "_NOTES"),
+								 eaElement.Modified, eaElement.Author));
+
+
+				operationResource.Properties.Add(
+					new Property("dcterms:type", new Key("PC-Type", "1"), "OMG:UML:2.5.1:Operation",
+								 EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID + "_TYPE"),
+								 eaElement.Modified, eaElement.Author));
+
+
+				string namespc = "";
+				string stereotype = "";
+
+				ParseFullQualifiedName(operation.FQStereotype, out namespc, out stereotype);
+
+				string stereotypeValue = "";
+
+				if (namespc != "EAUML" && !string.IsNullOrWhiteSpace(namespc))
 				{
-					stereotypeValue += ",";
+					stereotypeValue = namespc + ":";
 				}
-				stereotypeValue += "exit";
-			}
-			else if (operation.ReturnType == "do")
-			{
-				if (stereotypeValue != "")
+				else if (namespc == "EAUML" && stereotype != "")
 				{
-					stereotypeValue += ",";
+					stereotypeValue = "UML:";
 				}
-				stereotypeValue += "do";
+
+				stereotypeValue += stereotype;
+
+				if (operation.ReturnType == "entry")
+				{
+					if (stereotypeValue != "")
+					{
+						stereotypeValue += ",";
+					}
+					stereotypeValue += "entry";
+				}
+				else if (operation.ReturnType == "exit")
+				{
+					if (stereotypeValue != "")
+					{
+						stereotypeValue += ",";
+					}
+					stereotypeValue += "exit";
+				}
+				else if (operation.ReturnType == "do")
+				{
+					if (stereotypeValue != "")
+					{
+						stereotypeValue += ",";
+					}
+					stereotypeValue += "do";
+				}
+
+				operationResource.Properties.Add(
+						new Property("UML:Stereotype", new Key("PC-Stereotype", "1"), stereotypeValue,
+									 EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID + "_STEREOTYPE"),
+									 eaElement.Modified, eaElement.Author));
+
+
+				string id = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID) + "_VISIBILITY";
+
+				operationResource.Properties.Add(GetVisibilityProperty(operation.Visibility, id, elementRevision, eaElement.Modified, eaElement.Author));
+
+				result = operationResource;
 			}
+			else
+            {
+				result = _resources[specIfID];
+            }
 
-            operationResource.Properties.Add(
-                    new Property("SpecIF:Stereotype", new Key("PC-Stereotype", "1"), stereotypeValue,
-                                 EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID + "_STEREOTYPE"),
-                                 eaElement.Modified, eaElement.Author));
-					
-
-			string id = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID) + "_VISIBILITY";
-
-			operationResource.Properties.Add(GetVisibilityProperty(operation.Visibility, id, elementRevision, eaElement.Modified, eaElement.Author));
-
-			return operationResource;
+			return result;
 		}
 
 		private Resource ConvertOperationParameter(EAAPI.Parameter parameter, EAAPI.Element eaElement, string elementRevision)
 		{
-            
+			Resource result;
 
-			Resource result = new Resource()
+			string specIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(parameter.ParameterGUID);
+
+			if (!_resources.ContainsKey(specIfID))
 			{
-				ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(parameter.ParameterGUID),
-				Class = new Key("RC-State", "1"),
-				ChangedAt = eaElement.Modified,
-				ChangedBy = eaElement.Author,
-				Revision = elementRevision,
-				Title = new Value(parameter.Name)
-			};
-
-			result.Properties = new List<Property>();
-
-			result.Properties.Add(
-				new Property()
+				result = new Resource()
 				{
-					Title = new Value("dcterms:title"),
-					PropertyClass = new Key("PC-Name", "1"),
-					Value = parameter.Name,
-					ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(parameter.ParameterGUID + "_NAME"),
+					ID = specIfID,
+					Class = new Key("RC-State", "1"),
 					ChangedAt = eaElement.Modified,
-					ChangedBy = eaElement.Author
-				}
-				);
+					ChangedBy = eaElement.Author,
+					Revision = elementRevision,
+					Title = new Value(parameter.Name)
+				};
 
-			result.Properties.Add(
-				new Property()
-				{
-					Title = new Value("dcterms:description"),
-					PropertyClass = new Key("PC-Text", "1"),
-					Value = parameter.Notes,
-					ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(parameter.ParameterGUID + "_NOTES"),
-					ChangedAt = eaElement.Modified,
-					ChangedBy = eaElement.Author
-				}
-				);
+				result.Properties = new List<Property>();
 
-			result.Properties.Add(
-				new Property()
-				{
-					Title = new Value("dcterms:type"),
-					PropertyClass = new Key("PC-Type", "1"),
-					Value = "OMG:UML:2.5.1:Parameter",
-					ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(parameter.ParameterGUID + "_TYPE"),
-					ChangedAt = eaElement.Modified,
-					ChangedBy = eaElement.Author
-				}
-				);
+				result.Properties.Add(
+					new Property()
+					{
+						Title = new Value("dcterms:title"),
+						PropertyClass = new Key("PC-Name", "1"),
+						Value = parameter.Name,
+						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(parameter.ParameterGUID + "_NAME"),
+						ChangedAt = eaElement.Modified,
+						ChangedBy = eaElement.Author
+					}
+					);
+
+				result.Properties.Add(
+					new Property()
+					{
+						Title = new Value("dcterms:description"),
+						PropertyClass = new Key("PC-Description", "1"),
+						Value = parameter.Notes,
+						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(parameter.ParameterGUID + "_NOTES"),
+						ChangedAt = eaElement.Modified,
+						ChangedBy = eaElement.Author
+					}
+					);
+
+				result.Properties.Add(
+					new Property()
+					{
+						Title = new Value("dcterms:type"),
+						PropertyClass = new Key("PC-Type", "1"),
+						Value = "OMG:UML:2.5.1:Parameter",
+						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(parameter.ParameterGUID + "_TYPE"),
+						ChangedAt = eaElement.Modified,
+						ChangedBy = eaElement.Author
+					}
+					);
+			}
+			else
+            {
+				result = _resources[specIfID];
+            }
 
 			return result;
 		}
 
 		public Resource ConvertElement(EAAPI.Element eaElement)
 		{
-			Resource result = null;
+			Resource result;
 
-			string elementType = eaElement.Type;
+			string specIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID);
 
-            string revision = EaDateToRevisionConverter.ConvertDateToRevision(eaElement.Modified);
-            
-            ResourceClass resourceClass = GetResourceClassForElementType(elementType, eaElement.Stereotype);
+			string cacheKey = GetCacheKeyForElement(eaElement);
 
-			Resource elementResource = new Resource()
+			if (!_resources.ContainsKey(cacheKey))
 			{
-				ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID),
-				Class = new Key(resourceClass.ID, resourceClass.Revision),
-				ChangedAt = eaElement.Modified,
-				ChangedBy = eaElement.Author,
-				Revision = revision,
-				Title = new Value(eaElement.Name)
-			};
 
-			elementResource.Properties = new List<Property>();
+				string elementType = eaElement.Type;
 
-			elementResource.Properties.Add(
-				new Property()
+				string revision = EaDateToRevisionConverter.ConvertDateToRevision(eaElement.Modified);
+
+				ResourceClass resourceClass = GetResourceClassForElementType(elementType, eaElement.Stereotype);
+
+				Resource elementResource = new Resource()
 				{
-					Title = new Value("dcterms:title"),
-					PropertyClass = new Key("PC-Name", "1"),
-					Value = eaElement.Name,
-					ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID + "_NAME"),
+					ID = specIfID,
+					Class = new Key(resourceClass.ID, resourceClass.Revision),
 					ChangedAt = eaElement.Modified,
-					ChangedBy = eaElement.Author
-				}
-				);
+					ChangedBy = eaElement.Author,
+					Revision = revision,
+					Title = new Value(eaElement.Name)
+				};
 
-			elementResource.Properties.Add(
-				new Property()
+				elementResource.Properties = new List<Property>();
+
+				elementResource.Properties.Add(
+					new Property()
+					{
+						Title = new Value("dcterms:title"),
+						PropertyClass = new Key("PC-Name", "1"),
+						Value = eaElement.Name,
+						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID + "_NAME"),
+						ChangedAt = eaElement.Modified,
+						ChangedBy = eaElement.Author
+					}
+					);
+
+				elementResource.Properties.Add(
+					new Property()
+					{
+						Title = new Value("dcterms:description"),
+						PropertyClass = new Key("PC-Description", "1"),
+						Value = eaElement.Notes,
+						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID + "_NOTES"),
+						ChangedAt = eaElement.Modified,
+						ChangedBy = eaElement.Author
+					}
+					);
+
+				if (resourceClass.ID != "RC-Hierarchy")
 				{
-					Title = new Value("dcterms:description"),
-					PropertyClass = new Key("PC-Text", "1"),
-					Value = eaElement.Notes,
-					ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID + "_NOTES"),
-					ChangedAt = eaElement.Modified,
-					ChangedBy = eaElement.Author
+					elementResource.Properties.Add(
+						new Property()
+						{
+							Title = new Value("SpecIF:Status"),
+							PropertyClass = new Key("PC-Status", "1"),
+							Value = new Value(GetStatusEnumID(eaElement.Status)),
+							ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID + "_STATUS"),
+							ChangedAt = eaElement.Modified,
+							ChangedBy = eaElement.Author
+						}
+						);
 				}
-				);
 
-			elementResource.Properties.Add(
-				new Property()
+				if (resourceClass.ID == "RC-State" ||
+					resourceClass.ID == "RC-Actor" ||
+					resourceClass.ID == "RC-Collection" ||
+					resourceClass.ID == "RC-Event")
 				{
-					Title = new Value("SpecIF:Status"),
-					PropertyClass = new Key("PC-Status", "1"),
-					Value = new Value(GetStatusEnumID(eaElement.Status)),
-					ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID + "_STATUS"),
-					ChangedAt = eaElement.Modified,
-					ChangedBy = eaElement.Author
-				}
-				);
+					string namespc = "";
+					string stereotype = "";
 
-            if (resourceClass.ID == "RC-State" || resourceClass.ID == "RC-Actor" ||
-                resourceClass.ID == "RC-Collection")
+					ParseFullQualifiedName(eaElement.FQStereotype, out namespc, out stereotype);
+
+					string stereotypeValue = "";
+
+					if (namespc != "")
+					{
+						stereotypeValue = namespc + ":" + stereotype;
+					}
+					else
+					{
+						stereotypeValue = stereotype;
+					}
+
+					elementResource.Properties.Add(
+						new Property()
+						{
+							Title = new Value("UML:Stereotype"),
+							PropertyClass = new Key("PC-Stereotype", "1"),
+							Value = stereotypeValue,
+							ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID + "_STEREOTYPE"),
+							ChangedAt = eaElement.Modified,
+							ChangedBy = eaElement.Author
+						}
+						);
+
+					string elementLegacyType = "";
+
+					if (stereotype == "")
+					{
+						switch (elementType)
+						{
+							case "StateNode":
+
+								if (eaElement.Subtype == 100)
+								{
+									elementLegacyType = "OMG:UML:2.5.1:InitialNode";
+								}
+								else if (eaElement.Subtype == 101)
+								{
+									elementLegacyType = "OMG:UML:2.5.1:ActivityFinal";
+								}
+								else if (eaElement.Subtype == 102)
+								{
+									elementLegacyType = "OMG:UML:2.5.1:FlowFinal";
+								}
+
+								break;
+
+							case "Decision":
+								elementLegacyType = "OMG:UML:2.5.1:DecisionNode";
+								break;
+
+							default:
+								elementLegacyType = "OMG:UML:2.5.1:" + elementType;
+								break;
+						}
+
+					}
+					else
+					{
+						elementLegacyType = "OMG:UML:2.5.1:" + elementType;
+
+						if (elementType == "Object" && stereotype == "agent")
+						{
+							elementLegacyType = "FMC4SE:Agent";
+						}
+						if (elementType == "Port" && stereotype == "channel")
+						{
+							elementLegacyType = "FMC4SE:Channel";
+						}
+					}
+
+					elementResource.Properties.Add(
+						new Property()
+						{
+							Title = new Value("dcterms:type"),
+							PropertyClass = new Key("PC-Type", "1"),
+							Value = elementLegacyType,
+							ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID + "_TYPE"),
+							ChangedAt = eaElement.Modified,
+							ChangedBy = eaElement.Author
+						}
+						);
+
+					string id = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID) + "_VISIBILITY";
+
+					elementResource.Properties.Add(GetVisibilityProperty(eaElement.Visibility, id, revision, eaElement.Modified, eaElement.Author));
+
+
+				}
+
+				if (eaElement.Type == "Requirement")
+				{
+					string identifierValue = eaElement.GetTaggedValueString("Identifier");
+
+					if (!string.IsNullOrEmpty(identifierValue))
+					{
+						elementResource.Properties.Add(
+							new Property("dcterms:identifier", new Key("PC-VisibleId", "1"), identifierValue,
+										 EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID + "_IDENTIFIER"),
+										 eaElement.Modified, eaElement.Author)
+							);
+					}
+				}
+
+
+				result = elementResource;
+			}
+			else
             {
-                string namespc = "";
-                string stereotype = "";
-
-                ParseFullQualifiedName(eaElement.FQStereotype, out namespc, out stereotype);
-
-                string stereotypeValue = "";
-
-                if (namespc != "")
-                {
-                    stereotypeValue = namespc + ":" + stereotype;
-                }
-                else
-                {
-                    stereotypeValue = stereotype;
-                }
-
-                elementResource.Properties.Add(
-                    new Property()
-                    {
-                        Title = new Value("SpecIF:Stereotype"),
-                        PropertyClass = new Key("PC-Stereotype", "1"),
-                        Value = stereotypeValue,
-                        ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID + "_STEREOTYPE"),
-                        ChangedAt = eaElement.Modified,
-                        ChangedBy = eaElement.Author
-                    }
-                    );
-
-
-                elementResource.Properties.Add(
-                new Property()
-                {
-                    Title = new Value("dcterms:type"),
-                    PropertyClass = new Key("PC-Type", "1"),
-                    Value = "OMG:UML:2.5.1:" + eaElement.Type,
-                    ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID + "_TYPE"),
-                    ChangedAt = eaElement.Modified,
-                    ChangedBy = eaElement.Author
-                }
-                );
-
-                string id = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID) + "_VISIBILITY";
-
-                elementResource.Properties.Add(GetVisibilityProperty(eaElement.Visibility, id, revision, eaElement.Modified, eaElement.Author));
-
-
+				result = _resources[cacheKey];
             }
-
-            if(eaElement.Type == "Requirement")
-            {
-                string identifierValue = eaElement.GetTaggedValueString("Identifier");
-
-                if(!string.IsNullOrEmpty(identifierValue))
-                {
-                    elementResource.Properties.Add(
-                        new Property("dcterms:identifier", new Key("PC-VisibleId", "1"), identifierValue,
-                                     EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID + "_IDENTIFIER"),
-                                     eaElement.Modified, eaElement.Author)
-                        );
-                }
-            }
-
-
-			result = elementResource;
 
 			return result;
 		}
@@ -948,98 +1248,111 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 			for (short counter = 0; counter < eaElement.TaggedValues.Count; counter++)
 			{
+
 				EAAPI.TaggedValue tag = eaElement.TaggedValues.GetAt(counter) as EAAPI.TaggedValue;
 
-				string tagNamespace = "";
-				string tagStereotype = "";
-				string tagName = tag.Name;
+				string specIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID);
 
-				ParseFullQualifiedTagName(tag.FQName, out tagNamespace, out tagStereotype, out tagName);
-
-				Resource tagResource = new Resource()
+				if (!_resources.ContainsKey(specIfID))
 				{
-					ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID),
-					Class = new Key("RC-State", "1"),
-					ChangedAt = eaElement.Modified,
-					ChangedBy = eaElement.Author,
-					Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID(),
-					Title = new Value(tagName)
-				};
+					string tagNamespace = "";
+					string tagStereotype = "";
+					string tagName = tag.Name;
 
-				tagResource.Properties = new List<Property>();
-
-				tagResource.Properties.Add(
-					new Property()
+					if (!string.IsNullOrEmpty(tag.FQName))
 					{
-						Title = new Value("dcterms:title"),
-						PropertyClass = new Key("PC-Name", "1"),
-						Value = tagName,
-						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID + "_NAME"),
-						ChangedAt = eaElement.Modified,
-						ChangedBy = eaElement.Author
+						ParseFullQualifiedTagName(tag.FQName, out tagNamespace, out tagStereotype, out tagName);
 					}
-					);
-
-				tagResource.Properties.Add(
-					new Property()
+					
+					Resource tagResource = new Resource()
 					{
-						Title = new Value("dcterms:description"),
-						PropertyClass = new Key("PC-Text", "1"),
-						Value = tag.Notes,
-						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID + "_NOTES"),
+						ID = specIfID,
+						Class = new Key("RC-State", "1"),
 						ChangedAt = eaElement.Modified,
-						ChangedBy = eaElement.Author
-					}
-					);
+						ChangedBy = eaElement.Author,
+						Revision = "1",
+						Title = new Value(tagName)
+					};
 
-				tagResource.Properties.Add(
-					new Property()
+					tagResource.Properties = new List<Property>();
+
+					tagResource.Properties.Add(
+						new Property()
+						{
+							Title = new Value("dcterms:title"),
+							PropertyClass = new Key("PC-Name", "1"),
+							Value = tagName,
+							ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID + "_NAME"),
+							ChangedAt = eaElement.Modified,
+							ChangedBy = eaElement.Author
+						}
+						);
+
+					tagResource.Properties.Add(
+						new Property()
+						{
+							Title = new Value("dcterms:description"),
+							PropertyClass = new Key("PC-Description", "1"),
+							Value = tag.Notes,
+							ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID + "_NOTES"),
+							ChangedAt = eaElement.Modified,
+							ChangedBy = eaElement.Author
+						}
+						);
+
+					tagResource.Properties.Add(
+						new Property()
+						{
+							Title = new Value("dcterms:type"),
+							PropertyClass = new Key("PC-Type", "1"),
+							Value = "OMG:UML:2.5.1:TaggedValue",
+							ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID + "_TYPE"),
+							ChangedAt = eaElement.Modified,
+							ChangedBy = eaElement.Author
+						}
+						);
+
+					tagResource.Properties.Add(
+						new Property()
+						{
+							Title = new Value("rdf:value"),
+							PropertyClass = new Key("PC-Value", "1"),
+							Value = eaElement.GetTaggedValueString(tag.Name),
+							ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID + "_VALUE"),
+							ChangedAt = eaElement.Modified,
+							ChangedBy = eaElement.Author
+						}
+						);
+
+					string stereotypeValue = "";
+
+					if (tagStereotype != "")
 					{
-						Title = new Value("dcterms:type"),
-						PropertyClass = new Key("PC-Type", "1"),
-						Value = "OMG:UML:2.5.1:TaggedValue",
-						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID + "_TYPE"),
-						ChangedAt = eaElement.Modified,
-						ChangedBy = eaElement.Author
+						stereotypeValue = tagNamespace + ":" + tagStereotype;
 					}
-					);
-
-				tagResource.Properties.Add(
-					new Property()
+					else
 					{
-						Title = new Value("rdf:value"),
-						PropertyClass = new Key("PC-Value", "1"),
-						Value = eaElement.GetTaggedValueString(tag.Name),
-						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID + "_VALUE"),
-						ChangedAt = eaElement.Modified,
-						ChangedBy = eaElement.Author
+						stereotypeValue = stereotype;
 					}
-					);
 
-				string stereotypeValue = "";
+					tagResource.Properties.Add(
+						new Property()
+						{
+							Title = new Value("UML:Stereotype"),
+							PropertyClass = new Key("PC-Stereotype", "1"),
+							Value = stereotypeValue,
+							ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID + "_STEREOTYPE"),
+							ChangedAt = eaElement.Modified,
+							ChangedBy = eaElement.Author
+						}
+						);
 
-				if (tagStereotype != "")
-				{
-					stereotypeValue = tagNamespace + ":" + tagStereotype;
+					result.Add(tagResource);
 				}
 				else
-				{
-					stereotypeValue = stereotype;
-				}
-
-				tagResource.Properties.Add(
-					new Property()
-					{
-						Title = new Value("SpecIF:Stereotype"),
-						PropertyClass = new Key("PC-Stereotype", "1"),
-						Value = stereotypeValue,
-						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID + "_STEREOTYPE"),
-						ChangedAt = eaElement.Modified,
-						ChangedBy = eaElement.Author
-					}
-					);
-
-				result.Add(tagResource);
+                {
+					result.Add(_resources[specIfID]);
+                }
 			}
 
 
@@ -1048,57 +1361,69 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 		private Resource ConvertElementConstraint(EAAPI.Element element, EAAPI.Constraint elementConstraint, int index)
 		{
-			Resource result = new Resource()
+			Resource result;
+
+			string specIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(element.ElementGUID + "_CONSTRAINT_" + index);
+
+			if (!_resources.ContainsKey(specIfID))
 			{
-				ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(element.ElementGUID + "_CONSTRAINT_" + index),
-				Class = new Key("RC-State", "1"),
-				Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID(),
-				Title = new Value(elementConstraint.Name)
-			};
 
-			result.Properties = new List<Property>();
-
-			result.Properties.Add(
-				new Property()
+				result = new Resource()
 				{
-					Title = new Value("dcterms:title"),
-					PropertyClass = new Key("PC-Name", "1"),
-					Value = elementConstraint.Name,
-					ID = result.ID + "_NAME"
+					ID = specIfID,
+					Class = new Key("RC-State", "1"),
+					Revision = "1",
+					Title = new Value(elementConstraint.Name)
+				};
 
-				}
-				);
+				result.Properties = new List<Property>();
 
-			result.Properties.Add(
-				new Property()
-				{
-					Title = new Value("dcterms:type"),
-					PropertyClass = new Key("PC-Type", "1"),
-					Value = "OMG:UML:2.5.1:Constraint",
-					ID = result.ID + "_TYPE"
-
-				}
-				);
-
-			result.Properties.Add(
+				result.Properties.Add(
 					new Property()
 					{
-						Title = new Value("SpecIF:Stereotype"),
-						PropertyClass = new Key("PC-Stereotype", "1"),
-						Value = elementConstraint.Type,
-						ID = result.ID + "_STEREOTYPE"
+						Title = new Value("dcterms:title"),
+						PropertyClass = new Key("PC-Name", "1"),
+						Value = elementConstraint.Name,
+						ID = result.ID + "_NAME"
+
 					}
 					);
 
-			result.Properties.Add(
+				result.Properties.Add(
 					new Property()
 					{
-						Title = new Value("rdf:value"),
-						PropertyClass = new Key("PC-Value", "1"),
-						Value = elementConstraint.Notes,
-						ID = result.ID + "_VALUE"
+						Title = new Value("dcterms:type"),
+						PropertyClass = new Key("PC-Type", "1"),
+						Value = "OMG:UML:2.5.1:Constraint",
+						ID = result.ID + "_TYPE"
+
 					}
 					);
+
+				result.Properties.Add(
+						new Property()
+						{
+							Title = new Value("UML:Stereotype"),
+							PropertyClass = new Key("PC-Stereotype", "1"),
+							Value = elementConstraint.Type,
+							ID = result.ID + "_STEREOTYPE"
+						}
+						);
+
+				result.Properties.Add(
+						new Property()
+						{
+							Title = new Value("rdf:value"),
+							PropertyClass = new Key("PC-Value", "1"),
+							Value = elementConstraint.Notes,
+							ID = result.ID + "_VALUE"
+						}
+						);
+			}
+			else
+            {
+				result = _resources[specIfID];
+            }
 
 			return result;
 		}
@@ -1112,41 +1437,89 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			if (diagram != null)
 			{
 
-				try
+				string specIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID);
+
+				if (!_resources.ContainsKey(specIfID))
 				{
 
-					string diagramFileName = Path.GetTempPath() + "/" + diagram.DiagramGUID + ".png";
 
-					_repository.GetProjectInterface().PutDiagramImageToFile(diagram.DiagramGUID, diagramFileName, 1);
-
-					Image image = Image.FromFile(diagramFileName);
-
-					using (MemoryStream m = new MemoryStream())
+					try
 					{
-						image.Save(m, image.RawFormat);
-						byte[] imageBytes = m.ToArray();
 
-						// Convert byte[] to Base64 String
-						string base64String = Convert.ToBase64String(imageBytes);
+						string diagramFileName = System.IO.Path.GetTempPath() + "/" + diagram.DiagramGUID + ".png";
 
-						diagramXHTML += "<p><img style=\"max-width:100%\" src=\"data:image/png;base64," + base64String + "\" /></p>";
+						_repository.GetProjectInterface().PutDiagramImageToFile(diagram.DiagramGUID, diagramFileName, 1);
+
+						Image image = Image.FromFile(diagramFileName);
+
+						using (MemoryStream m = new MemoryStream())
+						{
+							image.Save(m, image.RawFormat);
+							byte[] imageBytes = m.ToArray();
+
+							// Convert byte[] to Base64 String
+							string base64String = Convert.ToBase64String(imageBytes);
+
+							diagramXHTML += "<p><img style=\"max-width:100%\" src=\"data:image/png;base64," + base64String + "\" /></p>";
+
+						}
+					}
+					catch (Exception exception)
+					{
 
 					}
-				}
-				catch (Exception exception)
-				{
 
-				}
+					#region SVG
+					//            EaSvgMetadataProvider eaSvgMetadataProvider = new EaSvgMetadataProvider();
+
+					//DiagramToSvgConverter diagramToSvgConverter = new DiagramToSvgConverter(_repository, eaSvgMetadataProvider);
+
+					//            ScalableVectorGraphics svgDiagram = diagramToSvgConverter.ConvertDiagramToSVG(diagram);
+
+					//XmlSerializerNamespaces namespaces = new XmlSerializerNamespaces();
+					//namespaces.Add("di", "http://www.omg.org/spec/DD/20100524/DI");
+					//namespaces.Add("dc", "http://www.omg.org/spec/DD/20100524/DC");
+					//namespaces.Add("specif", "https://specif.de/schema/v1.0/DI");
+
+					//// Create a Type array.
+					//Type[] extraTypes = new Type[2];
+					//extraTypes[0] = typeof(Shape);
+					//extraTypes[1] = typeof(Edge);
+					////extraTypes[2] = typeof(MetadataContent);
+					////extraTypes[0] = typeof(SpecIfDiagramInterchangeBase);
+
+					//XmlSerializer xmlSerializer = new XmlSerializer(typeof(ScalableVectorGraphics), extraTypes);
+
+					//using (var stringWriter = new StringWriter())
+					//{
+					//	using (XmlWriter writer = XmlWriter.Create(stringWriter,
+					//		new XmlWriterSettings() {
+					//			OmitXmlDeclaration = true,
+					//			ConformanceLevel = ConformanceLevel.Auto,
+					//			Indent = false
+					//		}))
+					//	{
+
+					//		xmlSerializer.Serialize(writer, svgDiagram, namespaces);
+					//		diagramXHTML = stringWriter.ToString();
+
+					//		//string svg = "<svg><circle cx=\"50\" cy=\"50\" r=\"40\" stroke=\"black\" stroke-width=\"3\" fill=\"red\" /></svg>";
+
+					//		//diagramXHTML = "<p>" + svg + "hallo SVG?</p>";
 
 
 
-				if (diagram != null)
-				{
-                    string diagramRevision = EaDateToRevisionConverter.ConvertDateToRevision(diagram.ModifiedDate);
+					//		//System.IO.File.WriteAllText("d:/test/svg/svgx.svg", diagramXHTML);
+					//	}
+					//}
+
+					#endregion
+
+					string diagramRevision = EaDateToRevisionConverter.ConvertDateToRevision(diagram.ModifiedDate);
 
 					result = new Resource()
 					{
-						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID),
+						ID = specIfID,
 						Class = new Key("RC-Diagram", "1"),
 						ChangedAt = diagram.ModifiedDate,
 						ChangedBy = diagram.Author,
@@ -1172,7 +1545,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 						new Property()
 						{
 							Title = new Value("dcterms:description"),
-							PropertyClass = new Key("PC-Text", "1"),
+							PropertyClass = new Key("PC-Description", "1"),
 							Value = diagram.Notes,
 							ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID + "_NOTES"),
 							ChangedAt = diagram.ModifiedDate,
@@ -1195,16 +1568,20 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					result.Properties.Add(
 						new Property()
 						{
-							Title = new Value("SpecIF:Notation"),
-							PropertyClass = new Key("PC-Notation", "1"),
+							Title = new Value("dcterms:type"),
+							PropertyClass = new Key("PC-Type", "1"),
 							Value = "OMG:UML:2.5.1:" + GetUmlDiagramTypeFromEaType(diagram.Type),
-                            ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID + "_NOTATION"),
+							ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID + "_TYPE"),
 							ChangedAt = diagram.ModifiedDate,
 							ChangedBy = diagram.Author
 						}
 						);
 
 				}
+				else
+                {
+					result = _resources[specIfID];
+                }
 			}
 
 			return result;
@@ -1213,235 +1590,98 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 		private Resource ConvertAttribute(EAAPI.Attribute attribute, EAAPI.Element eaElement, string elementRevision)
 		{
 
-			Resource attributeResource = new Resource()
+			Resource result;
+
+			string specIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(attribute.AttributeGUID);
+
+			if (!_resources.ContainsKey(specIfID))
 			{
-				ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(attribute.AttributeGUID),
-				Class = new Key("RC-State", "1"),
-				ChangedAt = eaElement.Modified,
-				ChangedBy = eaElement.Author,
-				Revision = elementRevision,
-				Title = new Value(attribute.Name)
-			};
-
-			attributeResource.Properties = new List<Property>();
-
-			attributeResource.Properties.Add(
-				new Property()
+				result = new Resource()
 				{
-					Title = new Value("dcterms:title"),
-					PropertyClass = new Key("PC-Name", "1"),
-					Value = attribute.Name,
-					ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(attribute.AttributeGUID + "_NAME"),
+					ID = specIfID,
+					Class = new Key("RC-State", "1"),
 					ChangedAt = eaElement.Modified,
-					ChangedBy = eaElement.Author
-				}
-				);
+					ChangedBy = eaElement.Author,
+					Revision = elementRevision,
+					Title = new Value(attribute.Name)
+				};
 
-			attributeResource.Properties.Add(
-				new Property()
-				{
-					Title = new Value("dcterms:description"),
-					PropertyClass = new Key("PC-Text", "1"),
-					Value = attribute.Notes,
-                    ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(attribute.AttributeGUID + "_NOTES"),
-					ChangedAt = eaElement.Modified,
-					ChangedBy = eaElement.Author
-				}
-				);
+				result.Properties = new List<Property>();
 
-			attributeResource.Properties.Add(
-				new Property()
-				{
-					Title = new Value("dcterms:type"),
-					PropertyClass = new Key("PC-Type", "1"),
-					Value = "OMG:UML:2.5.1:Attribute",
-                    ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(attribute.AttributeGUID + "_TYPE"),
-					ChangedAt = eaElement.Modified,
-					ChangedBy = eaElement.Author
-				}
-				);
-
-			attributeResource.Properties.Add(
+				result.Properties.Add(
 					new Property()
 					{
-						Title = new Value("rdf:value"),
-						PropertyClass = new Key("PC-Value", "1"),
-						Value = attribute.Default,
-                        ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(attribute.AttributeGUID + "_VALUE"),
+						Title = new Value("dcterms:title"),
+						PropertyClass = new Key("PC-Name", "1"),
+						Value = attribute.Name,
+						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(attribute.AttributeGUID + "_NAME"),
 						ChangedAt = eaElement.Modified,
 						ChangedBy = eaElement.Author
 					}
 					);
 
-			string id = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(attribute.AttributeGUID) + "_VISIBILITY";
-
-			attributeResource.Properties.Add(GetVisibilityProperty(attribute.Visibility, id, elementRevision, eaElement.Modified, eaElement.Author));
-
-			return attributeResource;
-		}
-
-		private Statement ConvertUmlConnector(EAAPI.Connector connectorEA)
-		{
-			Statement result;
-
-            string revison = "1";
-
-			EAAPI.Element sourceElement = _repository.GetElementByID(connectorEA.ClientID);
-			EAAPI.Element targetElement = _repository.GetElementByID(connectorEA.SupplierID);
-
-			string sourceID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(sourceElement.ElementGUID);
-			string targetID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(targetElement.ElementGUID);
-
-			string connectorID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(connectorEA.ConnectorGUID);
-
-			Statement umlRelationship = new Statement()
-			{
-				ID = connectorID,
-				Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID(),
-				Title = new Value("UML:Relationship"),
-				Class = new Key("SC-UML_Relationship"),
-				StatementSubject = new Key(sourceID, "1"),
-				StatementObject = new Key(targetID, "1")
-			};
-
-			if (connectorEA.Type == "Dependency" && connectorEA.Stereotype == "satisfy")
-			{
-				umlRelationship.Title = new Value("oslc_rm:satisfies");
-				umlRelationship.Class = new Key("SC-satisfies");
-			}
-			else
-			{
-
-				umlRelationship.Properties = new List<Property>();
-
-				umlRelationship.Properties.Add(
-					new Property()
-					{
-						Title = new Value("dcterms:title"),
-						PropertyClass = new Key("PC-Name", "1"),
-						Value = connectorEA.Name,
-                        ID = connectorID + "_NAME"
-					}
-					);
-
-				umlRelationship.Properties.Add(
+				result.Properties.Add(
 					new Property()
 					{
 						Title = new Value("dcterms:description"),
-						PropertyClass = new Key("PC-Text", "1"),
-						Value = connectorEA.Notes,
-						ID = connectorID + "_NOTES"
-
+						PropertyClass = new Key("PC-Description", "1"),
+						Value = attribute.Notes,
+						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(attribute.AttributeGUID + "_NOTES"),
+						ChangedAt = eaElement.Modified,
+						ChangedBy = eaElement.Author
 					}
 					);
 
-				umlRelationship.Properties.Add(
+				result.Properties.Add(
 					new Property()
 					{
 						Title = new Value("dcterms:type"),
 						PropertyClass = new Key("PC-Type", "1"),
-						Value = "OMG:UML:2.5.1:" + connectorEA.Type,
-						ID = connectorID + "_TYPE"
+						Value = "OMG:UML:2.5.1:Attribute",
+						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(attribute.AttributeGUID + "_TYPE"),
+						ChangedAt = eaElement.Modified,
+						ChangedBy = eaElement.Author
 					}
 					);
 
-				umlRelationship.Properties.Add(
-					new Property()
-					{
-						Title = new Value("UML:ConnectorDirection"),
-						PropertyClass = new Key("PC-UML_ConnectorDirection", "1"),
-						Value = GetDirectionID(connectorEA.Direction),
-						ID = connectorID + "_DIRECTION"
-					}
-					);
+				result.Properties.Add(
+						new Property()
+						{
+							Title = new Value("rdf:value"),
+							PropertyClass = new Key("PC-Value", "1"),
+							Value = attribute.Default,
+							ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(attribute.AttributeGUID + "_VALUE"),
+							ChangedAt = eaElement.Modified,
+							ChangedBy = eaElement.Author
+						}
+						);
 
-				string namespc = "";
-				string stereotype = "";
+				string id = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(attribute.AttributeGUID) + "_VISIBILITY";
 
-				ParseFullQualifiedName(connectorEA.FQStereotype, out namespc, out stereotype);
-
-				string stereotypeValue = "";
-
-				if (namespc != "")
-				{
-					stereotypeValue = namespc + ":" + stereotype;
-				}
-				else
-				{
-					stereotypeValue = stereotype;
-				}
-
-				umlRelationship.Properties.Add(
-					new Property()
-					{
-						Title = new Value("SpecIF:Stereotype"),
-						PropertyClass = new Key("PC-Stereotype", "1"),
-						Value = stereotypeValue,
-						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(connectorID + "_STEREOTYPE"),
-					}
-					);
-
-				umlRelationship.Properties.Add(
-					new Property()
-					{
-						Title = new Value("UML:ConnectorSourceRole"),
-						PropertyClass = new Key("PC-UML_ConnectorSourceRole", "1"),
-						Value = connectorEA.ClientEnd.Role,
-						ID = connectorID + "_SOURCE_ROLE"
-					}
-					);
-
-				umlRelationship.Properties.Add(
-					new Property()
-					{
-						Title = new Value("UML:ConnectorTargetRole"),
-						PropertyClass = new Key("PC-UML_ConnectorTargetRole", "1"),
-						Value = connectorEA.SupplierEnd.Role,
-						ID = connectorID + "_TARGET_ROLE"
-					}
-					);
-
-				umlRelationship.Properties.Add(
-					new Property()
-					{
-						Title = new Value("UML:ConnectorSourceMultiplicity"),
-						PropertyClass = new Key("PC-UML_ConnectorSourceMultiplicity", "1"),
-						Value = connectorEA.ClientEnd.Cardinality,
-						ID = connectorID + "_SOURCE_MULTIPLICITY"
-					}
-					);
-
-				umlRelationship.Properties.Add(
-					new Property()
-					{
-						Title = new Value("UML:ConnectorTargetMultiplicity"),
-						PropertyClass = new Key("PC-UML_ConnectorTargetMultiplicity", "1"),
-						Value = connectorEA.ClientEnd.Cardinality,
-						ID = connectorID + "_TARGET_MULTIPLICITY"
-					}
-					);
-
-
-				string sourceVisibilityId = connectorID + "_SOURCE_VISIBILITY";
-
-				Property sourceVisibilityProperty = GetVisibilityProperty(connectorEA.ClientEnd.Visibility, sourceVisibilityId, revison);
-
-				sourceVisibilityProperty.PropertyClass = new Key("PC-UML_ConnectorSourceDataAccess", "1");
-				sourceVisibilityProperty.Title = new Value("UML:ConnectorSourceDataAccess");
-
-				umlRelationship.Properties.Add(sourceVisibilityProperty);
-
-				string targetVisibilityId = connectorID + "_TARGET_VISIBILITY";
-
-				Property targetVisibilityProperty = GetVisibilityProperty(connectorEA.SupplierEnd.Visibility, targetVisibilityId, revison);
-
-				targetVisibilityProperty.PropertyClass = new Key("PC-UML_ConnectorTargetDataAccess", "1");
-				targetVisibilityProperty.Title = new Value("UML:ConnectorTargetDataAccess");
-
-				umlRelationship.Properties.Add(targetVisibilityProperty);
+				result.Properties.Add(GetVisibilityProperty(attribute.Visibility, id, elementRevision, eaElement.Modified, eaElement.Author));
 			}
+			else
+            {
+				result = _resources[specIfID];
+            }
 
-			result = umlRelationship;
+			return result;
+		}
+
+		private Statement ConvertUmlConnector(EAAPI.Connector connectorEA)
+		{
+			Statement result = null;
+
+			EAAPI.Element sourceElement = _repository.GetElementByID(connectorEA.ClientID);
+			EAAPI.Element targetElement = _repository.GetElementByID(connectorEA.SupplierID);
+						
+			Resource sourceResource = AddElement(sourceElement);
+			Resource targetResource = AddElement(targetElement);
+
+			if (connectorEA.Type == "Dependency" && connectorEA.Stereotype == "satisfy")
+            {
+				result = GetSatisfiesStatement(sourceResource, targetResource);
+            }
 
 			return result;
 		}
@@ -1483,7 +1723,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			result.Properties.Add(
 					new Property()
 					{
-						Title = new Value("SpecIF:Stereotype"),
+						Title = new Value("UML:Stereotype"),
 						PropertyClass = new Key("PC-Stereotype", "1"),
 						Value = connectorConstraint.Type,
 						ID = result.ID + "_STEREOTYPE"
@@ -1540,7 +1780,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			result.Properties.Add(
 					new Property()
 					{
-						Title = new Value("SpecIF:Stereotype"),
+						Title = new Value("UML:Stereotype"),
 						PropertyClass = new Key("PC-Stereotype", "1"),
 						Value = "Guard",
 						ID = result.ID + "_STEREOTYPE"
@@ -1605,7 +1845,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					new Property()
 					{
 						Title = new Value("dcterms:description"),
-						PropertyClass = new Key("PC-Text", "1"),
+						PropertyClass = new Key("PC-Description", "1"),
 						Value = tag.Notes,
 						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.TagGUID + "_NOTES")
 					}
@@ -1645,7 +1885,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				tagResource.Properties.Add(
 					new Property()
 					{
-						Title = new Value("SpecIF:Stereotype"),
+						Title = new Value("UML:Stereotype"),
 						PropertyClass = new Key("PC-Stereotype", "1"),
 						Value = stereotypeValue,
 						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.TagGUID + "_STEREOTYPE")
@@ -1663,9 +1903,13 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
         {
             Statement result = null;
 
-            // rdf:type statement
-            result = new Statement()
+			string statementID = classifiedResource.ID + "_INSTANCEOF_" + classifier.ID;
+
+			// rdf:type statement
+			result = new Statement()
             {
+				ID = statementID,
+				Revision = "1",
                 Title = new Value("rdf:type"),
                 Class = new Key("SC-Classifier", "1"),
                 StatementSubject = new Key(classifiedResource.ID, classifiedResource.Revision),
@@ -1676,13 +1920,35 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
             return result;
         }
 
+		private Statement GetSatisfiesStatement(Resource subjectResource, Resource objectResource)
+		{
+			Statement result;
+
+			string statementID = subjectResource.ID + "_SATISFIES_" + objectResource.ID;
+
+			// rdf:type statement
+			result = new Statement()
+			{
+				ID = statementID,
+				Revision = "1",
+				Title = new Value("oslc_rm:satisfies"),
+				Class = new Key("SC-satisfies", "1"),
+				StatementSubject = new Key(subjectResource.ID, subjectResource.Revision),
+				StatementObject = new Key(objectResource.ID, objectResource.Revision)
+			};
+
+
+			return result;
+		}
+
 		private Statement GetContainsStatement(Resource parentResource, Resource childResource)
 		{
 			Statement result = null;
 
 			
 			// SpecIF:contains statement
-			result = GetContainsStatementFromSpecIfID(new Key(parentResource.ID, parentResource.Revision), new Key(childResource.ID, childResource.Revision));
+			result = GetContainsStatementFromSpecIfID(new Key(parentResource.ID, parentResource.Revision), 
+													  new Key(childResource.ID, childResource.Revision));
 
 			return result;
 		}
@@ -1691,10 +1957,13 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 		{
 			Statement result = null;
 
-			
+			string statementID = subjectID.ID + "_CONTAINS_" + objectID.ID;
+
 			// SpecIF:contains statement
 			result = new Statement()
 			{
+				ID = statementID,
+				Revision = "1",
 				Title = new Value("SpecIF:contains"),
 				Class = new Key("SC-contains", "1"),
                 StatementSubject = subjectID,
@@ -1708,10 +1977,13 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 		{
 			Statement result = null;
 
+			string statementID = subjectID.ID + "_SHOWS_" + objectID.ID;
 
 			// SpecIF:shows statement
 			result = new Statement()
 			{
+				ID = statementID,
+				Revision = "1",
 				Title = new Value("SpecIF:shows"),
 				Class = new Key("SC-shows", "1"),
 				StatementSubject = new Key(subjectID.ID, subjectID.Revision),
@@ -1733,14 +2005,15 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 				string subelementSpecIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(subElement.ElementGUID);
 
+
+
 				// add UML:AtributeReference statement
-				Statement attributeReferenceStatement = new Statement()
-				{
-					Title = new Value("SpecIF:contains"),
-					Class = new Key("SC-contains"),
-					StatementSubject = new Key(elementResource.ID, elementResource.Revision),
-					StatementObject = new Key(subelementSpecIfID, "1")
-				};
+				Statement attributeReferenceStatement = GetContainsStatementFromSpecIfID(
+					new Key(elementResource.ID, elementResource.Revision),
+					new Key(subelementSpecIfID, "1")
+					);
+					
+				
 
 				result.Add(attributeReferenceStatement);
 
@@ -1754,13 +2027,10 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				string subElementSpecIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(subElement.ElementGUID);
 
 				// add UML:AtributeReference statement
-				Statement attributeReferenceStatement = new Statement()
-				{
-					Title = new Value("SpecIF:contains"),
-					Class = new Key("SC-contains"),
-					StatementSubject = new Key(elementResource.ID, elementResource.Revision),
-					StatementObject = new Key(subElementSpecIfID, "1")
-				};
+				Statement attributeReferenceStatement = GetContainsStatementFromSpecIfID(
+					new Key(elementResource.ID, elementResource.Revision),
+					new Key(subElementSpecIfID, "1")
+					);
 
 				result.Add(attributeReferenceStatement);
 
@@ -1894,7 +2164,6 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				case "Class":
 				case "Component":
 				case "State":
-                case "Port":
                 case "TaggedValue":
                 case "Stereotype":
 				case "Parameter":
@@ -1913,30 +2182,44 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
                     {
                         result = _metadataReader.GetResourceClassByKey(new Key("RC-Folder", "1"));
                     }
+					else if(stereotype == "agent")
+                    {
+						result = _metadataReader.GetResourceClassByKey(new Key("RC-Actor", "1"));
+					}
                 break;
 
-                case "Activity":
+
+				case "Port":
+					result = _metadataReader.GetResourceClassByKey(new Key("RC-Actor", "1"));
+					break;
+				
+				case "Activity":
 				case "Action":
 				case "Actor":
                 case "StateMachine":
 				case "UseCase":
+				case "Decision":
 
 					result = _metadataReader.GetResourceClassByKey(new Key("RC-Actor", "1"));
 				break;
 
-                case "Event":
-                    result = _metadataReader.GetResourceClassByKey(new Key("RC-Event", "1"));
-                break;
-
-				
-
 				case "Package":
 
                     result = _metadataReader.GetResourceClassByKey(new Key("RC-Collection", "1"));
+
+					if(stereotype == "specification")
+                    {
+						result = _metadataReader.GetResourceClassByKey(new Key("RC-Hierarchy", "1"));
+					}
 				break;
 
 				case "Requirement":
 					result = _metadataReader.GetResourceClassByKey(new Key("RC-Requirement", "1"));
+				break;
+
+				case "StateNode":
+				case "Event":
+					result = _metadataReader.GetResourceClassByKey(new Key("RC-Event", "1"));
 				break;
 			}
 
@@ -2043,49 +2326,79 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			return result;
 		}
 
+
 		private void InitializePrimitiveTypes()
 		{
+
+			string intID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(INTEGER_GUID);
+
+
 			Resource integerResource = CreatePrimitiveTypeResource(
-				EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid("{239A1D1D-046D-4902-87B1-4D86FB6B7D76}"),
+				intID,
 				"Integer",
 				"An instance of Integer is a value in the (infinite) set of integers (…-2, -1, 0, 1, 2…).");
 
-			_primitiveTypes.Add("Integer", integerResource);
+
+
+			if (!_resources.ContainsKey(intID))
+			{
+				_resources.Add(intID, integerResource);
+			}
+
+			string boolID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(BOOLEAN_GUID);
 
 			Resource booleanResource = CreatePrimitiveTypeResource(
-				EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid("{26844644-6F52-40A8-BDA8-43A61276B197}"),
+				boolID,
 				"Boolean",
 				"An instance of Boolean is one of the predefined values true and false.");
 
-			_primitiveTypes.Add("Boolean", booleanResource);
+			if (!_resources.ContainsKey(boolID))
+			{
+				_resources.Add(EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(BOOLEAN_GUID), booleanResource);
+			}
+
+			string stringID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(STRING_GUID);
 
 			Resource stringResource = CreatePrimitiveTypeResource(
-				EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid("{4CEEB645-62E8-44B0-A97E-694FF01C25E4}"),
+				stringID,
 				"String",
 				@"An instance of String defines a sequence of characters. Character sets may include non-Roman
 alphabets.The semantics of the string itself depends on its purpose; it can be a comment,
 computational language expression, OCL expression, etc.");
 
-			_primitiveTypes.Add("String", stringResource);
+			if (!_resources.ContainsKey(stringID))
+			{
+				_resources.Add(EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(STRING_GUID), stringResource);
+			}
+
+			string unlimitedNaturalID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(UNLIMITED_NATURAL_GUID);
 
 			Resource unlimitedNaturalResource = CreatePrimitiveTypeResource(
-				EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid("{C35A5389-2CBF-47FB-B987-A540E71B0BFC}"),
+				unlimitedNaturalID,
 				"UnlimitedNatural",
 				@"An instance of UnlimitedNatural is a value in the (infinite) set of natural numbers (0, 1, 2…) plus
 unlimited. The value of unlimited is shown using an asterisk (‘*’). UnlimitedNatural values are
 typically used to denote the upper bound of a range, such as a multiplicity; unlimited is used
 whenever the range is specified to have no upper bound.");
 
-			_primitiveTypes.Add("UnlimitedNatural", unlimitedNaturalResource);
+			if (_resources.ContainsKey(unlimitedNaturalID))
+			{
+				_resources.Add(EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(UNLIMITED_NATURAL_GUID), unlimitedNaturalResource);
+			}
+
+			string realID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(REAL_GUID);
 
 			Resource realResource = CreatePrimitiveTypeResource(
-				EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid("{ABA6441D-268A-457D-A775-484C7301AF21}"),
+				realID,
 				"Real",
 				@"An instance of Real is a value in the (infinite) set of real numbers. Typically an implementation
 will internally represent Real numbers using a floating point standard such as ISO/IEC/IEEE
 60559:2011 (whose content is identical to the predecessor IEEE 754 standard).");
 
-			_primitiveTypes.Add("Real", realResource);
+			if (!_resources.ContainsKey(realID))
+			{
+				_resources.Add(EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(REAL_GUID), realResource);
+			}
 		}
 
 		private Resource CreatePrimitiveTypeResource(string id, 
@@ -2121,7 +2434,7 @@ will internally represent Real numbers using a floating point standard such as I
 				new Property()
 				{
 					Title = new Value("dcterms:description"),
-					PropertyClass = new Key("PC-Text", "1"),
+					PropertyClass = new Key("PC-Description", "1"),
 					Value = description,
 					ID = result.ID + "_NOTES",
 					ChangedAt = new DateTime(2019, 4, 7),
@@ -2152,27 +2465,27 @@ will internally represent Real numbers using a floating point standard such as I
 			switch(swTypeName)
 			{
 				case "int":
-					result = _primitiveTypes["Integer"];
+					result = _resources[EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(INTEGER_GUID)];
 				break;
 
 				case "bool":
 				case "boolean":
-					result = _primitiveTypes["Boolean"];
+					result = _resources[EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(BOOLEAN_GUID)];
 				break;
 
 				case "string":
 				case "String":
-					result = _primitiveTypes["String"];
+					result = _resources[EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(STRING_GUID)];
 				break;
 
 				case "uint":
 				case "uword":
-					result = _primitiveTypes["UnlimitedNatural"];
+					result = _resources[EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(UNLIMITED_NATURAL_GUID)];
 				break;
 
 				case "float":
 				case "double":
-					result = _primitiveTypes["Real"];
+					result = _resources[EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(REAL_GUID)];
 				break;
 			}
 

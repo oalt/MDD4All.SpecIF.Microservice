@@ -202,8 +202,27 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 
 		public override List<Statement> GetAllStatementsForResource(Key resourceKey)
 		{
-			throw new NotImplementedException();
-		}
+            List<Statement> result = new List<Statement>();
+
+            UriBuilder uriBuilder = new UriBuilder(_connectionURL + "/specif/v1.0/statements");
+
+            System.Collections.Specialized.NameValueCollection parameters = HttpUtility.ParseQueryString(string.Empty);
+            parameters["subjectID"] = resourceKey.ID;
+            parameters["subjectRevision"] = resourceKey.Revision;
+            parameters["objectID"] = resourceKey.ID;
+            parameters["objectRevision"] = resourceKey.Revision;
+
+            uriBuilder.Query = parameters.ToString();
+
+            Uri finalUrl = uriBuilder.Uri;
+
+            Task<List<Statement>> task = GetDataFromServiceAsync<List<Statement>>(finalUrl);
+            task.Wait();
+
+            result = task.Result;
+
+            return result;
+        }
 
 		public override List<Node> GetContainingHierarchyRoots(Key resourceKey)
 		{

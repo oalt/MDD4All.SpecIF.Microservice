@@ -93,12 +93,20 @@ namespace MDD4All.SpecIf.Microservice.Startup
                     Type type = Type.GetTypeFromProgID(progId);
                     EAAPI.Repository repository = Activator.CreateInstance(type) as EAAPI.Repository;
 
-                    bool openResult = repository.OpenFile(@"d:\alto_daten\EA\KafkaIntegrationTest.eapx");
+                    //bool openResult = repository.OpenFile(@"d:\alto_daten\EA\KafkaIntegrationTest.eapx");
+
+                    // D:\work\github\SpecIF-Backend\src\MDD4All.SoecIF.DataProvider.EA.Test\TestData\TestModel1.eap
+
+                    _logger.LogInformation("Starting Enterprise Architect...");
+
+                    bool openResult = repository.OpenFile(@"D:\work\github\SpecIF-Backend\src\MDD4All.SoecIF.DataProvider.EA.Test\TestData\TestModel1.eap");
 
                     if (openResult)
                     {
 
                         repository.ShowWindow(1);
+
+                        _logger.LogInformation("Model open.");
 
                         EaDataIntegrator eaDataIntegrator = new EaDataIntegrator(repository, metadataReader);
 

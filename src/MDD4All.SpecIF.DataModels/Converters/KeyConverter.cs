@@ -55,6 +55,7 @@ namespace MDD4All.SpecIF.DataModels.Converters
 				Key key = value as Key;
 
 				//Console.WriteLine("value is key. " + key.ID + " " + key.Revision);
+				
 
 				try
 				{
@@ -68,6 +69,8 @@ namespace MDD4All.SpecIF.DataModels.Converters
 				}
 				catch(Exception exception)
 				{
+					Console.WriteLine("id=" + key.ID);
+					Console.WriteLine("revision=" + key.Revision);
 					Console.WriteLine(exception);
 				}
 			}

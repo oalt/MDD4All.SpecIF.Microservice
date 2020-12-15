@@ -1,6 +1,11 @@
 ﻿/*
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
+using System;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+
 namespace MDD4All.SpecIF.DataProvider.EA.Converters
 {
     public class EaSpecIfGuidConverter
@@ -31,5 +36,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
             
             return result;
         }
+
+       
     }
 }

@@ -288,7 +288,26 @@ namespace MDD4All.SpecIF.DataProvider.Integration
 
 		public override List<Statement> GetAllStatementsForResource(Key resourceKey)
 		{
-			throw new System.NotImplementedException();
+			List<Statement> result = new List<Statement>();
+
+			foreach (KeyValuePair<string, ISpecIfDataReader> provider in _dataReaders)
+			{
+				try
+				{
+					List<Statement> statements = provider.Value.GetAllStatementsForResource(resourceKey);
+
+					if (statements != null)
+					{
+						result.AddRange(statements);
+					}
+				}
+				catch(Exception exception)
+                {
+
+                }
+			}
+
+			return result;
 		}
 
 		public override List<Node> GetContainingHierarchyRoots(Key resourceKey)

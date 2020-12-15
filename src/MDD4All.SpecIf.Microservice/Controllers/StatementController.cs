@@ -46,6 +46,37 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         {
             ActionResult<List<Statement>> result = NotFound();
 
+            Key subjectKey = null;
+            Key objectKey = null;
+
+            if(subjectID != null)
+            {
+                if(subjectRevision != null)
+                {
+                    subjectKey = new Key(subjectID, subjectRevision);
+                }
+            }
+
+            if(objectID != null)
+            {
+                if (objectRevision != null)
+                {
+                    objectKey = new Key(objectID, objectRevision);
+                }
+            }
+
+            if (subjectKey != null && objectKey != null)
+            {
+                if (subjectKey.ID == objectKey.ID && subjectKey.Revision == objectKey.Revision)
+                {
+                    result = _specIfDataReader.GetAllStatementsForResource(subjectKey);
+                }
+                else
+                {
+                    // TODO subject and object statements seperately
+                }
+            }
+
             return result;
         }
 

@@ -17,19 +17,26 @@ namespace MDD4All.SpecIF.DataProvider.EA
 
         private ISpecIfMetadataReader _metadataReader;
 
+        private static EaUmlToSpecIfConverter _eaUmlToSpecIfConverter;
+
         //public bool RepositoryIsOpen { get; set; }
 
         public SpecIfEaDataReader(EAAPI.Repository eaRepository, ISpecIfMetadataReader metadataReader)
 		{
 			_eaRepository = eaRepository;
             _metadataReader = metadataReader;
+
+            if (_eaUmlToSpecIfConverter == null)
+            {
+                _eaUmlToSpecIfConverter = new EaUmlToSpecIfConverter(eaRepository, metadataReader);
+            }
 		}
 
         public override List<Node> GetAllHierarchies()
         {
             List<Node> result = new List<Node>();
 
-            
+
             //EaToSpecIfConverter converter = new EaToSpecIfConverter(_eaRepository);
 
 
@@ -44,10 +51,19 @@ namespace MDD4All.SpecIF.DataProvider.EA
             //    result.Add(hierarchy);
             //}
 
-            SpecificationToHierarchyConverter converter = new SpecificationToHierarchyConverter(_eaRepository);
 
-            result = converter.GetAllHierarchies();
-            
+
+
+            //SpecificationToHierarchyConverter converter = new SpecificationToHierarchyConverter(_eaRepository);
+
+            //result = converter.GetAllHierarchies();
+
+            //_eaUmlToSpecIfConverter = new EaUmlToSpecIfConverter(_eaRepository, _metadataReader);
+
+            Node hierarchy = _eaUmlToSpecIfConverter.GetHierarchy();
+
+            result.Add(hierarchy);
+
 
             return result;
         }
@@ -76,11 +92,17 @@ namespace MDD4All.SpecIF.DataProvider.EA
             //    result = hierarchy;
             //}
 
-            SpecificationToHierarchyConverter converter = new SpecificationToHierarchyConverter(_eaRepository);
+            //SpecificationToHierarchyConverter converter = new SpecificationToHierarchyConverter(_eaRepository);
 
-            List<Node> allHierarchies = converter.GetAllHierarchies();
+            //List<Node> allHierarchies = converter.GetAllHierarchies();
 
-            result = allHierarchies.Find(hierarchy => hierarchy.ID == id.ID);
+            //result = allHierarchies.Find(hierarchy => hierarchy.ID == id.ID);
+
+            //_eaUmlToSpecIfConverter = new EaUmlToSpecIfConverter(_eaRepository, _metadataReader);
+
+            Node hierarchy = _eaUmlToSpecIfConverter.GetHierarchy();
+
+            result = hierarchy;
 
             return result;
         }
@@ -98,18 +120,20 @@ namespace MDD4All.SpecIF.DataProvider.EA
 
             try
             {
-                EaUmlToSpecIfConverter converter = new EaUmlToSpecIfConverter(_eaRepository, _metadataReader);
+                //EaUmlToSpecIfConverter converter = new EaUmlToSpecIfConverter(_eaRepository, _metadataReader);
 
-                EAAPI.Element eaElement = _eaRepository.GetElementByGuid(EaSpecIfGuidConverter.ConvertSpecIfGuidToEaGuid(key.ID));
+                //EAAPI.Element eaElement = _eaRepository.GetElementByGuid(EaSpecIfGuidConverter.ConvertSpecIfGuidToEaGuid(key.ID));
 
-                if (eaElement != null)
-                {
-                    result = converter.ConvertElement(eaElement);
-                }
-                else
-                {
-                    
-                }
+                //if (eaElement != null)
+                //{
+                //    result = converter.ConvertElement(eaElement);
+                //}
+                //else
+                //{
+
+                //}
+
+                result = _eaUmlToSpecIfConverter.GetResourceByKey(key);
             }
             catch(Exception exception)
             {
@@ -138,9 +162,9 @@ namespace MDD4All.SpecIF.DataProvider.EA
 
 		public override List<Statement> GetAllStatementsForResource(Key resourceKey)
 		{
-			throw new NotImplementedException();
+            return _eaUmlToSpecIfConverter.GetAllStatementsForResource(resourceKey);
 		}
-
+         
 		public override List<Node> GetContainingHierarchyRoots(Key resourceKey)
 		{
 			throw new NotImplementedException();
@@ -150,16 +174,18 @@ namespace MDD4All.SpecIF.DataProvider.EA
         {
             List<Node> result = new List<Node>();
 
-            SpecificationToHierarchyConverter converter = new SpecificationToHierarchyConverter(_eaRepository);
+            //SpecificationToHierarchyConverter converter = new SpecificationToHierarchyConverter(_eaRepository);
 
-            List<Node> allHierarchies = converter.GetAllHierarchies();
+            //List<Node> allHierarchies = converter.GetAllHierarchies();
 
-            foreach(Node rootNode in allHierarchies)
-            {
-                rootNode.Nodes = new List<Node>();
-            }
+            //foreach(Node rootNode in allHierarchies)
+            //{
+            //    rootNode.Nodes = new List<Node>();
+            //}
 
-            result = allHierarchies;
+            //result = allHierarchies;
+
+            result.Add(_eaUmlToSpecIfConverter.GetHierarchy().Nodes[0]);
 
             return result;
         }

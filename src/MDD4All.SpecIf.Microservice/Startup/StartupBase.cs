@@ -116,7 +116,7 @@ namespace MDD4All.SpecIf.Microservice.Startup
 
                 options.SwaggerDoc("v1.0", new Microsoft.OpenApi.Models.OpenApiInfo
                 {
-                    Title = "SpecIF API", // (" + _serviceDescription.ServiceName + ")",
+                    Title = "SpecIF API (" + _serviceDescription.ServiceName + ")",
                     Version = "v1.0",
                     Description = "Web API for the Specification Integration Facility (SpecIF).",
                     Contact = new Microsoft.OpenApi.Models.OpenApiContact
