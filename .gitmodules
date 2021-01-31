@@ -1,0 +1,3 @@
+[submodule "src/MDD4All.SpecIF.DataModels"]
+	path = src/MDD4All.SpecIF.DataModels
+	url = https://github.com/oalt/MDD4All.SpecIF.DataModels.git
