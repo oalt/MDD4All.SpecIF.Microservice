@@ -43,8 +43,6 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 
         void DeleteNode(string nodeID);
 
-		long GetNextSpecIfIdentifier(string prefix);
-
 		void InitializeIdentificators();
 
 		void SaveIdentificators();

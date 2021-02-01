@@ -3,7 +3,6 @@
  */
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using MDD4All.SpecIF.DataModels;
 using MDD4All.SpecIF.DataModels.BaseTypes;
 using MDD4All.SpecIF.DataModels.Helpers;
@@ -12,53 +11,21 @@ using MDD4All.SpecIF.DataProvider.Contracts.DataModels;
 
 namespace MDD4All.SpecIF.DataProvider.Contracts
 {
-	public abstract class AbstractSpecIfDataWriter : ISpecIfDataWriter
-	{
-		protected SpecIfIdentifiers _identificators;
+    public abstract class AbstractSpecIfDataWriter : ISpecIfDataWriter
+    {
+        protected SpecIfIdentifiers _identificators;
 
-		protected ISpecIfMetadataReader _metadataReader;
+        protected ISpecIfMetadataReader _metadataReader;
 
         protected ISpecIfDataReader _dataReader;
 
-		public ISpecIfServiceDescription DataSourceDescription { get; set; }
+        public ISpecIfServiceDescription DataSourceDescription { get; set; }
 
-		public AbstractSpecIfDataWriter(ISpecIfMetadataReader metadataReader, ISpecIfDataReader dataReader)
-		{
-			_metadataReader = metadataReader;
+        public AbstractSpecIfDataWriter(ISpecIfMetadataReader metadataReader, ISpecIfDataReader dataReader)
+        {
+            _metadataReader = metadataReader;
             _dataReader = dataReader;
-		}
-
-		public long GetNextSpecIfIdentifier(string prefix)
-		{
-			long result = 0;
-
-			if (_identificators == null)
-			{
-				_identificators = new SpecIfIdentifiers();
-			}
-
-			SpecIfIdentifier identifier = _identificators.Identifiers.FirstOrDefault(identificator => identificator.Prefix == prefix);
-
-			if (identifier != null)
-			{
-				identifier.Number = identifier.Number + 1;
-				result = identifier.Number;
-			}
-			else
-			{
-				SpecIfIdentifier newIdentifier = new SpecIfIdentifier()
-				{
-					Prefix = prefix,
-					Number = 1
-				};
-				_identificators.Identifiers.Add(newIdentifier);
-				result = 1;
-			}
-
-			SaveIdentificators();
-
-			return result;
-		}
+        }
 
         public SpecIfBaseElement UpdateVersionInfo<T>(SpecIfBaseElement data, bool isUpdate = false)
         {
@@ -95,7 +62,7 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
 
                 result = data;
             }
-            
+
             result.ChangedAt = DateTime.Now;
 
             return result;
@@ -106,7 +73,7 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
                                             string integrationID = null)
         {
             string projectID = integrationID;
-            
+
             if (project.DataTypes != null)
             {
                 foreach (DataType dataType in project.DataTypes)
@@ -148,9 +115,9 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
             {
                 foreach (Resource resource in project.Resources)
                 {
-                    
+
                     AddResource(resource);
-                    
+
                 }
             }
 
@@ -159,7 +126,7 @@ namespace MDD4All.SpecIF.DataProvider.Contracts
                 foreach (Statement statement in project.Statements)
                 {
                     AddStatement(statement);
-                    
+
                 }
             }
 
