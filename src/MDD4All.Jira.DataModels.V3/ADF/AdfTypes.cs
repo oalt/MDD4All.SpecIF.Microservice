@@ -1,4 +1,7 @@
-﻿using System;
+﻿/*
+ * Copyright (c) MDD4All.de, Dr. Oliver Alt
+ */
+using System;
 using System.Collections.Generic;
 using System.Text;
 

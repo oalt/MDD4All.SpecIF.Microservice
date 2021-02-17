@@ -1,4 +1,7 @@
-﻿using MDD4All.Jira.DataModels.V3.Converters;
+﻿/*
+ * Copyright (c) MDD4All.de, Dr. Oliver Alt
+ */
+using MDD4All.Jira.DataModels.V3.Converters;
 using Newtonsoft.Json;
 using System;
 

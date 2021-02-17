@@ -1,6 +1,8 @@
-﻿using MDD4All.Jira.DataModels.V3.Converters;
+﻿/*
+ * Copyright (c) MDD4All.de, Dr. Oliver Alt
+ */
 using Newtonsoft.Json;
-using System;
+using System.Collections.Generic;
 
 namespace MDD4All.Jira.DataModels.V3
 {
@@ -18,10 +20,27 @@ namespace MDD4All.Jira.DataModels.V3
         [JsonProperty("key")]
         public string Key { get; set; }
 
+        [JsonProperty("names")]
+        public Dictionary<string, string> FieldNames { get; set; } = new Dictionary<string, string>();
+
         [JsonProperty("changelog")]
         public ChangeLog ChangeLog { get; set; }
 
+        [JsonIgnore]
+        public Fields Fields { get; set; } = new Fields();
+        
         [JsonProperty("fields")]
-        public Fields Fields { get; set; }
+        public Dictionary<string, object> FieldDictionary
+        {
+            get
+            {
+                return Fields.FieldDictionary;
+            }
+
+            set
+            {
+                Fields = new Fields(value);
+            }
+        }
     }
 }

@@ -1,4 +1,7 @@
-﻿using MDD4All.Jira.DataModels.V3.ADF;
+﻿/*
+ * Copyright (c) MDD4All.de, Dr. Oliver Alt
+ */
+using MDD4All.Jira.DataModels.V3.ADF;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -7,11 +10,80 @@ namespace MDD4All.Jira.DataModels.V3
 {
     public partial class Fields
     {
+        public Fields()
+        {
+
+        }
+
+        public Fields(Dictionary<string, object> fieldDictionary)
+        {
+            FieldDictionary = fieldDictionary;
+        }
+
+        
+
+        [JsonIgnore]
+        public Dictionary<string, object> FieldDictionary { get; set; } = new Dictionary<string, object>();
+
+
         [JsonProperty("statuscategorychangedate")]
-        public string Statuscategorychangedate { get; set; }
+        public string Statuscategorychangedate 
+        { 
+            get
+            {
+                string result = "";
+
+                if(FieldDictionary.ContainsKey("statuscategorychangedate"))
+                {
+                    result = FieldDictionary["statuscategorychangedate"].ToString();
+                }
+
+                return result;
+            }
+
+            set
+            {
+                if(FieldDictionary.ContainsKey("statuscategorychangedate"))
+                {
+                    FieldDictionary["statuscategorychangedate"] = value;
+                }
+                else
+                {
+                    FieldDictionary.Add("statuscategorychangedate", value);
+                }
+            }
+                
+        }
 
         [JsonProperty("issuetype")]
-        public IssueType IssueType { get; set; }
+        public IssueType IssueType
+        {
+            get
+            {
+                IssueType result = null;
+
+                if (FieldDictionary.ContainsKey("issuetype"))
+                {
+                    string json = FieldDictionary["issuetype"].ToString();
+
+                    result = JsonConvert.DeserializeObject<IssueType>(json);
+                }
+
+                return result;
+            }
+
+            set
+            {
+                if (FieldDictionary.ContainsKey("issuetype"))
+                {
+                    FieldDictionary["issuetype"] = value;
+                }
+                else
+                {
+                    FieldDictionary.Add("issuetype", value);
+                }
+            }
+        }
 
         [JsonProperty("timespent")]
         public object Timespent { get; set; }
@@ -27,12 +99,6 @@ namespace MDD4All.Jira.DataModels.V3
 
         [JsonProperty("resolution")]
         public object Resolution { get; set; }
-
-        [JsonProperty("customfield_10028")]
-        public object Customfield10028 { get; set; }
-
-        [JsonProperty("customfield_10029")]
-        public object Customfield10029 { get; set; }
 
         [JsonProperty("resolutiondate")]
         public object Resolutiondate { get; set; }
@@ -52,35 +118,12 @@ namespace MDD4All.Jira.DataModels.V3
         [JsonProperty("created")]
         public string Created { get; set; }
 
-        [JsonProperty("customfield_10020")]
-        public object Customfield10020 { get; set; }
-
-        [JsonProperty("customfield_10021")]
-        public object Customfield10021 { get; set; }
-
-        [JsonProperty("customfield_10022")]
-        public object Customfield10022 { get; set; }
-
-        [JsonProperty("customfield_10023")]
-        public object Customfield10023 { get; set; }
 
         [JsonProperty("priority")]
         public Priority Priority { get; set; }
 
         [JsonProperty("labels")]
         public List<object> Labels { get; set; }
-
-        [JsonProperty("customfield_10016")]
-        public object Customfield10016 { get; set; }
-
-        [JsonProperty("customfield_10017")]
-        public object Customfield10017 { get; set; }
-
-        //[JsonProperty("customfield_10018")]
-        //public Customfield10018 Customfield10018 { get; set; }
-
-        [JsonProperty("customfield_10019")]
-        public string Customfield10019 { get; set; }
 
         [JsonProperty("aggregatetimeoriginalestimate")]
         public object Aggregatetimeoriginalestimate { get; set; }
@@ -98,10 +141,65 @@ namespace MDD4All.Jira.DataModels.V3
         public object Assignee { get; set; }
 
         [JsonProperty("updated")]
-        public DateTime? Updated { get; set; }
+        public DateTime? Updated
+        {
+            get
+            {
+                DateTime result = new DateTime();
+
+                if (FieldDictionary.ContainsKey("updated"))
+                {
+                    result = Convert.ToDateTime(FieldDictionary["updated"].ToString());
+                }
+
+                return result;
+            }
+
+            set
+            {
+                if (FieldDictionary.ContainsKey("updated"))
+                {
+                    FieldDictionary["updated"] = value;
+                }
+                else
+                {
+                    FieldDictionary.Add("updated", value);
+                }
+            }
+        }
 
         [JsonProperty("status")]
-        public Status Status { get; set; }
+        public Status Status
+        {
+            get
+            {
+                Status result = null;
+
+                if (FieldDictionary.ContainsKey("status"))
+                {
+                    if (FieldDictionary["status"] != null)
+                    {
+                        string json = FieldDictionary["status"].ToString();
+
+                        result = JsonConvert.DeserializeObject<Status>(json);
+                    }
+                }
+
+                return result;
+            }
+
+            set
+            {
+                if (FieldDictionary.ContainsKey("status"))
+                {
+                    FieldDictionary["status"] = value;
+                }
+                else
+                {
+                    FieldDictionary.Add("status", value);
+                }
+            }
+        }
 
         [JsonProperty("components")]
         public List<object> Components { get; set; }
@@ -110,49 +208,108 @@ namespace MDD4All.Jira.DataModels.V3
         public object Timeoriginalestimate { get; set; }
 
         [JsonProperty("description")]
-        public AtlassianDocumentFormat Description { get; set; }
+        public AtlassianDocumentFormat Description
+        {
+            get
+            {
+                AtlassianDocumentFormat result = null;
 
-        [JsonProperty("customfield_10010")]
-        public object Customfield10010 { get; set; }
+                if (FieldDictionary.ContainsKey("description"))
+                {
+                    if (FieldDictionary["description"] != null)
+                    {
+                        string json = FieldDictionary["description"].ToString();
 
-        [JsonProperty("customfield_10014")]
-        public object Customfield10014 { get; set; }
+                        result = JsonConvert.DeserializeObject<AtlassianDocumentFormat>(json);
+                    } 
+                }
 
-        [JsonProperty("customfield_10015")]
-        public object Customfield10015 { get; set; }
+                return result;
+            }
+
+            set
+            {
+                if (FieldDictionary.ContainsKey("description"))
+                {
+                    FieldDictionary["description"] = value;
+                }
+                else
+                {
+                    FieldDictionary.Add("description", value);
+                }
+            }
+        }
 
         [JsonProperty("timetracking")]
         public Timetracking Timetracking { get; set; }
 
-        [JsonProperty("customfield_10005")]
-        public object Customfield10005 { get; set; }
-
-        [JsonProperty("customfield_10006")]
-        public object Customfield10006 { get; set; }
-
-        [JsonProperty("customfield_10007")]
-        public object Customfield10007 { get; set; }
-
         [JsonProperty("security")]
         public object Security { get; set; }
 
-        [JsonProperty("customfield_10008")]
-        public object Customfield10008 { get; set; }
-
         [JsonProperty("aggregatetimeestimate")]
         public object Aggregatetimeestimate { get; set; }
-
-        [JsonProperty("customfield_10009")]
-        public object Customfield10009 { get; set; }
 
         [JsonProperty("attachment")]
         public List<object> Attachment { get; set; }
 
         [JsonProperty("summary")]
-        public string Summary { get; set; }
+        public string Summary
+        {
+            get
+            {
+                string result = "";
+
+                if (FieldDictionary.ContainsKey("summary"))
+                {
+                    result = FieldDictionary["summary"].ToString();
+                }
+
+                return result;
+            }
+
+            set
+            {
+                if (FieldDictionary.ContainsKey("summary"))
+                {
+                    FieldDictionary["summary"] = value;
+                }
+                else
+                {
+                    FieldDictionary.Add("summary", value);
+                }
+            }
+
+        }
 
         [JsonProperty("creator")]
-        public Creator Creator { get; set; }
+        public Creator Creator
+        {
+            get
+            {
+                Creator result = null;
+
+                if (FieldDictionary.ContainsKey("creator") && FieldDictionary["creator"] != null)
+                {
+                    string json = FieldDictionary["creator"].ToString();
+
+                    result = JsonConvert.DeserializeObject<Creator>(json);
+                }
+
+                return result;
+            }
+
+            set
+            {
+                if (FieldDictionary.ContainsKey("creator"))
+                {
+                    FieldDictionary["creator"] = value;
+                }
+                else
+                {
+                    FieldDictionary.Add("creator", value);
+                }
+            }
+        }
 
         [JsonProperty("subtasks")]
         public List<object> Subtasks { get; set; }
@@ -162,21 +319,6 @@ namespace MDD4All.Jira.DataModels.V3
 
         [JsonProperty("aggregateprogress")]
         public Progress Aggregateprogress { get; set; }
-
-        [JsonProperty("customfield_10000")]
-        public string Customfield10000 { get; set; }
-
-        [JsonProperty("customfield_10001")]
-        public object Customfield10001 { get; set; }
-
-        [JsonProperty("customfield_10002")]
-        public object Customfield10002 { get; set; }
-
-        [JsonProperty("customfield_10003")]
-        public object Customfield10003 { get; set; }
-
-        [JsonProperty("customfield_10004")]
-        public object Customfield10004 { get; set; }
 
         [JsonProperty("environment")]
         public object Environment { get; set; }

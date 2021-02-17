@@ -1,4 +1,6 @@
-﻿using MDD4All.Jira.DataModels.V3.Converters;
+﻿/*
+ * Copyright (c) MDD4All.de, Dr. Oliver Alt
+ */
 using Newtonsoft.Json;
 using System;
 
@@ -17,6 +19,9 @@ namespace MDD4All.Jira.DataModels.V3
 
         [JsonProperty("name")]
         public string Name { get; set; }
+
+        [JsonProperty("untranslatedName")]
+        public string UntranslatedName { get; set; }
 
         [JsonProperty("id")]
         public string ID { get; set; }

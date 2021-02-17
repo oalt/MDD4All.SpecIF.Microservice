@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿/*
+ * Copyright (c) MDD4All.de, Dr. Oliver Alt
+ */
+using Newtonsoft.Json;
 using System;
 
 namespace MDD4All.Jira.DataModels.V3
