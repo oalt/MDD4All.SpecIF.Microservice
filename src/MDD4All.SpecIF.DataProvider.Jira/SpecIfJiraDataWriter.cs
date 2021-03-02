@@ -4,13 +4,11 @@ using MDD4All.SpecIF.DataModels.BaseTypes;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using System.Linq;
 using MDD4All.SpecIF.DataModels.Manipulation;
 using MDD4All.SpecIF.DataAccess.Jira;
 
@@ -22,22 +20,24 @@ namespace MDD4All.SpecIF.DataProvider.Jira
 
         private string _url;
 
-        private string _apiKey;
-
-        public SpecIfJiraDataWriter(string url, 
+        public SpecIfJiraDataWriter(string url,
+                                    string userName,
                                     string apiKey, 
                                     ISpecIfMetadataReader metadataReader, 
                                     ISpecIfDataReader dataReader) : base(metadataReader, dataReader)
         {
             _url = url;
-            _apiKey = apiKey;
-
+            
             _httpClient.DefaultRequestHeaders.Accept.Clear();
 
             _httpClient.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("application/json"));
 
-            _httpClient.DefaultRequestHeaders.Add("Authorization", _apiKey);
+            byte[] credentials = Encoding.ASCII.GetBytes($"{userName}:{apiKey}");
+
+            AuthenticationHeaderValue authenticationHeaderValue = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(credentials));
+
+            _httpClient.DefaultRequestHeaders.Add("Authorization",  authenticationHeaderValue.ToString());
 
         }
 
@@ -67,8 +67,6 @@ namespace MDD4All.SpecIF.DataProvider.Jira
         {
             Resource result = null;
 
-            //projectID = "_d383255183995289153c412de3b5bffda9bcf45b_TEMPLATE";
-
             if (projectID != null)
             {
                 if (_dataReader is SpecIfJiraDataReader)
@@ -77,7 +75,7 @@ namespace MDD4All.SpecIF.DataProvider.Jira
 
                     Project jiraProject = dataReader.GetJiraProjectInfo(projectID);
 
-                    string jiraTypeID = GetJiraTypeFromSpecIfClass(resource.Class, projectID);
+                    string jiraTypeID = GetJiraTypeFromSpecIfResource(resource, projectID);
 
                     if(jiraProject != null && jiraTypeID != null)
                     {
@@ -130,7 +128,7 @@ namespace MDD4All.SpecIF.DataProvider.Jira
         /// <param name="classKey"></param>
         /// <param name="projectID">SpecIF project ID.</param>
         /// <returns></returns>
-        private string GetJiraTypeFromSpecIfClass(Key classKey, string projectID)
+        private string GetJiraTypeFromSpecIfResource(Resource resource, string projectID)
         {
             string result = null;
 
@@ -142,9 +140,20 @@ namespace MDD4All.SpecIF.DataProvider.Jira
 
                 if (jiraProject != null)
                 {
-                    if (classKey.ID == "RC-Requirement" && classKey.Revision == "1")
+                    if (resource.Class.ID == "RC-Requirement" && resource.Class.Revision == "1")
                     {
-                        IssueType requirementIssueType = jiraProject.IssueTypes.Find(issueType => issueType.Name == "Requirement");
+                        string perspecitve = resource.GetPropertyValue("SpecIF:Perspective", _metadataReader);
+
+                        IssueType requirementIssueType; 
+
+                        if (!string.IsNullOrEmpty(perspecitve) && perspecitve == "V-perspective-1") // user
+                        {
+                            requirementIssueType = jiraProject.IssueTypes.Find(issueType => issueType.Name == "Customer Requirement");
+                        }
+                        else
+                        {
+                            requirementIssueType = jiraProject.IssueTypes.Find(issueType => issueType.Name == "Requirement");
+                        }
 
                         if (requirementIssueType != null)
                         {
@@ -174,9 +183,16 @@ namespace MDD4All.SpecIF.DataProvider.Jira
 
                 string jiraResult = response.Content.ReadAsStringAsync().Result;
 
-                result = JsonConvert.DeserializeObject<Issue>(jiraResult);
+                if (response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.Created)
+                {
+                    result = JsonConvert.DeserializeObject<Issue>(jiraResult);
+                }
+                else
+                {
+                    result = null;
+                }
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 Debug.WriteLine(exception);
             }

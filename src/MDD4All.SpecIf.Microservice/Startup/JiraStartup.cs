@@ -28,9 +28,11 @@ namespace MDD4All.SpecIf.Microservice.Startup
 
             string dataConnection = Configuration.GetValue<string>("dataConnection");
 
-            string jiraAuth = Configuration.GetValue<string>("JiraAuthorization");
-
             string jiraServer = Configuration.GetValue<string>("JiraServer");
+
+            string jiraUser = Configuration.GetValue<string>("JiraUser");
+
+            string jiraApiKey = Configuration.GetValue<string>("JiraApiKey");
 
             if (!string.IsNullOrEmpty(dataSource) && !string.IsNullOrEmpty(dataConnection))
             {
@@ -78,14 +80,16 @@ namespace MDD4All.SpecIf.Microservice.Startup
                 services.AddScoped<ISpecIfMetadataWriter>(dataProvider => new SpecIfMongoDbMetadataWriter(dataConnection));
 
                 ISpecIfDataReader specIfDataReader = new SpecIfJiraDataReader(jiraServer, 
-                                                                              jiraAuth,
+                                                                              jiraUser,
+                                                                              jiraApiKey,
                                                                               new SpecIfMongoDbMetadataReader(dataConnection));
 
                 services.AddScoped<ISpecIfDataReader>(dataProvider => specIfDataReader);
 
 
                 services.AddScoped<ISpecIfDataWriter>(dataProvider => new SpecIfJiraDataWriter(jiraServer, 
-                                                                                               jiraAuth, 
+                                                                                               jiraUser, 
+                                                                                               jiraApiKey,
                                                                                                new SpecIfMongoDbMetadataReader(dataConnection),
                                                                                                specIfDataReader));
 
