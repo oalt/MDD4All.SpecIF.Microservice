@@ -10,7 +10,7 @@ pool:
   vmImage: 'windows-2019'
 
 variables:
-  solution: '**/*.sln'
+  solution: 'src\SpecIF_Backend.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
   versionToBuild: ''
