@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using NLog;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 
@@ -46,7 +47,7 @@ namespace MDD4All.SpecIF.Apps.ServiceStarter.Controllers
             }
             catch (Exception exception)
             {
-                
+                Debug.WriteLine(exception);
             }
         }
 
