@@ -9,8 +9,8 @@ using System.Linq;
 
 namespace MDD4All.SpecIF.DataModels.Manipulation
 {
-    public static class ResourceManipulationExtensions
-    {
+	public static class ResourceManipulationExtensions
+	{
 		public static string GetTypeName(this Resource resource, ISpecIfMetadataReader dataProvider)
 		{
 			string result = "";
@@ -21,14 +21,14 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 
 				if (resourceType != null)
 				{
-					if(resourceType.Title is string)
-                    {
+					if (resourceType.Title is string)
+					{
 						result = resourceType.Title.ToString();
-                    }
+					}
 					//result = resourceType.Title.LanguageValues[0];
 				}
 			}
-			catch(Exception exception)
+			catch (Exception exception)
 			{
 				Debug.WriteLine("Error with getTypeName() " + exception);
 			}
@@ -40,7 +40,7 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 			ResourceClass result = null;
 
 			result = dataProvider.GetResourceClassByKey(resource.Class);
-			
+
 			return result;
 		}
 
@@ -48,14 +48,14 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 		{
 			bool propertyFound = false;
 
-			foreach(Property property in resource.Properties)
+			foreach (Property property in resource.Properties)
 			{
-                string title = ""; 
+				string title = "";
 
-                if(property.Title is string)
-                {
-                    title = property.Title.ToString();
-                }
+				if (property.Title is string)
+				{
+					title = property.Title.ToString();
+				}
 
 				if (title == propertyTitle)
 				{
@@ -65,30 +65,30 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 				}
 			}
 
-			if(!propertyFound)
+			if (!propertyFound)
 			{
 				ResourceClass resourceType = dataProvider.GetResourceClassByKey(resource.Class);
 
-				if(resourceType != null)
+				if (resourceType != null)
 				{
 					PropertyClass matchingPropertyClass = null;
 					Key matchingPropertyKey = null;
 
 
-					foreach(Key propertyKey in resourceType.PropertyClasses)
+					foreach (Key propertyKey in resourceType.PropertyClasses)
 					{
 						PropertyClass propertyClass = dataProvider.GetPropertyClassByKey(propertyKey);
 
-						if(propertyClass != null)
+						if (propertyClass != null)
 						{
-                            string title = "";
+							string title = "";
 
-                            if (propertyClass.Title is string)
-                            {
-                                title = propertyClass.Title.ToString();
-                            }
+							if (propertyClass.Title is string)
+							{
+								title = propertyClass.Title.ToString();
+							}
 
-                            if (title == propertyTitle)
+							if (title == propertyTitle)
 							{
 								matchingPropertyClass = propertyClass;
 								matchingPropertyKey = propertyKey;
@@ -97,7 +97,7 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 						}
 					}
 
-					if(matchingPropertyClass != null)
+					if (matchingPropertyClass != null)
 					{
 						Property property = new Property()
 						{
@@ -112,9 +112,39 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 					}
 				}
 
-				
+
 			}
 		}
+
+		public static void SetPropertyValue(this Resource resource, Key propertyClassKey, object value)
+		{
+			bool propertyFound = false;
+
+			foreach (Property property in resource.Properties)
+			{
+				if (property.ID == propertyClassKey.ID && property.Revision == propertyClassKey.Revision)
+				{
+					property.Value = value;
+					propertyFound = true;
+					break;
+				}
+			}
+
+			if (!propertyFound)
+			{
+
+				Property property = new Property()
+				{
+					ID = SpecIfGuidGenerator.CreateNewSpecIfGUID(),
+					PropertyClass = propertyClassKey,
+					Value = value
+				};
+
+				resource.Properties.Add(property);
+			}
+
+		}
+	
 
 		public static string GetPropertyValue(this Resource resource, string propertyTitle, ISpecIfMetadataReader dataProvider)
 		{
@@ -129,6 +159,27 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 					if (title == propertyTitle)
 					{
 						result = property.GetStringValue(dataProvider);
+						break;
+					}
+				}
+			}
+
+			return result;
+		}
+
+		public static object GetPropertyValue(this Resource resource, Key propertyClassKey)
+        {
+			string result = "";
+
+			if (resource != null && resource.Properties != null)
+			{
+				foreach (Property property in resource.Properties)
+				{
+					
+
+					if (propertyClassKey.ID == property.PropertyClass.ID && propertyClassKey.Revision == property.PropertyClass.Revision)
+					{
+						result = property.Value.ToString();
 						break;
 					}
 				}

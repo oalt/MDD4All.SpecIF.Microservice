@@ -17,6 +17,8 @@ using System.Xml;
 using MDD4All.SpecIF.DataModels.DiagramInterchange;
 using MDD4All.SpecIF.DataModels.DiagramInterchange.BaseElements;
 using Newtonsoft.Json;
+using MDD4All.SpecIF.DataProvider.EA.Converters.DataModels;
+using MDD4All.EAFacade.DataAccess.Cached;
 
 namespace MDD4All.SpecIF.DataProvider.EA.Converters
 {
@@ -37,6 +39,11 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 		private Dictionary<string, Resource> _resources = new Dictionary<string, Resource>();
 		private Dictionary<string, Statement> _statements = new Dictionary<string, Statement>();
+
+		
+		private Dictionary<string, ElementResource> _elementResources = new Dictionary<string, ElementResource>();
+		private Dictionary<string, ImplicitElementResource> _implicitElementResources = new Dictionary<string, ImplicitElementResource>();
+		private Dictionary<string, PortStateResource> _portStateResources = new Dictionary<string, PortStateResource>();
 
         private ISpecIfMetadataReader _metadataReader;
 
@@ -65,16 +72,16 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 		/// </summary>
 		/// <param name="selectedPackage">The start package for the conversion.</param>
 		/// <returns>The generated SpecIF object.</returns>
-		public DataModels.SpecIF ConvertModelToSpecIF(EAAPI.Package selectedPackage)
+		public MDD4All.SpecIF.DataModels.SpecIF ConvertModelToSpecIF(EAAPI.Package selectedPackage)
 		{
-			DataModels.SpecIF result = new DataModels.SpecIF();
+			SpecIF.DataModels.SpecIF result = new SpecIF.DataModels.SpecIF();
 
 			result.Title = new Value("UML data extracted from Sparx Enterprise Architect: " + selectedPackage.Name);
 			result.Generator = "SpecIFicator";
 
 			Node node = new Node();
 
-			GetModelHierarchyRecursively(selectedPackage, node, null);
+			GetModelHierarchyRecursively(selectedPackage, node);
 
 			result.Hierarchies.Add(node);
 
@@ -96,17 +103,42 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 		{
 			Resource result = null;
 
-			if(_resources.ContainsKey(key.ID))
+			string cacheKey = GetCacheKey(key);
+
+			if (_implicitElementResources.ContainsKey(cacheKey))
 			{
-				result = _resources[key.ID];
+				result = _implicitElementResources[cacheKey].Resource;
 			}
-			if(result == null)
+			if (_portStateResources.ContainsKey(cacheKey))
+			{
+				result = _portStateResources[cacheKey].Resource;
+
+			}
+			if (result == null)
             {
-				string cacheKey = key.ID + "_R_" + key.Revision;
-				if (_resources.ContainsKey(cacheKey))
+				string eaGUID = EaSpecIfGuidConverter.ConvertSpecIfGuidToEaGuid(key.ID);
+
+				EAAPI.Element element = _repository.GetElementByGuid(eaGUID);
+
+				if (element != null)
+				{
+					result = ConvertElement(element);
+				}
+				else
                 {
-					result = _resources[cacheKey];
+					// try diagram
+					EAAPI.Diagram diagram = _repository.GetDiagramByGuid(eaGUID) as EAAPI.Diagram;
+
+					if(diagram != null)
+                    {
+						result = ConvertDiagram(diagram);
+                    }
+					
+					
                 }
+
+
+				
             }
 			
 			if(result == null)
@@ -133,27 +165,55 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
         {
 			List<Statement> result = new List<Statement>();
 
-			Dictionary<string, Statement> foundStatements = new Dictionary<string, Statement>();
 
-			foreach(KeyValuePair<string, Statement> keyValuePair in _statements)
-            {
-				Statement statement = keyValuePair.Value;
+			// implicit: contains statements, shows statements, classifier statements
 
-				if(
-					(statement.StatementSubject.ID == resourceKey.ID && 
-				     statement.StatementSubject.Revision == resourceKey.Revision) 
-				    ||
-				    (statement.StatementObject.ID == resourceKey.ID &&
-				     statement.StatementObject.Revision == resourceKey.Revision)
-				   )
-                {
-					if(!foundStatements.ContainsKey(statement.ID))
-                    {
-						foundStatements.Add(statement.ID, statement);
-						result.Add(statement);
-                    }
-                }
-            }
+			string cacheKey = GetCacheKey(resourceKey);
+
+			if (_elementResources.ContainsKey(cacheKey))
+			{
+				ElementResource resource = _elementResources[cacheKey];
+
+				// implicit statements
+				result.AddRange(resource.ImplicitElementsStatements);
+
+				// explicit statements
+				EAAPI.Element element = _repository.GetElementByGuid(resource.EaGUID);
+
+				if (element != null)
+				{
+					result.AddRange(ConvertExplicitElementStatements(element));
+				}
+				else
+				{
+					// try diagram
+					EAAPI.Diagram diagram = _repository.GetDiagramByGuid(resource.EaGUID) as EAAPI.Diagram;
+
+					if (diagram != null)
+					{
+						result.AddRange(ConvertExplicitDiagramStatements(diagram));
+					}
+				}
+			}
+			else if (_implicitElementResources.ContainsKey(cacheKey))
+			{
+				ImplicitElementResource resource = _implicitElementResources[cacheKey];
+
+				result.AddRange(resource.ImplicitElementsStatements);
+			}
+			else if (_portStateResources.ContainsKey(cacheKey))
+			{
+				PortStateResource portStateResource = _portStateResources[cacheKey];
+
+				foreach (KeyValuePair<string, Statement> portStateStatement in portStateResource.Statements)
+				{
+					result.Add(portStateStatement.Value);
+				}
+			}
+			else
+			{
+				;
+			}
 
 			return result;
         }
@@ -166,16 +226,18 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 			Node node = new Node();
 
-			ResetCache();
+			//ResetCache();
 
 			//if (_hierarchy == null)
 			//{
-				EAAPI.Package package = _repository.GetPackageByGuid("{45A143E0-D43A-4f51-ACA6-FF695EEE3256}");
+			EAAPI.Package package = _repository.GetPackageByGuid("{45A143E0-D43A-4f51-ACA6-FF695EEE3256}");
+			// 
+			//EAAPI.Package package = _repository.GetPackageByGuid("{962FD96B-4E7C-43cf-89B8-4D29D19C0A0F}");
 
-				GetModelHierarchyRecursively(package, node, null);
+			GetModelHierarchyRecursively(package, node);
 
-				_hierarchy = node;
-				result = _hierarchy;
+			//_hierarchy = node;
+			result = node;
 
 			string json = JsonConvert.SerializeObject(node);
 
@@ -189,44 +251,32 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			return result;
 		}
 
-		private void GetModelHierarchyRecursively(EAAPI.Package currentPackage, Node currentNode, Resource parentResource)
+		private void GetModelHierarchyRecursively(EAAPI.Package currentPackage, Node currentNode)
 		{
 			Console.WriteLine("Package: " + currentPackage.Name);
 
 
 			string packageID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(currentPackage.Element.ElementGUID);
+			string packageRevision = EaDateToRevisionConverter.ConvertDateToRevision(currentPackage.Element.Modified);
 
+			Key pakageKey = new Key(packageID, packageRevision);
 			
-
-			Resource packageResource = AddElement(currentPackage.Element);
-
-            currentNode.ResourceReference = new Key(packageResource.ID, packageResource.Revision);
+            currentNode.ResourceReference = pakageKey;
             currentNode.Description = new Value("Package: " + currentPackage.Name);
-
-            if(parentResource != null)
-            {
-                Statement containsStatement = GetContainsStatement(parentResource, packageResource);
-				if (!_statements.ContainsKey(containsStatement.ID))
-				{
-					_statements.Add(containsStatement.ID, containsStatement);
-				}
-            }
 
 			// diagrams
 			for (short diagramCounter = 0; diagramCounter < currentPackage.Diagrams.Count; diagramCounter++)
 			{
 				EAAPI.Diagram diagram = currentPackage.Diagrams.GetAt(diagramCounter) as EAAPI.Diagram;
 
-				Resource diagramResource = AddDiagram(diagram);
-				Statement containsStatement = GetContainsStatement(packageResource, diagramResource);
-				if (!_statements.ContainsKey(containsStatement.ID))
-				{
-					_statements.Add(containsStatement.ID, containsStatement);
-				}
+				string diagramID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID);
+				string diagramRevision = EaDateToRevisionConverter.ConvertDateToRevision(diagram.ModifiedDate);
+
+				Key diagramKey = new Key(diagramID, diagramRevision);
 
 				Node node = new Node()
 				{
-					ResourceReference = new Key(diagramResource.ID, diagramResource.Revision),
+					ResourceReference = diagramKey,
 					Description = new Value("Diagram: " + diagram.Name)
 				};
 
@@ -238,16 +288,14 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			{
 				EAAPI.Package childPackage = currentPackage.Packages.GetAt(packageCounter) as EAAPI.Package;
 
-				Console.WriteLine("Recursive call: " + childPackage.Name);
-
-				string specIfElementID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(childPackage.Element.ElementGUID);
+				//Console.WriteLine("Recursive call: " + childPackage.Name);
 
 				Node childNode = new Node()
 				{
 				};
 				currentNode.Nodes.Add(childNode);
 
-				GetModelHierarchyRecursively(childPackage, childNode, packageResource);
+				GetModelHierarchyRecursively(childPackage, childNode);
 				
 			}
 
@@ -256,30 +304,23 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			{
 				EAAPI.Element element = currentPackage.Elements.GetAt(elementCounter) as EAAPI.Element;
 
-				Console.WriteLine("Element: " + element.Name);
-
-				Resource elementResource = AddElement(element);
-				Statement containsStatement = GetContainsStatement(packageResource, elementResource);
-
-				if (!_statements.ContainsKey(containsStatement.ID))
-				{
-					_statements.Add(containsStatement.ID, containsStatement);
-				}
-
-				GetElementHierarchyRecursively(element, currentNode, elementResource);
+				GetElementHierarchyRecursively(element, currentNode);
 			}
 		}
 
-		private void GetElementHierarchyRecursively(EAAPI.Element currentElement, Node currentNode, Resource currentResource)
+		private void GetElementHierarchyRecursively(EAAPI.Element currentElement, Node currentNode)
 		{
-			string specIfElementID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(currentElement.ElementGUID);
+			Console.WriteLine("Element: " + currentElement.Name);
 
-			string specIfElemenRevision = EaDateToRevisionConverter.ConvertDateToRevision(currentElement.Modified);
+			string elementID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(currentElement.ElementGUID);
+			string elementRevision = EaDateToRevisionConverter.ConvertDateToRevision(currentElement.Modified);
+
+			Key elememntKey = new Key(elementID, elementRevision);
 
 			Node node = new Node()
 			{
-				ResourceReference = new Key(specIfElementID, specIfElemenRevision),
-				Description = new Value("Element: " + currentElement.Name)
+				ResourceReference = elememntKey,
+				Description = "Element: " + currentElement.Name
 			};
 
 			currentNode.Nodes.Add(node);
@@ -289,21 +330,18 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			{
 				EAAPI.Diagram diagram = currentElement.Diagrams.GetAt(diagramCounter) as EAAPI.Diagram;
 
-				Resource diagramResource = AddDiagram(diagram);
-				Statement containsStatement = GetContainsStatement(currentResource, diagramResource);
-				if (!_statements.ContainsKey(containsStatement.ID))
-				{
-					_statements.Add(containsStatement.ID, containsStatement);
-				}
+				string diagramID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID);
+				string diagramRevision = EaDateToRevisionConverter.ConvertDateToRevision(diagram.ModifiedDate);
 
-				string specIfDiagramID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID);
+				Key diagramKey = new Key(diagramID, diagramRevision);
 
 				Node diagramNode = new Node()
 				{
-					ResourceReference = new Key(specIfDiagramID, "1")
+					ResourceReference = diagramKey,
+					Description = "Diagram: " + diagram.Name
 				};
 
-				currentNode.Nodes.Add(diagramNode);
+				node.Nodes.Add(diagramNode);
 			}
 
 			// sub-elements
@@ -315,15 +353,8 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 				if (subElementType != "Port" && subElementType != "ActionPin" && subElementType != "ActivityParameter")
 				{
-					Resource subElementResource = AddElement(subElement);
-					Statement containsStatement = GetContainsStatement(currentResource, subElementResource);
-					if (!_statements.ContainsKey(containsStatement.ID))
-					{
-						_statements.Add(containsStatement.ID, containsStatement);
-					}
-
 					// recursive call
-					GetElementHierarchyRecursively(subElement, node, subElementResource);
+					GetElementHierarchyRecursively(subElement, node);
 				}
 				
 			}
@@ -335,18 +366,13 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 				Console.WriteLine("Embedded element: " + embeddedElement.Name);
 
-				Resource embeddedElementResource = AddElement(embeddedElement);
-				Statement containsStatement = GetContainsStatement(currentResource, embeddedElementResource);
-
-				if (!_statements.ContainsKey(containsStatement.ID))
-				{
-					_statements.Add(containsStatement.ID, containsStatement);
-				}
+				string embeddedElementID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(embeddedElement.ElementGUID);
+				string embeddedElementRevision = EaDateToRevisionConverter.ConvertDateToRevision(embeddedElement.Modified);
 
 				Node embeddedElementNode = new Node()
 				{
-					ResourceReference = new Key(embeddedElementResource.ID, embeddedElementResource.Revision),
-					Description = new Value("Embedded element: " + embeddedElement.Name)
+					ResourceReference = new Key(embeddedElementID, embeddedElementRevision),
+					Description = "Embedded element: " + embeddedElement.Name
 				};
 
 				node.Nodes.Add(embeddedElementNode);
@@ -355,7 +381,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			
 		}
 
-		#region DATA_ADDITION
+		
 
 		private string GetCacheKey(Resource resource)
         {
@@ -363,6 +389,13 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 			return result;
         }
+
+		private string GetCacheKey(string id, string revision)
+		{
+			string result =id + "_R_" + revision;
+
+			return result;
+		}
 
 		private string GetCacheKeyForElement(EAAPI.Element element)
         {
@@ -375,691 +408,290 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			return result;
         }
 
-		private Resource AddElement(EAAPI.Element eaElement)
-		{
-			Resource result = ConvertElement(eaElement);
-
-			if (_resources.ContainsKey(GetCacheKey(result)))
-			{
-				Console.WriteLine("Element still in collection " + result.ID);
-			}
-			else
-			{
-				_resources.Add(GetCacheKey(result), result);
-
-				AddClassifier(eaElement, result);
-
-				AddTaggedValues(eaElement, result);
-
-				AddAttributes(eaElement, result);
-
-				AddOperations(eaElement, result);
-
-				AddElementConstraints(eaElement, result);
-
-				AddUmlConnectors(eaElement);
-			}
-
-
+		private string GetCacheKey(Key key)
+        {
+			string result = key.ID + "_R_" + key.Revision;
 
 			return result;
-		}
+        }
 
-		private void AddClassifier(EAAPI.Element element, Resource elementResource)
-		{
-			string elementType = element.Type;
+		#region DATA_ADDITION
 
-			string specIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(element.ElementGUID);
+		
 
-			// classifier
-			
-			Statement classifierStatement = null;
+		
 
-			int classifierID = 0;
+		
 
-			if (elementType == "Port" || elementType == "Part" || elementType == "ActionPin" || elementType == "ActivityParameter")
-			{
-				classifierID = element.PropertyType;
-			}
-			else
-			{
-				classifierID = element.ClassifierID;
-			}
+		//private void AddAttributes(EAAPI.Element eaElement, Resource elementResource)
+		//{
+		//	for(short counter = 0; counter < eaElement.Attributes.Count; counter++ )
+		//	{
+		//		EAAPI.Attribute attribute = eaElement.Attributes.GetAt(counter) as EAAPI.Attribute;
 
-			if (classifierID != 0)
-			{
-				EAAPI.Element classifierElement = element.GetClassifier(_repository);
+		//		if(attribute != null)
+		//		{
+		//			Resource attributeResource = ConvertAttribute(attribute, eaElement, elementResource.Revision);
 
-				string classifierSpecIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(classifierElement.ElementGUID);
+		//			if (!_resources.ContainsKey(attributeResource.ID))
+		//			{
+		//				_resources.Add(attributeResource.ID, attributeResource);
+		//			}
 
-                Resource classifierResource = null;
+		//			// add contains statement
+		//			Statement containsStatement = GetContainsStatement(elementResource, attributeResource);
+		//			if (!_statements.ContainsKey(containsStatement.ID))
+		//			{
+		//				_statements.Add(containsStatement.ID, containsStatement);
+		//			}
 
-				string cacheKey = GetCacheKeyForElement(classifierElement);
+		//			if (attribute.ClassifierID == 0 && !string.IsNullOrEmpty(attribute.Type))
+		//			{
+		//				Resource primitiveClassifier = GetPrimitiveTypeBySwTypeName(attribute.Type);
 
-				if (!_resources.ContainsKey(cacheKey))
-				{
-					classifierResource = AddElement(classifierElement);
+		//				if (primitiveClassifier != null)
+		//				{
+		//					Statement classifierStatement = GetClassifierStatement(primitiveClassifier, attributeResource);
 
-					classifierStatement = GetClassifierStatement(classifierResource, elementResource);
+		//					if (!_statements.ContainsKey(classifierStatement.ID))
+		//					{
+		//						_statements.Add(classifierStatement.ID, classifierStatement);
+		//					}
+		//				}
+		//			}
+		//			else if (attribute.ClassifierID != 0)
+		//			{
+		//				EAAPI.Element classifierElement = attribute.GetClassifier(_repository);
 
-					if (classifierStatement != null && !_statements.ContainsKey(classifierStatement.ID))
-					{
-						_statements.Add(classifierStatement.ID, classifierStatement);
-					}
-				}
-                else
-                {
-                    classifierResource = _resources[cacheKey];
+		//				string classifierSpecIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(classifierElement.ElementGUID);
 
-					classifierStatement = GetClassifierStatement(classifierResource, elementResource);
+		//				Resource classifierResource = null;
 
-					if (classifierStatement != null && !_statements.ContainsKey(classifierStatement.ID))
-					{
-						_statements.Add(classifierStatement.ID, classifierStatement);
-					}
-				}
-
-				
-			}
-			
-		}
-
-		private void AddTaggedValues(EAAPI.Element eaElement, Resource elementResource)
-		{
-			List<Resource> tagResources = ConvertElementTaggedValues(eaElement);
-
-			foreach (Resource tagResource in tagResources)
-			{
-				if (!_resources.ContainsKey(tagResource.ID))
-				{
-					_resources.Add(tagResource.ID, tagResource);
-				}
-
-				Statement tagContainsStatement = GetContainsStatement(elementResource, tagResource);
-
-				if (!_statements.ContainsKey(tagContainsStatement.ID))
-				{
-					_statements.Add(tagContainsStatement.ID, tagContainsStatement);
-				}
-			}
-		}
-
-		private void AddAttributes(EAAPI.Element eaElement, Resource elementResource)
-		{
-			for(short counter = 0; counter < eaElement.Attributes.Count; counter++ )
-			{
-				EAAPI.Attribute attribute = eaElement.Attributes.GetAt(counter) as EAAPI.Attribute;
-
-				if(attribute != null)
-				{
-					Resource attributeResource = ConvertAttribute(attribute, eaElement, elementResource.Revision);
-
-					if (!_resources.ContainsKey(attributeResource.ID))
-					{
-						_resources.Add(attributeResource.ID, attributeResource);
-					}
-
-					// add contains statement
-					Statement containsStatement = GetContainsStatement(elementResource, attributeResource);
-					if (!_statements.ContainsKey(containsStatement.ID))
-					{
-						_statements.Add(containsStatement.ID, containsStatement);
-					}
-
-					if (attribute.ClassifierID == 0 && !string.IsNullOrEmpty(attribute.Type))
-					{
-						Resource primitiveClassifier = GetPrimitiveTypeBySwTypeName(attribute.Type);
-
-						if (primitiveClassifier != null)
-						{
-							Statement classifierStatement = GetClassifierStatement(primitiveClassifier, attributeResource);
-
-							if (!_statements.ContainsKey(classifierStatement.ID))
-							{
-								_statements.Add(classifierStatement.ID, classifierStatement);
-							}
-						}
-					}
-					else if (attribute.ClassifierID != 0)
-					{
-						EAAPI.Element classifierElement = attribute.GetClassifier(_repository);
-
-						string classifierSpecIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(classifierElement.ElementGUID);
-
-						Resource classifierResource = null;
-
-						if (!_resources.ContainsKey(classifierSpecIfID))
-						{
-							classifierResource = AddElement(classifierElement);
-						}
-						else
-						{
-							classifierResource = _resources[classifierSpecIfID];
-						}
+		//				if (!_resources.ContainsKey(classifierSpecIfID))
+		//				{
+		//					classifierResource = AddElement(classifierElement);
+		//				}
+		//				else
+		//				{
+		//					classifierResource = _resources[classifierSpecIfID];
+		//				}
 
 
-						Statement classifierStatement = GetClassifierStatement(classifierResource, attributeResource);
+		//				Statement classifierStatement = GetClassifierStatement(classifierResource, attributeResource);
 
-						if (!_statements.ContainsKey(classifierStatement.ID))
-						{
-							_statements.Add(classifierStatement.ID, classifierStatement);
-						}
-					}
+		//				if (!_statements.ContainsKey(classifierStatement.ID))
+		//				{
+		//					_statements.Add(classifierStatement.ID, classifierStatement);
+		//				}
+		//			}
 					
-				}
-			}
+		//		}
+		//	}
 
-		}
+		//}
 
-		private void AddOperations(EAAPI.Element eaElement, Resource elementResource)
-		{
-			for (short counter = 0; counter < eaElement.Methods.Count; counter++)
-			{
-				EAAPI.Method operation = eaElement.Methods.GetAt(counter) as EAAPI.Method;
+		//private void AddOperations(EAAPI.Element eaElement, Resource elementResource)
+		//{
+		//	for (short counter = 0; counter < eaElement.Methods.Count; counter++)
+		//	{
+		//		EAAPI.Method operation = eaElement.Methods.GetAt(counter) as EAAPI.Method;
 
-				if (operation != null)
-				{
-					Resource operationResource = ConvertOperation(operation, eaElement, elementResource.Revision);
+		//		if (operation != null)
+		//		{
+		//			Resource operationResource = ConvertOperation(operation, eaElement, elementResource.Revision);
 					
-					if (!_resources.ContainsKey(operationResource.ID))
-					{
-						_resources.Add(operationResource.ID, operationResource);
-					}
+		//			if (!_resources.ContainsKey(operationResource.ID))
+		//			{
+		//				_resources.Add(operationResource.ID, operationResource);
+		//			}
 
-					Statement containsStatement = GetContainsStatement(elementResource, operationResource);
+		//			Statement containsStatement = GetContainsStatement(elementResource, operationResource);
 
-					if (!_statements.ContainsKey(containsStatement.ID))
-					{
-						_statements.Add(containsStatement.ID, containsStatement);
-					}
+		//			if (!_statements.ContainsKey(containsStatement.ID))
+		//			{
+		//				_statements.Add(containsStatement.ID, containsStatement);
+		//			}
 
-					Console.WriteLine("Operation " + operation.Name + " classifierID=" + operation.ClassifierID);
+		//			Console.WriteLine("Operation " + operation.Name + " classifierID=" + operation.ClassifierID);
 
-					if (operation.ClassifierID == "0" && !string.IsNullOrEmpty(operation.ReturnType))
-					{
-						Resource primitiveClassifier = GetPrimitiveTypeBySwTypeName(operation.ReturnType);
+		//			if (operation.ClassifierID == "0" && !string.IsNullOrEmpty(operation.ReturnType))
+		//			{
+		//				Resource primitiveClassifier = GetPrimitiveTypeBySwTypeName(operation.ReturnType);
 
-						if (primitiveClassifier != null)
-						{
-							Statement classifierStatement = GetClassifierStatement(primitiveClassifier, operationResource);
+		//				if (primitiveClassifier != null)
+		//				{
+		//					Statement classifierStatement = GetClassifierStatement(primitiveClassifier, operationResource);
 							
-							if (!_statements.ContainsKey(classifierStatement.ID))
-							{
-								_statements.Add(classifierStatement.ID, classifierStatement);
-							}
-						}
-					}
-					else if (operation.ClassifierID != "0")
-					{
-						int classifierID = int.Parse(operation.ClassifierID);
+		//					if (!_statements.ContainsKey(classifierStatement.ID))
+		//					{
+		//						_statements.Add(classifierStatement.ID, classifierStatement);
+		//					}
+		//				}
+		//			}
+		//			else if (operation.ClassifierID != "0")
+		//			{
+		//				int classifierID = int.Parse(operation.ClassifierID);
 
-						Console.WriteLine("Operation complex classifier. ID=" + classifierID);
+		//				Console.WriteLine("Operation complex classifier. ID=" + classifierID);
 
-						EAAPI.Element classifierElement = operation.GetClassifier(_repository);
+		//				EAAPI.Element classifierElement = operation.GetClassifier(_repository);
 
-						string cacheKey = GetCacheKeyForElement(classifierElement);
+		//				string cacheKey = GetCacheKeyForElement(classifierElement);
 
-						if (!_resources.ContainsKey(cacheKey))
-						{
-							Resource classifierResource = AddElement(classifierElement);
+		//				if (!_resources.ContainsKey(cacheKey))
+		//				{
+		//					Resource classifierResource = AddElement(classifierElement);
 
-							Statement classifierStatement = GetClassifierStatement(classifierResource, operationResource);
+		//					Statement classifierStatement = GetClassifierStatement(classifierResource, operationResource);
 
-							if (!_statements.ContainsKey(classifierStatement.ID))
-							{
-								_statements.Add(classifierStatement.ID, classifierStatement);
-							}
-						}
-						else
-                        {
-							Resource classifierResource = _resources[cacheKey];
+		//					if (!_statements.ContainsKey(classifierStatement.ID))
+		//					{
+		//						_statements.Add(classifierStatement.ID, classifierStatement);
+		//					}
+		//				}
+		//				else
+  //                      {
+		//					Resource classifierResource = _resources[cacheKey];
 
-							Statement classifierStatement = GetClassifierStatement(classifierResource, operationResource);
+		//					Statement classifierStatement = GetClassifierStatement(classifierResource, operationResource);
 
-							if (!_statements.ContainsKey(classifierStatement.ID))
-							{
-								_statements.Add(classifierStatement.ID, classifierStatement);
-							}
-						}
-					}
+		//					if (!_statements.ContainsKey(classifierStatement.ID))
+		//					{
+		//						_statements.Add(classifierStatement.ID, classifierStatement);
+		//					}
+		//				}
+		//			}
 					
 
-					for (short parameterCounter = 0; parameterCounter < operation.Parameters.Count; parameterCounter++)
-					{
-						EAAPI.Parameter parameterEA = operation.Parameters.GetAt(parameterCounter) as EAAPI.Parameter;
+		//			for (short parameterCounter = 0; parameterCounter < operation.Parameters.Count; parameterCounter++)
+		//			{
+		//				EAAPI.Parameter parameterEA = operation.Parameters.GetAt(parameterCounter) as EAAPI.Parameter;
 
-						Resource operationParameterResource = ConvertOperationParameter(parameterEA, eaElement, elementResource.Revision);
+		//				Resource operationParameterResource = ConvertOperationParameter(parameterEA, eaElement, elementResource.Revision);
 
-						if (!_resources.ContainsKey(operationParameterResource.ID))
-						{
-							_resources.Add(operationParameterResource.ID, operationParameterResource);
-						}
+		//				if (!_resources.ContainsKey(operationParameterResource.ID))
+		//				{
+		//					_resources.Add(operationParameterResource.ID, operationParameterResource);
+		//				}
 
-						Statement paramaterConatinmentStatement = GetContainsStatement(operationResource, operationParameterResource);
+		//				Statement paramaterConatinmentStatement = GetContainsStatement(operationResource, operationParameterResource);
 
-						if (!_statements.ContainsKey(paramaterConatinmentStatement.ID))
-						{
-							_statements.Add(paramaterConatinmentStatement.ID, paramaterConatinmentStatement);
-						}
+		//				if (!_statements.ContainsKey(paramaterConatinmentStatement.ID))
+		//				{
+		//					_statements.Add(paramaterConatinmentStatement.ID, paramaterConatinmentStatement);
+		//				}
 
-						if (parameterEA.ClassifierID == "0" && !string.IsNullOrEmpty(parameterEA.Type))
-						{
-							Resource primitiveClassifier = GetPrimitiveTypeBySwTypeName(parameterEA.Type);
+		//				if (parameterEA.ClassifierID == "0" && !string.IsNullOrEmpty(parameterEA.Type))
+		//				{
+		//					Resource primitiveClassifier = GetPrimitiveTypeBySwTypeName(parameterEA.Type);
 
-							if (primitiveClassifier != null)
-							{
+		//					if (primitiveClassifier != null)
+		//					{
 
-								Statement classifierStatement = GetClassifierStatement(primitiveClassifier, operationParameterResource);
+		//						Statement classifierStatement = GetClassifierStatement(primitiveClassifier, operationParameterResource);
 								
-								if (!_statements.ContainsKey(classifierStatement.ID))
-								{
-									_statements.Add(classifierStatement.ID, classifierStatement);
-								}
-							}
-						}
-						else if (parameterEA.ClassifierID != "0")
-						{
-                            EAAPI.Element classifierElement = parameterEA.GetClassifier(_repository);
+		//						if (!_statements.ContainsKey(classifierStatement.ID))
+		//						{
+		//							_statements.Add(classifierStatement.ID, classifierStatement);
+		//						}
+		//					}
+		//				}
+		//				else if (parameterEA.ClassifierID != "0")
+		//				{
+  //                          EAAPI.Element classifierElement = parameterEA.GetClassifier(_repository);
 
-                            string classifierSpecIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(classifierElement.ElementGUID);
+  //                          string classifierSpecIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(classifierElement.ElementGUID);
 
-                            Resource classifierResource = null;
+  //                          Resource classifierResource = null;
 
-                            if (!_resources.ContainsKey(classifierSpecIfID))
-                            {
-                                classifierResource = AddElement(classifierElement);
-                            }
-                            else
-                            {
-                                classifierResource = _resources[classifierSpecIfID];
-                            }
+  //                          if (!_resources.ContainsKey(classifierSpecIfID))
+  //                          {
+  //                              classifierResource = AddElement(classifierElement);
+  //                          }
+  //                          else
+  //                          {
+  //                              classifierResource = _resources[classifierSpecIfID];
+  //                          }
 
-                            Statement classifierStatement = GetClassifierStatement(classifierResource, operationParameterResource);
+  //                          Statement classifierStatement = GetClassifierStatement(classifierResource, operationParameterResource);
 
-							if (!_statements.ContainsKey(classifierStatement.ID))
-							{
-								_statements.Add(classifierStatement.ID, classifierStatement);
-							}
-						}
+		//					if (!_statements.ContainsKey(classifierStatement.ID))
+		//					{
+		//						_statements.Add(classifierStatement.ID, classifierStatement);
+		//					}
+		//				}
 						
-					}
-				}
-			}
-		}
+		//			}
+		//		}
+		//	}
+		//}
 
-		private void AddElementConstraints(EAAPI.Element eaElement, Resource elementResource)
-		{
-			string connectorSpecIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID);
+		//private void AddElementConstraints(EAAPI.Element eaElement, Resource elementResource)
+		//{
+			//string connectorSpecIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID);
 
-			// connector constraints
-			for (short constraintCounter = 0; constraintCounter < eaElement.Constraints.Count; constraintCounter++)
-			{
-				EAAPI.Constraint elementConstraintEA = eaElement.Constraints.GetAt(constraintCounter) as EAAPI.Constraint;
-
-				if (elementConstraintEA != null)
-				{
-					Resource connectorConstraint = ConvertElementConstraint(eaElement, elementConstraintEA, constraintCounter + 1);
-
-					if (!_resources.ContainsKey(connectorConstraint.ID))
-					{
-						_resources.Add(connectorConstraint.ID, connectorConstraint);
-					}
-
-					Statement constraintContainsStatement = GetContainsStatementFromSpecIfID(new Key(elementResource.ID, elementResource.Revision),
-						new Key(connectorConstraint.ID));
-
-					if (!_statements.ContainsKey(constraintContainsStatement.ID))
-					{
-						_statements.Add(constraintContainsStatement.ID, constraintContainsStatement);
-					}
-
-
-				}
-			}
-		}
-
-
-		private void AddUmlConnectors(EAAPI.Element eaElement)
-		{
-			for (short counter = 0; counter < eaElement.Connectors.Count; counter++)
-			{
-				EAAPI.Connector connectorEA = eaElement.Connectors.GetAt(counter) as EAAPI.Connector;
-
-				Statement umlConnector = ConvertUmlConnector(connectorEA);
-
-				if (umlConnector != null)
-				{
-					if (!_statements.ContainsKey(umlConnector.ID))
-					{
-						_statements.Add(umlConnector.ID, umlConnector);
-					}
-				}
-				//AddConnectorConstraints(connectorEA, umlConnector);
-
-				//AddConnectorTaggedValues(connectorEA, umlConnector);
-
-			}
-		}
-
-		private Resource AddDiagram(EAAPI.Diagram diagram)
-		{
-			Resource diagramResource = ConvertDiagram(diagram);
-
-			if (!_resources.ContainsKey(diagramResource.ID))
-			{
-				_resources.Add(diagramResource.ID, diagramResource);
-			}
-
-			AddShowsStatements(diagram, diagramResource);
-
-            return diagramResource;
-		}
-
-		private void AddShowsStatements(EAAPI.Diagram diagram, Resource diagramResource)
-		{
-			string diagramSpecIfGUID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID);
-
-			for (short counter = 0; counter < diagram.DiagramObjects.Count; counter++)
-			{
-				EAAPI.DiagramObject diagramObject = diagram.DiagramObjects.GetAt(counter) as EAAPI.DiagramObject;
-
-				EAAPI.Element elementOnDiagram = _repository.GetElementByID(diagramObject.ElementID);
-
-				if (elementOnDiagram != null)
-				{
-					string elementSpecIfGuid = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(elementOnDiagram.ElementGUID);
-					string elementSpecIfRevision = EaDateToRevisionConverter.ConvertDateToRevision(elementOnDiagram.Modified);
-
-
-					Statement statement = GetShowsStatementFromSpecIfID(new Key(diagramResource.ID, diagramResource.Revision), 
-																		new Key(elementSpecIfGuid, elementSpecIfRevision));
-
-					if (!_statements.ContainsKey(statement.ID))
-					{
-						_statements.Add(statement.ID, statement);
-					}
-
-					AddElement(elementOnDiagram);
-				}
-			}
-
-			//for (short counter = 0; counter < diagram.DiagramLinks.Count; counter++)
+			//// connector constraints
+			//for (short constraintCounter = 0; constraintCounter < eaElement.Constraints.Count; constraintCounter++)
 			//{
-			//	EAAPI.DiagramLink link = diagram.DiagramLinks.GetAt(counter) as EAAPI.DiagramLink;
+			//	EAAPI.Constraint elementConstraintEA = eaElement.Constraints.GetAt(constraintCounter) as EAAPI.Constraint;
 
-			//	EAAPI.Connector connectorOnDiagram = _repository.GetConnectorByID(link.ConnectorID);
-
-			//	if (connectorOnDiagram != null)
+			//	if (elementConstraintEA != null)
 			//	{
-			//		string connectorSpecIfGuid = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(connectorOnDiagram.ConnectorGUID);
+			//		Resource connectorConstraint = ConvertElementConstraint(eaElement, elementConstraintEA, constraintCounter + 1);
 
-			//		Statement statement = GetShowsStatementFromSpecIfID(new Key(diagramResource.ID, diagramResource.Revision), new Key(connectorSpecIfGuid));
-			//		_statements.Add(statement.ID, statement);
+			//		if (!_resources.ContainsKey(connectorConstraint.ID))
+			//		{
+			//			_resources.Add(connectorConstraint.ID, connectorConstraint);
+			//		}
+
+			//		Statement constraintContainsStatement = GetContainsStatementFromSpecIfID(new Key(elementResource.ID, elementResource.Revision),
+			//			new Key(connectorConstraint.ID));
+
+			//		if (!_statements.ContainsKey(constraintContainsStatement.ID))
+			//		{
+			//			_statements.Add(constraintContainsStatement.ID, constraintContainsStatement);
+			//		}
+
+
 			//	}
 			//}
-		}
+		//}
 
-		private void AddConnectorConstraints(EAAPI.Connector connectorEA, Statement connectorStatement)
-		{
-			string connectorSpecIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(connectorEA.ConnectorGUID);
-
-			// connector constraints
-			for (short constraintCounter = 0; constraintCounter < connectorEA.Constraints.Count; constraintCounter++)
-			{
-				EAAPI.ConnectorConstraint connectorConstraintEA = connectorEA.Constraints.GetAt(constraintCounter) as EAAPI.ConnectorConstraint;
-
-				if (connectorConstraintEA != null)
-				{
-					Resource connectorConstraint = ConvertConnectorConstraint(connectorEA, connectorConstraintEA, constraintCounter + 1);
-
-					if (!_resources.ContainsKey(connectorConstraint.ID))
-					{
-						_resources.Add(connectorConstraint.ID, connectorConstraint);
-					}
-
-					Statement constraintContainsStatement = GetContainsStatementFromSpecIfID(new Key(connectorStatement.ID, connectorStatement.Revision),
-																							 new Key(connectorConstraint.ID));
-
-					if (!_statements.ContainsKey(constraintContainsStatement.ID))
-					{
-						_statements.Add(constraintContainsStatement.ID, constraintContainsStatement);
-					}
-
-
-				}
-			}
-
-			// guard
-			if (!string.IsNullOrEmpty(connectorEA.TransitionGuard))
-			{
-
-				Resource guardResource = ConvertConnectorGuard(connectorEA);
-
-				if (!_resources.ContainsKey(guardResource.ID))
-				{
-					_resources.Add(guardResource.ID, guardResource);
-				}
-
-				Statement guardContainsStatement = GetContainsStatementFromSpecIfID(new Key(connectorStatement.ID, connectorStatement.Revision),
-																					new Key(guardResource.ID));
-
-				if (!_statements.ContainsKey(guardContainsStatement.ID))
-				{
-					_statements.Add(guardContainsStatement.ID, guardContainsStatement);
-				}
-			}
-
-
-		}
-
-		private void AddConnectorTaggedValues(EAAPI.Connector eaConnector, Statement connectorStatement)
-		{
-			List<Resource> tagResources = ConvertConnectorTaggedValues(eaConnector);
-
-			foreach (Resource tagResource in tagResources)
-			{
-				if (!_resources.ContainsKey(tagResource.ID))
-				{
-					_resources.Add(tagResource.ID, tagResource);
-				}
-
-				Statement tagContainsStatement = GetContainsStatement(connectorStatement,
-																	  tagResource);
-
-				if (!_statements.ContainsKey(tagContainsStatement.ID))
-				{
-					_statements.Add(tagContainsStatement.ID, tagContainsStatement);
-				}
-			}
-		}
 
 		#endregion
 
 		#region CONVERTERS
-
-		private Resource ConvertOperation(EAAPI.Method operation, EAAPI.Element eaElement, string elementRevision)
-		{
-
-			Resource result;
-
-			string specIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID);
-
-			if (!_resources.ContainsKey(specIfID))
-			{
-
-				Resource operationResource = new Resource()
-				{
-					ID = specIfID,
-					Class = new Key("RC-Actor", "1"),
-					ChangedAt = eaElement.Modified,
-					ChangedBy = eaElement.Author,
-					Revision = elementRevision,
-					Title = new Value(operation.Name)
-				};
-
-				operationResource.Properties = new List<Property>();
-
-				operationResource.Properties.Add(
-					new Property("dcterms:title", new Key("PC-Name", "1"), operation.Name,
-								 EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID + "_NAME"),
-								 eaElement.Modified, eaElement.Author));
-
-
-				operationResource.Properties.Add(
-					new Property("dcterms:description", new Key("PC-Description", "1"), operation.Notes,
-								 EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID + "_NOTES"),
-								 eaElement.Modified, eaElement.Author));
-
-
-				operationResource.Properties.Add(
-					new Property("dcterms:type", new Key("PC-Type", "1"), "OMG:UML:2.5.1:Operation",
-								 EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID + "_TYPE"),
-								 eaElement.Modified, eaElement.Author));
-
-
-				string namespc = "";
-				string stereotype = "";
-
-				ParseFullQualifiedName(operation.FQStereotype, out namespc, out stereotype);
-
-				string stereotypeValue = "";
-
-				if (namespc != "EAUML" && !string.IsNullOrWhiteSpace(namespc))
-				{
-					stereotypeValue = namespc + ":";
-				}
-				else if (namespc == "EAUML" && stereotype != "")
-				{
-					stereotypeValue = "UML:";
-				}
-
-				stereotypeValue += stereotype;
-
-				if (operation.ReturnType == "entry")
-				{
-					if (stereotypeValue != "")
-					{
-						stereotypeValue += ",";
-					}
-					stereotypeValue += "entry";
-				}
-				else if (operation.ReturnType == "exit")
-				{
-					if (stereotypeValue != "")
-					{
-						stereotypeValue += ",";
-					}
-					stereotypeValue += "exit";
-				}
-				else if (operation.ReturnType == "do")
-				{
-					if (stereotypeValue != "")
-					{
-						stereotypeValue += ",";
-					}
-					stereotypeValue += "do";
-				}
-
-				operationResource.Properties.Add(
-						new Property("UML:Stereotype", new Key("PC-Stereotype", "1"), stereotypeValue,
-									 EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID + "_STEREOTYPE"),
-									 eaElement.Modified, eaElement.Author));
-
-
-				string id = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID) + "_VISIBILITY";
-
-				operationResource.Properties.Add(GetVisibilityProperty(operation.Visibility, id, elementRevision, eaElement.Modified, eaElement.Author));
-
-				result = operationResource;
-			}
-			else
-            {
-				result = _resources[specIfID];
-            }
-
-			return result;
-		}
-
-		private Resource ConvertOperationParameter(EAAPI.Parameter parameter, EAAPI.Element eaElement, string elementRevision)
-		{
-			Resource result;
-
-			string specIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(parameter.ParameterGUID);
-
-			if (!_resources.ContainsKey(specIfID))
-			{
-				result = new Resource()
-				{
-					ID = specIfID,
-					Class = new Key("RC-State", "1"),
-					ChangedAt = eaElement.Modified,
-					ChangedBy = eaElement.Author,
-					Revision = elementRevision,
-					Title = new Value(parameter.Name)
-				};
-
-				result.Properties = new List<Property>();
-
-				result.Properties.Add(
-					new Property()
-					{
-						Title = new Value("dcterms:title"),
-						PropertyClass = new Key("PC-Name", "1"),
-						Value = parameter.Name,
-						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(parameter.ParameterGUID + "_NAME"),
-						ChangedAt = eaElement.Modified,
-						ChangedBy = eaElement.Author
-					}
-					);
-
-				result.Properties.Add(
-					new Property()
-					{
-						Title = new Value("dcterms:description"),
-						PropertyClass = new Key("PC-Description", "1"),
-						Value = parameter.Notes,
-						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(parameter.ParameterGUID + "_NOTES"),
-						ChangedAt = eaElement.Modified,
-						ChangedBy = eaElement.Author
-					}
-					);
-
-				result.Properties.Add(
-					new Property()
-					{
-						Title = new Value("dcterms:type"),
-						PropertyClass = new Key("PC-Type", "1"),
-						Value = "OMG:UML:2.5.1:Parameter",
-						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(parameter.ParameterGUID + "_TYPE"),
-						ChangedAt = eaElement.Modified,
-						ChangedBy = eaElement.Author
-					}
-					);
-			}
-			else
-            {
-				result = _resources[specIfID];
-            }
-
-			return result;
-		}
 
 		public Resource ConvertElement(EAAPI.Element eaElement)
 		{
 			Resource result;
 
 			string specIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID);
+			string revision = EaDateToRevisionConverter.ConvertDateToRevision(eaElement.Modified);
 
 			string cacheKey = GetCacheKeyForElement(eaElement);
+			
 
-			if (!_resources.ContainsKey(cacheKey))
+			string elementType = eaElement.Type;
+
+			EAAPI.Package elementPackage;
+
+			if (elementType == "Package")
+			{
+				elementPackage = _repository.GetPackageByGuid(eaElement.ElementGUID);
+			}
+			else
+			{
+				elementPackage = _repository.GetPackageByID(eaElement.PackageID);
+			}
+
+			ResourceClass resourceClass = GetResourceClassForElementType(elementType, eaElement.Stereotype);
+
+			if (!_elementResources.ContainsKey(cacheKey))
 			{
 
-				string elementType = eaElement.Type;
+				#region RESOURCE_CREATION
 
-				string revision = EaDateToRevisionConverter.ConvertDateToRevision(eaElement.Modified);
-
-				ResourceClass resourceClass = GetResourceClassForElementType(elementType, eaElement.Stereotype);
 
 				Resource elementResource = new Resource()
 				{
@@ -1182,14 +814,14 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					{
 						elementLegacyType = "OMG:UML:2.5.1:" + elementType;
 
-						if (elementType == "Object" && stereotype == "agent")
-						{
-							elementLegacyType = "FMC4SE:Agent";
-						}
-						if (elementType == "Port" && stereotype == "channel")
-						{
-							elementLegacyType = "FMC4SE:Channel";
-						}
+						//if (elementType == "Object" && stereotype == "agent")
+						//{
+						//	elementLegacyType = "FMC4SE:Agent";
+						//}
+						//if (elementType == "Port" && stereotype == "channel")
+						//{
+						//	elementLegacyType = "FMC4SE:Channel";
+						//}
 					}
 
 					elementResource.Properties.Add(
@@ -1218,28 +850,320 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					if (!string.IsNullOrEmpty(identifierValue))
 					{
 						elementResource.Properties.Add(
-							new Property("dcterms:identifier", new Key("PC-VisibleId", "1"), identifierValue,
-										 EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID + "_IDENTIFIER"),
-										 eaElement.Modified, eaElement.Author)
+							new Property()
+							{
+								Title = "dcterms:identifier",
+								PropertyClass = new Key("PC-VisibleId", "1"),
+								Value = identifierValue,
+								ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID + "_IDENTIFIER"),
+								ChangedAt = eaElement.Modified,
+								ChangedBy = eaElement.Author
+							}
 							);
 					}
-				}
 
+					string disciplineValue = eaElement.GetTaggedValueString("Perspective");
+
+					if(!string.IsNullOrEmpty(disciplineValue))
+                    {
+						if(disciplineValue == "User")
+                        {
+							elementResource.Properties.Add(new Property()
+							{
+								Title = "SpecIF:Perspective",
+								PropertyClass = new Key("PC-Perspective", "1"),
+								Value = "V-perspective-1",
+								ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID + "_PERSPECTIVE"),
+								ChangedAt = eaElement.Modified,
+								ChangedBy = eaElement.Author
+							});
+                        }
+                    }
+				}
+				#endregion
 
 				result = elementResource;
+
+				ElementResource resource = new ElementResource
+				{
+					Resource = elementResource,
+					EaGUID = eaElement.ElementGUID,
+					Key = new Key(specIfID, revision)
+				};
+
+				// ***  convert implicit respources ***
+
+				
+
+				
+
+				// diagrams
+				EAAPI.Collection diagramCollection;
+
+				if(elementType == "Package")
+                {
+					diagramCollection = elementPackage.Diagrams;
+                }
+				else
+                {
+					diagramCollection = eaElement.Diagrams;
+                }
+
+				for (short counter = 0; counter < diagramCollection.Count; counter++)
+				{
+					EAAPI.Diagram diagram = diagramCollection.GetAt(counter) as EAAPI.Diagram;
+
+					Key diagramKey = GetKeyForDiagram(diagram);
+
+					Statement parentStatement = GetContainsStatementFromSpecIfID(resource.Key, diagramKey);
+
+					resource.ImplicitElementsStatements.Add(parentStatement);
+				}
+
+				// packages
+				if (elementType == "Package")
+				{
+					
+					for (short counter = 0; counter < elementPackage.Packages.Count; counter++)
+					{
+						EAAPI.Package childPackage = elementPackage.Packages.GetAt(counter) as EAAPI.Package;
+
+						Key packageKey = GetKeyForElement(childPackage.Element);
+
+						Statement parentStatement = GetContainsStatementFromSpecIfID(resource.Key, packageKey);
+
+						resource.ImplicitElementsStatements.Add(parentStatement);
+					}
+
+				}
+
+				// classifier
+				if (elementType != "Port")
+				{
+					Statement classifierStatement = GetClassifierStatement(eaElement);
+					if (classifierStatement != null)
+					{
+						resource.ImplicitElementsStatements.Add(classifierStatement);
+					}
+				}
+				
+
+				// tagged values
+				List<ImplicitElementResource> taggedValueResources = ConvertElementTaggedValues(eaElement, resource);
+
+				foreach (ImplicitElementResource tag in taggedValueResources)
+				{
+					Statement tagValueStatement = GetContainsStatement(resource.Resource, tag.Resource);
+					resource.ImplicitElementsStatements.Add(tagValueStatement);
+				}
+
+				// attributes
+
+				// operations
+
+				// constraints
+
+				// alternative ID
+				result.AlternativeIDs = new List<AlternativeId>();
+
+				AlternativeId alternativeId = new AlternativeId()
+				{
+					Project = "Enterprise Architect:" + _repository.ProjectGUID,
+					ID = eaElement.ElementGUID,
+					Revision = "1"
+				};
+
+				result.AlternativeIDs.Add(alternativeId);
+
+				_elementResources.Add(cacheKey, resource);
 			}
 			else
-            {
-				result = _resources[cacheKey];
-            }
+			{
+				result = _elementResources[cacheKey].Resource;
+			}
 
 			return result;
 		}
 
-		private List<Resource> ConvertElementTaggedValues(EAAPI.Element eaElement)
-		{
-			List<Resource> result = new List<Resource>();
+		private List<Statement> GetPortStatements(EAAPI.Element port)
+        {
+			List<Statement> result = new List<Statement>();
 
+			result.AddRange(ConvertPort(port));
+
+			return result;
+        }
+
+		private List<Statement> ConvertPort(EAAPI.Element port)
+        {
+			List<Statement> result = new List<Statement>();
+
+			string name = port.Name;
+
+			Key portKey = GetKeyForElement(port);
+
+			EAAPI.Element portParent = port.GetParentElement(_repository);
+            List<int> outerPortIDs = new List<int>();
+
+			List<int> childPortIDs = new List<int>();
+
+			outerPortIDs.Add(port.ElementID);
+
+			childPortIDs.Add(port.ElementID);
+
+			for(short counter=0; counter < port.Connectors.Count; counter++)
+            {
+				EAAPI.Connector connector = port.Connectors.GetAt(counter) as EAAPI.Connector;
+
+				if(connector.Type == "Connector" && connector.Stereotype == "access type")
+                {
+                    EAAPI.Element connectedPort;
+                    bool connectorReversed = false;
+
+                    if (connector.SupplierID == port.ElementID) // destination -> source
+					{
+						connectedPort = _repository.GetElementByID(connector.ClientID);
+						connectorReversed = true;
+					}
+					else
+                    {
+						connectedPort = _repository.GetElementByID(connector.SupplierID);
+					}
+
+					Key connectedPortKey = GetKeyForElement(connectedPort);
+
+                    string connectorDirection;
+                    if (connector.Direction == "Source -> Destination")
+                    {
+                        if (!connectorReversed)
+                        {
+                            connectorDirection = "out";
+                        }
+                        else
+                        {
+                            connectorDirection = "in";
+                        }
+
+                    }
+                    else if (connector.Direction == "Destination -> Source")
+                    {
+                        if (!connectorReversed)
+                        {
+                            connectorDirection = "in";
+                        }
+                        else
+                        {
+                            connectorDirection = "out";
+                        }
+                    }
+                    else if (connector.Direction == "Bi-Directional")
+                    {
+                        connectorDirection = "inout";
+                    }
+                    else
+                    {
+                        connectorDirection = "none";
+                    }
+
+                    string portStateID = EaSpecIfGuidConverter.CreatePortStateID(port, connectedPort);
+					Key portStateKey = new Key(portStateID, "1");
+
+					string cacheKey = GetCacheKey(portStateKey);
+
+                    PortStateResource portStateResource;
+
+                    if (!_portStateResources.ContainsKey(cacheKey))
+					{
+						Resource outerPortState = CreatePortConnectionState(portStateID);
+
+						portStateResource = new PortStateResource
+						{
+							Resource = outerPortState,
+							Key = portStateKey
+
+						};
+
+						_portStateResources.Add(cacheKey, portStateResource);
+
+					}
+					else
+					{
+						portStateResource = _portStateResources[cacheKey];
+
+					}
+
+                    Statement portStateStatement;
+                    Statement statePortStatement;
+
+                    if (connectorDirection == "out")
+					{
+						portStateStatement = GetWritesStatement(portKey, portStateKey);
+						statePortStatement = GetReadsStatement(connectedPortKey, portStateKey);
+
+					}
+					else if (connectorDirection == "in")
+					{
+						portStateStatement = GetReadsStatement(portKey, portStateKey);
+						statePortStatement = GetWritesStatement(connectedPortKey, portStateKey);
+					}
+					else
+					{
+						portStateStatement = GetStoresStatement(portKey, portStateKey);
+						statePortStatement = GetStoresStatement(portStateKey, connectedPortKey);
+					}
+
+					string statementKey = GetCacheKey(portStateStatement.ID, portStateStatement.Revision);
+					string oppositeKey = GetCacheKey(statePortStatement.ID, statePortStatement.Revision);
+
+					if (!portStateResource.Statements.ContainsKey(statementKey))
+					{
+						portStateResource.Statements.Add(statementKey, portStateStatement);
+						portStateResource.Statements.Add(oppositeKey, statePortStatement);
+					}
+
+					EAAPI.Element portClassifier = port.GetClassifier(_repository);
+
+					if (portClassifier != null)
+					{
+
+						Statement portClassifierStatement = GetClassifierStatement(portStateKey, GetKeyForElement(portClassifier));
+
+						string classifierStatementKey = GetCacheKey(portClassifierStatement.ID, portClassifierStatement.Revision);
+
+						if (!portStateResource.Statements.ContainsKey(classifierStatementKey))
+						{
+							portStateResource.Statements.Add(classifierStatementKey, portClassifierStatement);
+						}
+
+					}
+
+					result.Add(portStateStatement);
+
+
+				} // if(connector.Type == "Connector" && connector.Stereotype == "access type")
+			} // for
+
+			return result;
+        }
+
+		private Resource CreatePortConnectionState(string guid)
+        {
+			Resource result = new Resource()
+			{
+				ID = guid,
+				Revision = "1",
+				Class = new Key("RC-State", "1")
+
+			};
+
+			return result;
+        }
+
+		private List<ImplicitElementResource> ConvertElementTaggedValues(EAAPI.Element eaElement, ElementResource parent)
+		{
+			List<ImplicitElementResource> result = new List<ImplicitElementResource>();
+
+			string revision = EaDateToRevisionConverter.ConvertDateToRevision(eaElement.Modified);
 
 			string namespc = "";
 			string stereotype = "";
@@ -1253,8 +1177,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 				string specIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID);
 
-				if (!_resources.ContainsKey(specIfID))
-				{
+				
 					string tagNamespace = "";
 					string tagStereotype = "";
 					string tagName = tag.Name;
@@ -1270,7 +1193,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 						Class = new Key("RC-State", "1"),
 						ChangedAt = eaElement.Modified,
 						ChangedBy = eaElement.Author,
-						Revision = "1",
+						Revision = revision,
 						Title = new Value(tagName)
 					};
 
@@ -1347,12 +1270,18 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 						}
 						);
 
-					result.Add(tagResource);
-				}
-				else
-                {
-					result.Add(_resources[specIfID]);
-                }
+
+				ImplicitElementResource tagValueResource = new ImplicitElementResource
+				{
+					Resource = tagResource,
+					Key = new Key(tagResource.ID, tagResource.Revision),
+					Parent = new Key(parent.Resource.ID, parent.Resource.Revision),
+					ParentEaGUID = parent.EaGUID
+				};
+				
+				result.Add(tagValueResource);
+
+				_implicitElementResources.Add(GetCacheKey(tagResource), tagValueResource);
 			}
 
 
@@ -1428,160 +1357,168 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			return result;
 		}
 
-		public Resource ConvertDiagram(EAAPI.Diagram diagram)
+		private Resource ConvertOperation(EAAPI.Method operation, EAAPI.Element eaElement, string elementRevision)
 		{
-			Resource result = null;
 
-			string diagramXHTML = "";
+			Resource result;
 
-			if (diagram != null)
+			string specIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID);
+
+			if (!_resources.ContainsKey(specIfID))
 			{
 
-				string specIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID);
-
-				if (!_resources.ContainsKey(specIfID))
+				Resource operationResource = new Resource()
 				{
+					ID = specIfID,
+					Class = new Key("RC-Actor", "1"),
+					ChangedAt = eaElement.Modified,
+					ChangedBy = eaElement.Author,
+					Revision = elementRevision,
+					Title = new Value(operation.Name)
+				};
+
+				operationResource.Properties = new List<Property>();
+
+				operationResource.Properties.Add(
+					new Property("dcterms:title", new Key("PC-Name", "1"), operation.Name,
+								 EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID + "_NAME"),
+								 eaElement.Modified, eaElement.Author));
 
 
-					try
-					{
-
-						string diagramFileName = System.IO.Path.GetTempPath() + "/" + diagram.DiagramGUID + ".png";
-
-						_repository.GetProjectInterface().PutDiagramImageToFile(diagram.DiagramGUID, diagramFileName, 1);
-
-						Image image = Image.FromFile(diagramFileName);
-
-						using (MemoryStream m = new MemoryStream())
-						{
-							image.Save(m, image.RawFormat);
-							byte[] imageBytes = m.ToArray();
-
-							// Convert byte[] to Base64 String
-							string base64String = Convert.ToBase64String(imageBytes);
-
-							diagramXHTML += "<p><img style=\"max-width:100%\" src=\"data:image/png;base64," + base64String + "\" /></p>";
-
-						}
-					}
-					catch (Exception exception)
-					{
-
-					}
-
-					#region SVG
-					//            EaSvgMetadataProvider eaSvgMetadataProvider = new EaSvgMetadataProvider();
-
-					//DiagramToSvgConverter diagramToSvgConverter = new DiagramToSvgConverter(_repository, eaSvgMetadataProvider);
-
-					//            ScalableVectorGraphics svgDiagram = diagramToSvgConverter.ConvertDiagramToSVG(diagram);
-
-					//XmlSerializerNamespaces namespaces = new XmlSerializerNamespaces();
-					//namespaces.Add("di", "http://www.omg.org/spec/DD/20100524/DI");
-					//namespaces.Add("dc", "http://www.omg.org/spec/DD/20100524/DC");
-					//namespaces.Add("specif", "https://specif.de/schema/v1.0/DI");
-
-					//// Create a Type array.
-					//Type[] extraTypes = new Type[2];
-					//extraTypes[0] = typeof(Shape);
-					//extraTypes[1] = typeof(Edge);
-					////extraTypes[2] = typeof(MetadataContent);
-					////extraTypes[0] = typeof(SpecIfDiagramInterchangeBase);
-
-					//XmlSerializer xmlSerializer = new XmlSerializer(typeof(ScalableVectorGraphics), extraTypes);
-
-					//using (var stringWriter = new StringWriter())
-					//{
-					//	using (XmlWriter writer = XmlWriter.Create(stringWriter,
-					//		new XmlWriterSettings() {
-					//			OmitXmlDeclaration = true,
-					//			ConformanceLevel = ConformanceLevel.Auto,
-					//			Indent = false
-					//		}))
-					//	{
-
-					//		xmlSerializer.Serialize(writer, svgDiagram, namespaces);
-					//		diagramXHTML = stringWriter.ToString();
-
-					//		//string svg = "<svg><circle cx=\"50\" cy=\"50\" r=\"40\" stroke=\"black\" stroke-width=\"3\" fill=\"red\" /></svg>";
-
-					//		//diagramXHTML = "<p>" + svg + "hallo SVG?</p>";
+				operationResource.Properties.Add(
+					new Property("dcterms:description", new Key("PC-Description", "1"), operation.Notes,
+								 EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID + "_NOTES"),
+								 eaElement.Modified, eaElement.Author));
 
 
+				operationResource.Properties.Add(
+					new Property("dcterms:type", new Key("PC-Type", "1"), "OMG:UML:2.5.1:Operation",
+								 EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID + "_TYPE"),
+								 eaElement.Modified, eaElement.Author));
 
-					//		//System.IO.File.WriteAllText("d:/test/svg/svgx.svg", diagramXHTML);
-					//	}
-					//}
 
-					#endregion
+				string namespc = "";
+				string stereotype = "";
 
-					string diagramRevision = EaDateToRevisionConverter.ConvertDateToRevision(diagram.ModifiedDate);
+				ParseFullQualifiedName(operation.FQStereotype, out namespc, out stereotype);
 
-					result = new Resource()
-					{
-						ID = specIfID,
-						Class = new Key("RC-Diagram", "1"),
-						ChangedAt = diagram.ModifiedDate,
-						ChangedBy = diagram.Author,
-						Revision = diagramRevision,
-						Title = new Value(diagram.Name)
-					};
+				string stereotypeValue = "";
 
-					result.Properties = new List<Property>();
-
-					result.Properties.Add(
-						new Property()
-						{
-							Title = new Value("dcterms:title"),
-							PropertyClass = new Key("PC-Name", "1"),
-							Value = diagram.Name,
-							ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID + "_NAME"),
-							ChangedAt = diagram.ModifiedDate,
-							ChangedBy = diagram.Author
-						}
-						);
-
-					result.Properties.Add(
-						new Property()
-						{
-							Title = new Value("dcterms:description"),
-							PropertyClass = new Key("PC-Description", "1"),
-							Value = diagram.Notes,
-							ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID + "_NOTES"),
-							ChangedAt = diagram.ModifiedDate,
-							ChangedBy = diagram.Author
-						}
-						);
-
-					result.Properties.Add(
-						new Property()
-						{
-							Title = new Value("SpecIF:Diagram"),
-							PropertyClass = new Key("PC-Diagram", "1"),
-							Value = diagramXHTML,
-							ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID + "_DIAGRAM"),
-							ChangedAt = diagram.ModifiedDate,
-							ChangedBy = diagram.Author
-						}
-						);
-
-					result.Properties.Add(
-						new Property()
-						{
-							Title = new Value("dcterms:type"),
-							PropertyClass = new Key("PC-Type", "1"),
-							Value = "OMG:UML:2.5.1:" + GetUmlDiagramTypeFromEaType(diagram.Type),
-							ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID + "_TYPE"),
-							ChangedAt = diagram.ModifiedDate,
-							ChangedBy = diagram.Author
-						}
-						);
-
+				if (namespc != "EAUML" && !string.IsNullOrWhiteSpace(namespc))
+				{
+					stereotypeValue = namespc + ":";
 				}
-				else
-                {
-					result = _resources[specIfID];
-                }
+				else if (namespc == "EAUML" && stereotype != "")
+				{
+					stereotypeValue = "UML:";
+				}
+
+				stereotypeValue += stereotype;
+
+				if (operation.ReturnType == "entry")
+				{
+					if (stereotypeValue != "")
+					{
+						stereotypeValue += ",";
+					}
+					stereotypeValue += "entry";
+				}
+				else if (operation.ReturnType == "exit")
+				{
+					if (stereotypeValue != "")
+					{
+						stereotypeValue += ",";
+					}
+					stereotypeValue += "exit";
+				}
+				else if (operation.ReturnType == "do")
+				{
+					if (stereotypeValue != "")
+					{
+						stereotypeValue += ",";
+					}
+					stereotypeValue += "do";
+				}
+
+				operationResource.Properties.Add(
+						new Property("UML:Stereotype", new Key("PC-Stereotype", "1"), stereotypeValue,
+									 EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID + "_STEREOTYPE"),
+									 eaElement.Modified, eaElement.Author));
+
+
+				string id = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID) + "_VISIBILITY";
+
+				operationResource.Properties.Add(GetVisibilityProperty(operation.Visibility, id, elementRevision, eaElement.Modified, eaElement.Author));
+
+				result = operationResource;
+			}
+			else
+			{
+				result = _resources[specIfID];
+			}
+
+			return result;
+		}
+
+		private Resource ConvertOperationParameter(EAAPI.Parameter parameter, EAAPI.Element eaElement, string elementRevision)
+		{
+			Resource result;
+
+			string specIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(parameter.ParameterGUID);
+
+			if (!_resources.ContainsKey(specIfID))
+			{
+				result = new Resource()
+				{
+					ID = specIfID,
+					Class = new Key("RC-State", "1"),
+					ChangedAt = eaElement.Modified,
+					ChangedBy = eaElement.Author,
+					Revision = elementRevision,
+					Title = new Value(parameter.Name)
+				};
+
+				result.Properties = new List<Property>();
+
+				result.Properties.Add(
+					new Property()
+					{
+						Title = new Value("dcterms:title"),
+						PropertyClass = new Key("PC-Name", "1"),
+						Value = parameter.Name,
+						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(parameter.ParameterGUID + "_NAME"),
+						ChangedAt = eaElement.Modified,
+						ChangedBy = eaElement.Author
+					}
+					);
+
+				result.Properties.Add(
+					new Property()
+					{
+						Title = new Value("dcterms:description"),
+						PropertyClass = new Key("PC-Description", "1"),
+						Value = parameter.Notes,
+						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(parameter.ParameterGUID + "_NOTES"),
+						ChangedAt = eaElement.Modified,
+						ChangedBy = eaElement.Author
+					}
+					);
+
+				result.Properties.Add(
+					new Property()
+					{
+						Title = new Value("dcterms:type"),
+						PropertyClass = new Key("PC-Type", "1"),
+						Value = "OMG:UML:2.5.1:Parameter",
+						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(parameter.ParameterGUID + "_TYPE"),
+						ChangedAt = eaElement.Modified,
+						ChangedBy = eaElement.Author
+					}
+					);
+			}
+			else
+			{
+				result = _resources[specIfID];
 			}
 
 			return result;
@@ -1668,23 +1605,238 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			return result;
 		}
 
-		private Statement ConvertUmlConnector(EAAPI.Connector connectorEA)
-		{
-			Statement result = null;
+		private List<Statement> ConvertExplicitElementStatements(EAAPI.Element eaElement)
+        {
+			List<Statement> result = new List<Statement>();
 
-			EAAPI.Element sourceElement = _repository.GetElementByID(connectorEA.ClientID);
-			EAAPI.Element targetElement = _repository.GetElementByID(connectorEA.SupplierID);
-						
-			Resource sourceResource = AddElement(sourceElement);
-			Resource targetResource = AddElement(targetElement);
+			Key resourceKey = GetKeyForElement(eaElement);
 
-			if (connectorEA.Type == "Dependency" && connectorEA.Stereotype == "satisfy")
+			string elementType = eaElement.Type;
+
+			EAAPI.Package elementPackage;
+
+			if (elementType == "Package")
+			{
+				elementPackage = _repository.GetPackageByGuid(eaElement.ElementGUID);
+			}
+			else
+			{
+				elementPackage = _repository.GetPackageByID(eaElement.PackageID);
+			}
+
+			// contains (parent element)
+			if (eaElement.ParentID != 0)
+			{
+				EAAPI.Element parentElement = _repository.GetElementByID(eaElement.ParentID);
+
+				if (parentElement != null)
+				{
+					string parentSpecifID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(parentElement.ElementGUID);
+					string parentRevision = EaDateToRevisionConverter.ConvertDateToRevision(parentElement.Modified);
+
+					Statement parentStatement = GetContainsStatementFromSpecIfID(new Key(parentSpecifID, parentRevision), resourceKey);
+
+					result.Add(parentStatement);
+
+				}
+			}
+			else
+			{
+				if (elementType != "Package")
+				{
+
+					Key packageKey = GetKeyForElement(elementPackage.Element);
+
+					Statement parentStatement = GetContainsStatementFromSpecIfID(packageKey, resourceKey);
+
+					result.Add(parentStatement);
+
+				}
+				else
+				{
+					EAAPI.Package parentPackage = _repository.GetPackageByID(eaElement.PackageID);
+
+					if (parentPackage != null && parentPackage.Element != null)
+					{
+
+						Key packageKey = GetKeyForElement(parentPackage.Element);
+
+						Statement parentStatement = GetContainsStatementFromSpecIfID(packageKey, resourceKey);
+
+						result.Add(parentStatement);
+					}
+				}
+			}
+
+			// child elements
+
+			EAAPI.Collection elementCollection;
+
+			if (elementType == "Package")
+			{
+				elementCollection = elementPackage.Elements;
+			}
+			else
+			{
+				elementCollection = eaElement.Elements;
+			}
+
+			for (short counter = 0; counter < elementCollection.Count; counter++)
+			{
+				EAAPI.Element childElement = elementCollection.GetAt(counter) as EAAPI.Element;
+
+				string childElementType = childElement.Type;
+
+				if (childElementType != "Port" && childElementType != "ActionPin")
+				{
+					Key childKey = GetKeyForElement(childElement);
+
+					Statement childStatement = GetContainsStatementFromSpecIfID(resourceKey, childKey);
+
+					result.Add(childStatement);
+				}
+
+			}
+
+			// embedded elements
+			for (short counter = 0; counter < eaElement.EmbeddedElements.Count; counter++)
+			{
+				EAAPI.Element embeddedElement = eaElement.EmbeddedElements.GetAt(counter) as EAAPI.Element;
+
+				Key childKey = GetKeyForElement(embeddedElement);
+
+				Statement childStatement = GetContainsStatementFromSpecIfID(resourceKey, childKey);
+
+				result.Add(childStatement);
+			}
+
+			// shows (diagrams)
+			CachedDiagramDataProvider cachedDiagramDataProvider = new CachedDiagramDataProvider(_repository);
+
+			List<int> diagramIDs = cachedDiagramDataProvider.GetAllDiagramIDsForElement(eaElement.ElementID);
+
+			foreach (int diagramID in diagramIDs)
+			{
+				EAAPI.Diagram diagram = _repository.GetDiagramByID(diagramID);
+
+				if (diagram != null)
+				{
+					string diagramSpecifID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID);
+					string diagramRevision = EaDateToRevisionConverter.ConvertDateToRevision(diagram.ModifiedDate);
+
+					Key diagramKey = new Key(diagramSpecifID, diagramRevision);
+
+					Statement showsStatement = GetShowsStatementFromSpecIfID(diagramKey, resourceKey);
+
+					result.Add(showsStatement);
+				}
+
+			}
+
+			if(elementType == "Port")
             {
-				result = GetSatisfiesStatement(sourceResource, targetResource);
+				result.AddRange(GetPortStatements(eaElement));
             }
+
+			// external connectors
+			result.AddRange(ConvertExternalConnectors(eaElement));
+
+
+
+			return result;
+        }
+
+		private List<Statement> ConvertExternalConnectors(EAAPI.Element eaElement)
+        {
+			List<Statement> result = new List<Statement>();
+
+			for (short counter = 0; counter < eaElement.Connectors.Count; counter++)
+			{
+				EAAPI.Connector connectorEA = eaElement.Connectors.GetAt(counter) as EAAPI.Connector;
+
+				EAAPI.Element sourceElement = _repository.GetElementByID(connectorEA.ClientID);
+				EAAPI.Element targetElement = _repository.GetElementByID(connectorEA.SupplierID);
+
+
+				if (connectorEA.Direction == "Destination -> Source")
+				{
+					sourceElement = _repository.GetElementByID(connectorEA.SupplierID);
+					targetElement = _repository.GetElementByID(connectorEA.ClientID);
+				}
+
+				
+				Key sourceKey = GetKeyForElement(sourceElement);
+				Key targetKey = GetKeyForElement(targetElement);
+
+				string sourceElementType = sourceElement.Type;
+				string targetElementType = targetElement.Type;
+				string connectorType = connectorEA.Type;
+				string connectorStereotype = connectorEA.Stereotype;
+
+				Key subjectKey = sourceKey;
+				Key objectKey = targetKey;
+
+				if(connectorType == "Dependency")
+                {
+					if(connectorStereotype == "satisfy")
+                    {
+						result.Add(GetSatisfiesStatement(subjectKey, objectKey));
+                    }
+					else if(connectorStereotype == "deriveReqt")
+                    {
+						result.Add(GetRefinesStatement(subjectKey, objectKey));
+                    }
+                }
+				else if(connectorType == "Aggregation" && connectorEA.Subtype == "Strong")
+                {
+					result.Add(GetContainsStatementFromSpecIfID(objectKey, subjectKey));
+                }
+
+
+			}
 
 			return result;
 		}
+
+		private List<Statement> ConvertExplicitDiagramStatements(EAAPI.Diagram diagram)
+        {
+			List<Statement> result = new List<Statement>();
+
+			string specIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID);
+			string revision = EaDateToRevisionConverter.ConvertDateToRevision(diagram.ModifiedDate);
+
+			Key diagramKey = new Key(specIfID, revision);
+
+			if (diagram.ParentID != 0)
+			{
+				EAAPI.Element parentElement = _repository.GetElementByID(diagram.ParentID);
+
+				if (parentElement != null)
+				{
+					string parentSpecifID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(parentElement.ElementGUID);
+					string parentRevision = EaDateToRevisionConverter.ConvertDateToRevision(parentElement.Modified);
+
+					Statement parentStatement = GetContainsStatementFromSpecIfID(new Key(parentSpecifID, parentRevision), diagramKey);
+
+					result.Add(parentStatement);
+
+				}
+			}
+			else
+			{
+				EAAPI.Package diagramPackage = _repository.GetPackageByID(diagram.PackageID);
+
+				Key packageKey = GetKeyForElement(diagramPackage.Element);
+
+				Statement parentStatement = GetContainsStatementFromSpecIfID(packageKey, diagramKey);
+
+				result.Add(parentStatement);
+			}
+
+			return result;
+        }
+
+		
 
 		private Resource ConvertConnectorConstraint(EAAPI.Connector connector, EAAPI.ConnectorConstraint connectorConstraint, int index)
 		{
@@ -1899,28 +2051,205 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			return result;
 		}
 
-        private Statement GetClassifierStatement(Resource classifier, Resource classifiedResource)
+		public Resource ConvertDiagram(EAAPI.Diagram diagram)
+		{
+			Resource result = null;
+
+			string diagramXHTML = "";
+
+			if (diagram != null)
+			{
+
+				string specIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID);
+				string revision = EaDateToRevisionConverter.ConvertDateToRevision(diagram.ModifiedDate);
+
+
+
+
+				#region DIAGRAM_RESOURCE_CRAETION
+
+				//               try
+				//               {
+
+				//	string diagramFileName = System.IO.Path.GetTempPath() + "/" + diagram.DiagramGUID + ".png";
+
+				//	_repository.GetProjectInterface().PutDiagramImageToFile(diagram.DiagramGUID, diagramFileName, 1);
+
+				//	Image image = Image.FromFile(diagramFileName);
+
+				//	using (MemoryStream m = new MemoryStream())
+				//	{
+				//		image.Save(m, image.RawFormat);
+
+				//		byte[] imageBytes = m.ToArray();
+
+				//		// Convert byte[] to Base64 String
+				//		string base64String = Convert.ToBase64String(imageBytes);
+
+				//		diagramXHTML += "<p><img style=\"max-width:100%\" src=\"data:image/png;base64," + base64String + "\" /></p>";
+				//		m.Close();
+				//		image.Dispose();
+				//	}
+				//}
+				//catch (Exception exception)
+				//{
+
+				//}
+
+				#region SVG
+				EaSvgMetadataProvider eaSvgMetadataProvider = new EaSvgMetadataProvider();
+
+				DiagramToSvgConverter diagramToSvgConverter = new DiagramToSvgConverter(_repository, eaSvgMetadataProvider);
+
+				ScalableVectorGraphics svgDiagram = diagramToSvgConverter.ConvertDiagramToSVG(diagram);
+
+				XmlSerializerNamespaces namespaces = new XmlSerializerNamespaces();
+				namespaces.Add("di", "http://www.omg.org/spec/DD/20100524/DI");
+				namespaces.Add("dc", "http://www.omg.org/spec/DD/20100524/DC");
+				namespaces.Add("specif", "https://specif.de/schema/v1.0/DI");
+
+				// Create a Type array.
+				Type[] extraTypes = new Type[2];
+				extraTypes[0] = typeof(Shape);
+				extraTypes[1] = typeof(Edge);
+				//extraTypes[2] = typeof(MetadataContent);
+				//extraTypes[0] = typeof(SpecIfDiagramInterchangeBase);
+
+				XmlSerializer xmlSerializer = new XmlSerializer(typeof(ScalableVectorGraphics), extraTypes);
+
+				using (var stringWriter = new StringWriter())
+				{
+					using (XmlWriter writer = XmlWriter.Create(stringWriter,
+						new XmlWriterSettings()
+						{
+							OmitXmlDeclaration = true,
+							ConformanceLevel = ConformanceLevel.Auto,
+							Indent = false
+						}))
+					{
+
+						xmlSerializer.Serialize(writer, svgDiagram, namespaces);
+						diagramXHTML = stringWriter.ToString();
+
+						//string svg = "<svg><circle cx=\"50\" cy=\"50\" r=\"40\" stroke=\"black\" stroke-width=\"3\" fill=\"red\" /></svg>";
+
+						//diagramXHTML = "<p>" + svg + "hallo SVG?</p>";
+
+
+
+						//System.IO.File.WriteAllText("d:/test/svg/svgx.svg", diagramXHTML);
+					}
+				}
+
+				#endregion
+
+
+
+				result = new Resource()
+				{
+					ID = specIfID,
+					Class = new Key("RC-Diagram", "1"),
+					ChangedAt = diagram.ModifiedDate,
+					ChangedBy = diagram.Author,
+					Revision = revision,
+					Title = new Value(diagram.Name)
+				};
+
+				result.Properties = new List<Property>();
+
+				result.Properties.Add(
+					new Property()
+					{
+						Title = new Value("dcterms:title"),
+						PropertyClass = new Key("PC-Name", "1"),
+						Value = diagram.Name,
+						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID + "_NAME"),
+						ChangedAt = diagram.ModifiedDate,
+						ChangedBy = diagram.Author
+					}
+					);
+
+				result.Properties.Add(
+					new Property()
+					{
+						Title = new Value("dcterms:description"),
+						PropertyClass = new Key("PC-Description", "1"),
+						Value = diagram.Notes,
+						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID + "_NOTES"),
+						ChangedAt = diagram.ModifiedDate,
+						ChangedBy = diagram.Author
+					}
+					);
+
+				result.Properties.Add(
+					new Property()
+					{
+						Title = new Value("SpecIF:Diagram"),
+						PropertyClass = new Key("PC-Diagram", "1"),
+						Value = diagramXHTML,
+						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID + "_DIAGRAM"),
+						ChangedAt = diagram.ModifiedDate,
+						ChangedBy = diagram.Author
+					}
+					);
+
+				result.Properties.Add(
+					new Property()
+					{
+						Title = new Value("dcterms:type"),
+						PropertyClass = new Key("PC-Type", "1"),
+						Value = "OMG:UML:2.5.1:" + GetUmlDiagramTypeFromEaType(diagram.Type),
+						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID + "_TYPE"),
+						ChangedAt = diagram.ModifiedDate,
+						ChangedBy = diagram.Author
+					}
+					);
+
+				#endregion
+
+				ElementResource diagramResource = new ElementResource
+				{
+					Resource = result,
+					EaGUID = diagram.DiagramGUID,
+					Key = new Key(specIfID, revision)
+				};
+
+				// shows statements
+
+				CachedDiagramDataProvider cachedDiagramDataProvider = new CachedDiagramDataProvider(_repository);
+
+				List<int> elementIDs = cachedDiagramDataProvider.GetShownElementIDs(diagram.DiagramID);
+
+				foreach (int elementID in elementIDs)
+				{
+					EAAPI.Element elementOnDiagram = _repository.GetElementByID(elementID);
+
+					if (elementOnDiagram != null)
+					{
+						Key elementOnDiagramKey = GetKeyForElement(elementOnDiagram);
+
+						Statement showsStatement = GetShowsStatementFromSpecIfID(diagramResource.Key, elementOnDiagramKey);
+
+						diagramResource.ImplicitElementsStatements.Add(showsStatement);
+					}
+
+				}
+
+			}
+			return result;
+		}
+
+		private Statement GetClassifierStatement(Resource classifier, Resource classifiedResource)
         {
             Statement result = null;
 
-			string statementID = classifiedResource.ID + "_INSTANCEOF_" + classifier.ID;
-
-			// rdf:type statement
-			result = new Statement()
-            {
-				ID = statementID,
-				Revision = "1",
-                Title = new Value("rdf:type"),
-                Class = new Key("SC-Classifier", "1"),
-                StatementSubject = new Key(classifiedResource.ID, classifiedResource.Revision),
-                StatementObject = new Key(classifier.ID, classifier.Revision)
-            };
+			
 
 
             return result;
         }
 
-		private Statement GetSatisfiesStatement(Resource subjectResource, Resource objectResource)
+		private Statement GetSatisfiesStatement(Key subjectResource, Key objectResource)
 		{
 			Statement result;
 
@@ -1993,6 +2322,87 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			return result;
 		}
 
+		private Statement GetWritesStatement(Key subjectID, Key objectID)
+		{
+			Statement result = null;
+
+			string statementID = subjectID.ID + "_WRITES_" + objectID.ID;
+
+			// SpecIF:shows statement
+			result = new Statement()
+			{
+				ID = statementID,
+				Revision = "1",
+				Title = new Value("SpecIF:writes"),
+				Class = new Key("SC-writes", "1"),
+				StatementSubject = new Key(subjectID.ID, subjectID.Revision),
+				StatementObject = new Key(objectID.ID, objectID.Revision)
+			};
+
+			return result;
+		}
+
+		private Statement GetReadsStatement(Key subjectID, Key objectID)
+		{
+			Statement result = null;
+
+			string statementID = subjectID.ID + "_READS_" + objectID.ID;
+
+			// SpecIF:shows statement
+			result = new Statement()
+			{
+				ID = statementID,
+				Revision = "1",
+				Title = new Value("SpecIF:reads"),
+				Class = new Key("SC-reads", "1"),
+				StatementSubject = new Key(subjectID.ID, subjectID.Revision),
+				StatementObject = new Key(objectID.ID, objectID.Revision)
+			};
+
+			return result;
+		}
+
+		private Statement GetStoresStatement(Key subjectID, Key objectID)
+		{
+			Statement result = null;
+
+			string statementID = subjectID.ID + "_STORES_" + objectID.ID;
+
+			// SpecIF:shows statement
+			result = new Statement()
+			{
+				ID = statementID,
+				Revision = "1",
+				Title = new Value("SpecIF:stores"),
+				Class = new Key("SC-stores", "1"),
+				StatementSubject = new Key(subjectID.ID, subjectID.Revision),
+				StatementObject = new Key(objectID.ID, objectID.Revision)
+			};
+
+			return result;
+		}
+
+		private Statement GetRefinesStatement(Key subjectID, Key objectID)
+		{
+			Statement result = null;
+
+			string statementID = subjectID.ID + "_REFINES_" + objectID.ID;
+
+			// IREB:refines statement
+			result = new Statement()
+			{
+				ID = statementID,
+				Revision = "1",
+				Title = new Value("IREB:refines"),
+				Class = new Key("SC-refines", "1"),
+				StatementSubject = new Key(subjectID.ID, subjectID.Revision),
+				StatementObject = new Key(objectID.ID, objectID.Revision)
+			};
+
+			return result;
+		}
+
+
 		private List<Statement> GetSubelementStatements(EAAPI.Element eaElement, Key elementResource)
 		{
 			List<Statement> result = new List<Statement>();
@@ -2035,6 +2445,70 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				result.Add(attributeReferenceStatement);
 
 			} // for
+
+			return result;
+		}
+
+		private Statement GetClassifierStatement(EAAPI.Element element)
+        {
+			Statement result = null;
+
+			string elementType = element.Type;
+
+			string specIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(element.ElementGUID);
+			string specifRevision = EaDateToRevisionConverter.ConvertDateToRevision(element.Modified);
+			// classifier
+
+			int classifierID = 0;
+
+			if (elementType == "Port" || elementType == "Part" || elementType == "ActionPin" || elementType == "ActivityParameter")
+			{
+				classifierID = element.PropertyType;
+			}
+			else
+			{
+				classifierID = element.ClassifierID;
+			}
+
+			if (classifierID != 0)
+			{
+
+				EAAPI.Element classifierElement = element.GetClassifier(_repository);
+
+				string classifierSpecIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(classifierElement.ElementGUID);
+				string classifierRevision = EaDateToRevisionConverter.ConvertDateToRevision(classifierElement.Modified);
+
+				string statementID = specIfID + "_INSTANCEOF_" + classifierSpecIfID;
+
+				// rdf:type statement
+				result = new Statement()
+				{
+					ID = statementID,
+					Revision = "1",
+					Title = new Value("rdf:type"),
+					Class = new Key("SC-Classifier", "1"),
+					StatementSubject = new Key(specIfID, specifRevision),
+					StatementObject = new Key(classifierSpecIfID, classifierRevision)
+				};
+
+			}
+
+			return result;
+		}
+
+		private Statement GetClassifierStatement(Key instanceKey, Key classifierKey)
+        {
+			string statementID = instanceKey.ID + "_INSTANCEOF_" + classifierKey.ID;
+
+			Statement result = new Statement()
+			{
+				ID = statementID,
+				Revision = "1",
+				Title = new Value("rdf:type"),
+				Class = new Key("SC-Classifier", "1"),
+				StatementSubject = instanceKey,
+				StatementObject = classifierKey
+			};
 
 			return result;
 		}
@@ -2326,6 +2800,29 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			return result;
 		}
 
+		private Key GetKeyForElement(EAAPI.Element eaElement)
+        {
+			Key result;
+
+			string id = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID);
+			string revision = EaDateToRevisionConverter.ConvertDateToRevision(eaElement.Modified);
+
+			result = new Key(id, revision);
+
+			return result;
+        }
+
+		private Key GetKeyForDiagram(EAAPI.Diagram diagram)
+		{
+			Key result;
+
+			string id = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID);
+			string revision = EaDateToRevisionConverter.ConvertDateToRevision(diagram.ModifiedDate);
+
+			result = new Key(id, revision);
+
+			return result;
+		}
 
 		private void InitializePrimitiveTypes()
 		{

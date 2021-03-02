@@ -1,33 +1,32 @@
 ﻿using MDD4All.SpecIF.DataModels;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using EAAPI = EA;
 using MDD4All.EnterpriseArchitect.Manipulations;
-using MDD4All.SpecIF.DataProvider.WebAPI;
 using MDD4All.SpecIF.DataIntegrator.EA.Extensions;
 using MDD4All.SpecIF.DataProvider.Contracts;
-using MDD4All.SpecIF.DataModels.RightsManagement;
 using MDD4All.SpecIF.DataProvider.EA.Converters;
-using MDD4All.SpecIF.DataProvider.Jira;
 using MDD4All.SpecIF.DataModels.Manipulation;
+using NLog;
 
 namespace MDD4All.SpecIF.DataIntegrator.EA
 {
     public class ProjectIntegrator
     {
-        
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
         private static bool _searchesDefined = false;
 
         private EAAPI.Repository _repository;
         private ISpecIfMetadataReader _metadataReader;
-        
+        private ISpecIfDataReader _specIfDataReader;
 
-        public ProjectIntegrator(EAAPI.Repository repository, ISpecIfMetadataReader metadataReader)
+        public ProjectIntegrator(EAAPI.Repository repository, 
+                                 ISpecIfMetadataReader metadataReader,
+                                 ISpecIfDataReader specIfDataReader)
         {
             _repository = repository;
             _metadataReader = metadataReader;
-        
+            _specIfDataReader = specIfDataReader;
 
             AddSearches();
         }
@@ -42,11 +41,7 @@ namespace MDD4All.SpecIF.DataIntegrator.EA
 
                 if(!string.IsNullOrEmpty(apiURL))
                 {
-                    SpecIfWebApiDataReader webApiDataReader = new SpecIfWebApiDataReader(apiURL);
-
-                    List<ProjectDescriptor> projectDescriptors = webApiDataReader.GetProjectDescriptions();
-
-                    
+                    List<ProjectDescriptor> projectDescriptors = _specIfDataReader.GetProjectDescriptions();
 
                     foreach (ProjectDescriptor projectDescriptor in projectDescriptors)
                     {
@@ -88,9 +83,9 @@ namespace MDD4All.SpecIF.DataIntegrator.EA
 
                     if(!string.IsNullOrEmpty(apiURL) && !string.IsNullOrEmpty(projectID))
                     {
-                        SpecIfWebApiDataReader webApiDataReader = new SpecIfWebApiDataReader(apiURL);
+                        
 
-                        List<Node> hierarchyRoots = webApiDataReader.GetAllHierarchyRootNodes(projectID);
+                        List<Node> hierarchyRoots = _specIfDataReader.GetAllHierarchyRootNodes(projectID);
 
                         foreach (Node rootNode in hierarchyRoots)
                         {
@@ -111,7 +106,7 @@ namespace MDD4All.SpecIF.DataIntegrator.EA
                                 hierarchyRootPackage = projectPackage.AddChildPackage("New Hierarchy");
                             }
 
-                            Resource hierarchyRootResource = webApiDataReader.GetResourceByKey(rootNode.ResourceReference);
+                            Resource hierarchyRootResource = _specIfDataReader.GetResourceByKey(rootNode.ResourceReference);
 
                             if(hierarchyRootResource != null)
                             {
@@ -144,13 +139,11 @@ namespace MDD4All.SpecIF.DataIntegrator.EA
 
                         if(!string.IsNullOrEmpty(apiURL) && !string.IsNullOrEmpty(hierarchyID))
                         {
-                            SpecIfWebApiDataReader webApiDataReader = new SpecIfWebApiDataReader(apiURL);
-
-                            Node hierarchy = webApiDataReader.GetHierarchyByKey(new Key(hierarchyID));
+                            Node hierarchy = _specIfDataReader.GetHierarchyByKey(new Key(hierarchyID));
 
                             if(hierarchy != null)
                             {
-                                SynchronizeHierarchyResourcesRecusrively(hierarchy, hierarchyPackage.Element, webApiDataReader);
+                                SynchronizeHierarchyResourcesRecusrively(hierarchy, hierarchyPackage.Element);
                             }
 
                         }
@@ -159,18 +152,15 @@ namespace MDD4All.SpecIF.DataIntegrator.EA
             }
         }
 
-        private void SynchronizeHierarchyResourcesRecusrively(Node currentNode, EAAPI.Element parentElement, 
-                                                              ISpecIfDataReader dataReader)
+        private void SynchronizeHierarchyResourcesRecusrively(Node currentNode, EAAPI.Element parentElement)
         {
-
-            Resource resource = dataReader.GetResourceByKey(currentNode.ResourceReference);
+            Resource resource = _specIfDataReader.GetResourceByKey(currentNode.ResourceReference);
 
             if (resource != null)
             {
+                EAAPI.Element eaSpecIfElement = null;
 
                 EAAPI.Collection searchResult = _repository.GetElementsByQuery("SpecIfElement", currentNode.ResourceReference.ID);
-
-                EAAPI.Element eaSpecIfElement;
 
                 if (searchResult.Count > 0)
                 {
@@ -183,36 +173,52 @@ namespace MDD4All.SpecIF.DataIntegrator.EA
                         eaSpecIfElement.SetRequirementDataFromSpecIF(resource, _metadataReader);
                     }
                 }
-                else
+                // if an EA GUID is available in the alternative IDs, try to synchronize existing element by using the EA GUID.
+                else if (resource.AlternativeIDs != null && resource.AlternativeIDs.Count > 0)
+                {
+                    foreach (AlternativeId alternativeId in resource.AlternativeIDs)
+                    {
+                        if (alternativeId.Project != null && alternativeId.Project.StartsWith("Enterprise Architect"))
+                        {
+                            if (!string.IsNullOrEmpty(alternativeId.ID) && alternativeId.ID.StartsWith("{"))
+                            {
+                                eaSpecIfElement = _repository.GetElementByGuid(alternativeId.ID);
+                                break;
+                            }
+                        }
+                    }
+
+                    if (eaSpecIfElement != null)
+                    {
+                        eaSpecIfElement.SetRequirementDataFromSpecIF(resource, _metadataReader);
+                    }
+                    
+                }
+
+                // if no element was found by SpecIF ID and by alternative ID, add a new element
+                if (eaSpecIfElement == null)
                 {
                     ResourceToElementConverter resourceToElementConverter = new ResourceToElementConverter();
 
                     resourceToElementConverter.AddResource(parentElement, resource, _repository, _metadataReader);
                 }
 
-                foreach(Node childNode in currentNode.Nodes)
+                foreach (Node childNode in currentNode.Nodes)
                 {
-                    SynchronizeHierarchyResourcesRecusrively(childNode, parentElement, dataReader);
+                    SynchronizeHierarchyResourcesRecusrively(childNode, parentElement);
                 }
             }
         }
 
-        public Resource AddRequirementToSpecIF(string url, LoginData loginData, EAAPI.Element reqiuirement, string projectID)
+        public Resource AddRequirementToSpecIF(ISpecIfDataWriter requirementWriter, EAAPI.Element reqiuirement, string projectID)
         {
             Resource result = null;
 
-            SpecIfWebApiDataReader specIfWebApiDataReader = new SpecIfWebApiDataReader(url);
+            EaUmlToSpecIfConverter eaToSpecIfConverter = new EaUmlToSpecIfConverter(_repository, _metadataReader);
 
-            
-            SpecIfWebApiDataWriter webApiDataWriter = new SpecIfWebApiDataWriter(url, loginData, _metadataReader, specIfWebApiDataReader);
+            Resource resource = eaToSpecIfConverter.ConvertElement(reqiuirement);
 
-
-
-            EaToSpecIfConverter eaToSpecIfConverter = new EaToSpecIfConverter(_repository);
-
-            Resource resource = eaToSpecIfConverter.ConvertElementToResource(reqiuirement);
-
-            result = webApiDataWriter.SaveResource(resource, projectID);
+            result = requirementWriter.SaveResource(resource, projectID);
 
             if (result != null)
             {
@@ -220,7 +226,10 @@ namespace MDD4All.SpecIF.DataIntegrator.EA
                 reqiuirement.SetTaggedValueString("specifRevision", result.Revision, false);
                 string key = result.GetPropertyValue("dcterms:identifier", _metadataReader);
 
-                reqiuirement.SetTaggedValueString("identifier", key, false);
+                reqiuirement.SetTaggedValueString("Identifier", key, false);
+
+                
+
             }
 
             return result;

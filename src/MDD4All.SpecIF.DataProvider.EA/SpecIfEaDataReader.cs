@@ -185,7 +185,7 @@ namespace MDD4All.SpecIF.DataProvider.EA
 
             //result = allHierarchies;
 
-            result.Add(_eaUmlToSpecIfConverter.GetHierarchy().Nodes[0]);
+            result.Add(_eaUmlToSpecIfConverter.GetHierarchy());
 
             return result;
         }

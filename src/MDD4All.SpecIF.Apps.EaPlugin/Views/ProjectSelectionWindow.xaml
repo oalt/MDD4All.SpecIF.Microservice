@@ -5,13 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MDD4All.SpecIF.Apps.EaPlugin.Views"
         xmlns:viewModels="clr-namespace:MDD4All.SpecIF.Apps.EaPlugin.ViewModels"
-        d:DataContext="{d:DesignInstance viewModels:ProjectSelectionViewModel, IsDesignTimeCreatable=True}"
         mc:Ignorable="d"
-        Title="Select a project..." 
+        Title="Select a SpecIF project..." 
         Height="200"
         Width="800"
         WindowStartupLocation="CenterScreen"
-        WindowStyle="SingleBorderWindow">
+        WindowStyle="SingleBorderWindow" ResizeMode="NoResize"
+        >
     
     <Grid Margin="0"
           VerticalAlignment="Stretch">
@@ -37,17 +37,28 @@
                FontSize="18"/>
 
             <ComboBox Grid.Row="0"
-                  Grid.Column="1"
+                      Grid.Column="1"
                       Margin="5"
-                  ItemsSource="{Binding Projects}"
-                  SelectedItem="{Binding SelectedProject}"/>
+                      ItemsSource="{Binding Projects}"
+                      SelectedItem="{Binding SelectedProject}"
+                      VerticalAlignment="Center">
+
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Title}"
+                                       FontSize="16"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
 
 
         </Grid>
         <Grid Grid.Row="1"
-                  Grid.Column="0"
-                  Grid.ColumnSpan="2"
-                  Margin="0">
+              Grid.Column="0"
+              Grid.ColumnSpan="2"
+              Margin="0">
             
             <Grid.RowDefinitions>
                 <RowDefinition />
@@ -59,15 +70,17 @@
             </Grid.ColumnDefinitions>
 
             <Button Content="Ok"
-                        Grid.Row="0"
-                        Grid.Column="0" 
+                    Grid.Row="0"
+                    Grid.Column="0" 
                     Margin="5"
+                    IsDefault="True"
                     Command="{Binding OkCommand}"/>
 
             <Button Content="Cancel"
-                        Grid.Row="0"
-                        Grid.Column="1"
+                    Grid.Row="0"
+                    Grid.Column="1"
                     Margin="5" 
+                    IsCancel="True"
                     Command="{Binding CancelCommand}"/>
         </Grid>
     </Grid>

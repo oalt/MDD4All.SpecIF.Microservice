@@ -1,43 +1,56 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using MDD4All.EnterpriseArchitect.Manipulations;
 using MDD4All.SpecIF.Apps.EaPlugin.Views;
 using MDD4All.SpecIF.DataIntegrator.EA;
 using MDD4All.SpecIF.DataModels;
-using MDD4All.SpecIF.DataModels.RightsManagement;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using MDD4All.SpecIF.DataProvider.File;
-using MDD4All.SpecIF.DataModels.Manipulation;
 using System;
-using System.Collections.ObjectModel;
 using System.Windows.Forms;
 using System.Windows.Input;
 using EAAPI = EA;
 using EADM = MDD4All.EAFacade.DataModels.Contracts;
 using System.Collections.Generic;
 using MDD4All.EAFacade.DataAccess.Cached;
+using MDD4All.SpecIF.Apps.EaPlugin.Configuration;
+using GalaSoft.MvvmLight.Ioc;
+using MDD4All.Configuration.Contracts;
+using MDD4All.Configuration.Views;
+using NLog;
 
 namespace MDD4All.SpecIF.Apps.EaPlugin.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
         private EAAPI.Repository _repository;
 
         private ISpecIfMetadataReader _metadataReader;
-
-        private ISpecIfDataReader _dataReader;
+        private ISpecIfDataReader _specIfDataReader;
+        private ISpecIfDataWriter _requirementMasterDataWriter;
 
         private ProjectIntegrator _projectIntegrator;
 
-        public ObservableCollection<ProjectDescriptor> Projects { get; set; } = new ObservableCollection<ProjectDescriptor>();
+        private SpecIfPluginConfiguration _configuration;
 
         public MainViewModel(EAAPI.Repository repository,
-                             ISpecIfMetadataReader metadataReader)
+                             ISpecIfMetadataReader metadataReader,
+                             ISpecIfDataReader specIfDataReader,
+                             ISpecIfDataWriter requirementMasterDataWriter)
         {
             _repository = repository;
             _metadataReader = metadataReader;
+            _specIfDataReader = specIfDataReader;
+            _requirementMasterDataWriter = requirementMasterDataWriter;
 
-            _projectIntegrator = new ProjectIntegrator(_repository, _metadataReader);
+            _repository.CreateOutputTab("SpecIF");
+
+            _repository.EnsureOutputVisible("SpecIF");
+
+            _projectIntegrator = new ProjectIntegrator(_repository, 
+                                                       _metadataReader,
+                                                       _specIfDataReader);
 
             ExportToSpecIfCommand = new RelayCommand(ExecuteExportToSpecIfCommand);
             SynchronizeProjectRootsCommand = new RelayCommand(ExecuteSynchronizeProjectRoots);
@@ -46,35 +59,16 @@ namespace MDD4All.SpecIF.Apps.EaPlugin.ViewModels
             NewRequirementCreationRequestedCommand = new RelayCommand(ExecuteNewRequirementCreationRequested);
             AddSingleRequirementToSpecIfCommand = new RelayCommand(ExecuteAddSingleRequirementToSpecIF);
             AddSpecificationToSpecIfCommand = new RelayCommand(ExecuteAddSpecificationToSpecIF);
-        }
+            EditSettingsCommand = new RelayCommand(ExecuteEditSettings);
+            OpenJiraViewCommand = new RelayCommand<string>(ExecuteOpenJiraView);
 
-        
-
-        public string GetSpecIfRepositoryURL()
-        {
-            string result = null;
-
-            EAAPI.Collection searchResult = _repository.GetElementsByQuery("SpecIfIntegrationPackage", "");
-
-            EAAPI.Element packageElement;
-
-            if (searchResult.Count > 0)
+            IConfigurationReaderWriter<SpecIfPluginConfiguration> configurationReaderWriter = SimpleIoc.Default.GetInstance<IConfigurationReaderWriter<SpecIfPluginConfiguration>>();
+            
+            if(configurationReaderWriter != null)
             {
-                try
-                {
-                    packageElement = searchResult.GetAt(0) as EAAPI.Element;
-
-                    result = packageElement.GetTaggedValueString("specifApiUrl");
-                }
-                catch
-                {
-
-                }
+                _configuration = configurationReaderWriter.GetConfiguration();
             }
-
-            return result;
         }
-
 
         public ICommand ExportToSpecIfCommand { get; private set; }
         public ICommand SynchronizeProjectRootsCommand { get; private set; }
@@ -83,6 +77,8 @@ namespace MDD4All.SpecIF.Apps.EaPlugin.ViewModels
         public ICommand NewRequirementCreationRequestedCommand { get; private set; }
         public ICommand AddSingleRequirementToSpecIfCommand { get; private set; }
         public ICommand AddSpecificationToSpecIfCommand { get; private set; }
+        public ICommand EditSettingsCommand { get; private set; }
+        public ICommand OpenJiraViewCommand { get; private set; }
 
         private void ExecuteExportToSpecIfCommand()
         {
@@ -133,26 +129,18 @@ namespace MDD4All.SpecIF.Apps.EaPlugin.ViewModels
 
         private void ExecuteSynchronizeHierarchyResources()
         {
+            logger.Info("Starting synchonization...");
             _projectIntegrator.SynchronizeHierarchyResources();
+            logger.Info("Synchonization finished.");
         }
 
         private void ExecuteNewRequirementCreationRequested()
         {
-            ProjectSelectionViewModel projectSelectionViewModel = new ProjectSelectionViewModel();
+            ProjectDescriptor project = ExecuteSelectProject();
 
-            projectSelectionViewModel.Projects = Projects;
-
-            ProjectSelectionWindow projectSelectionWindow = new ProjectSelectionWindow();
-            projectSelectionWindow.DataContext = projectSelectionViewModel;
-
-            bool? dialogResult = projectSelectionWindow.ShowDialog();
-
-            if(dialogResult != null && dialogResult == true)
+            if(project != null)
             {
-                if(projectSelectionViewModel.SelectedProject != null)
-                {
 
-                }
             }
         }
 
@@ -165,18 +153,25 @@ namespace MDD4All.SpecIF.Apps.EaPlugin.ViewModels
 
             EAAPI.Element element = selectedItem as EAAPI.Element;
 
-            string apiUrl = GetSpecIfRepositoryURL();
+            ProjectDescriptor project = ExecuteSelectProject();
 
-            // TODO project id
+            if (project != null)
+            {
+                _repository.WriteOutput("SpecIF", "Integrating requirement " + element.Name + "...", element.ElementID);
+                Resource repositoryResource = _projectIntegrator.AddRequirementToSpecIF(_requirementMasterDataWriter, element, project.ID);
 
-            // TODO login data to config file
+                if(repositoryResource == null)
+                {
+                    _repository.WriteOutput("SpecIF", "Error integrating requirement.", element.ElementID);
+                }
+                else
+                {
+                    _repository.WriteOutput("SpecIF", "Finished.", 0);
+                }
 
-            LoginData loginData = new LoginData();
+            }
 
-            loginData.UserName = "olli";
-            loginData.Password = "password";
-
-            Resource repositoryResource = _projectIntegrator.AddRequirementToSpecIF(apiUrl, loginData, element, "_d383255183995289153c412de3b5bffda9bcf45b_10000");
+            
           
         }
 
@@ -192,12 +187,89 @@ namespace MDD4All.SpecIF.Apps.EaPlugin.ViewModels
 
                 List<EADM.Element> linearElementList = eaCacheDataProvider.GetSpecificationElementList(cachedSpecification);
 
-                List<EADM.Element> cachedRequirements = linearElementList.FindAll(el => el.Type == "Requirement" && !el.TaggedValues.Exists(tv => tv.Name == "specifId"));
+                List<EADM.Element> cachedRequirements = linearElementList.FindAll(el => el.Type == "Requirement" && 
+                                                                                  !el.TaggedValues.Exists(tv => tv.Name == "specifId"));
 
-                // TODO Add data to SpecIF
+                if(cachedRequirements.Count > 0)
+                {
+                    ProjectDescriptor project = ExecuteSelectProject();
+
+                    if(project != null)
+                    {
+                        bool error = false;
+
+                        foreach (EADM.Element cachedElement in cachedRequirements)
+                        {
+                            EAAPI.Element element = _repository.GetElementByID(cachedElement.ElementID);
+
+                            if(element != null)
+                            {
+                                _repository.WriteOutput("SpecIF", "Integrating requirement " + cachedElement.Name + "...", cachedElement.ElementID);
+                                Resource repositoryResource = _projectIntegrator.AddRequirementToSpecIF(_requirementMasterDataWriter, element, project.ID);
+                                if(repositoryResource == null)
+                                {
+                                    _repository.WriteOutput("SpecIF", "Error integrating requirement. Abort.", cachedElement.ElementID);
+                                    error = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if(!error)
+                        {
+                            _repository.WriteOutput("SpecIF", "Integration finished.", 0);
+                        }
+                    }
+                }
 
             }
         }
 
+        private void ExecuteEditSettings()
+        {
+            PropertyDialog propertyDialog = new PropertyDialog();
+
+            propertyDialog.SetPropertyData(_configuration);
+
+            propertyDialog.ShowDialog();
+
+            IConfigurationReaderWriter<SpecIfPluginConfiguration> configurationReaderWriter = SimpleIoc.Default.GetInstance<IConfigurationReaderWriter<SpecIfPluginConfiguration>>();
+
+            if (configurationReaderWriter != null)
+            {
+                configurationReaderWriter.StoreConfiguration(_configuration);
+            }
+
+        }
+
+        private ProjectDescriptor ExecuteSelectProject()
+        {
+            ProjectDescriptor result = null;
+
+            ProjectSelectionWindow projectSelectionWindow = new ProjectSelectionWindow();
+
+            ProjectSelectionViewModel projectSelectionViewModel = new ProjectSelectionViewModel(_specIfDataReader, projectSelectionWindow);
+
+            projectSelectionWindow.DataContext = projectSelectionViewModel;
+
+            bool? dialogResult = projectSelectionWindow.ShowDialog();
+
+            if (dialogResult != null && dialogResult == true)
+            {
+                if (projectSelectionViewModel.SelectedProject != null)
+                {
+                    result = projectSelectionViewModel.SelectedProject.ProjectDescriptor;
+                }
+            }
+
+            return result;
+        }
+
+        private void ExecuteOpenJiraView(string url)
+        {
+            //JiraIssueBrowswerWindow jiraIssueBrowswerWindow = new JiraIssueBrowswerWindow();
+            //jiraIssueBrowswerWindow.ShowDialog();
+            System.Diagnostics.Process.Start("https://karlmayer.atlassian.net/browse/WIN-1");
+        }
     }
 }

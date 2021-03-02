@@ -34,6 +34,16 @@ namespace MDD4All.SpecIF.DataIntegrator.EA.Extensions
             eaRequirement.SetTaggedValueString("specifRevision", resource.Revision, false);
 
             eaRequirement.SetTaggedValueString("Identifier", identifier, false);
+
+            string perspective = resource.GetPropertyValue("SpecIF:Perspective", metadataReader);
+
+            if (!string.IsNullOrEmpty(perspective))
+            {
+                if (perspective == "V-perspective-1")
+                {
+                    eaRequirement.SetTaggedValueString("Perspective", "User");
+                }
+            }
         }
 
         public static void SetProjectDataFromSpecIF(this EAAPI.Package projectPackage,

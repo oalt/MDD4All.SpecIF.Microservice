@@ -1,7 +1,14 @@
-﻿using MDD4All.EnterpriseArchitect.Manipulations;
+﻿using GalaSoft.MvvmLight.Ioc;
+using MDD4All.Configuration;
+using MDD4All.Configuration.Contracts;
+using MDD4All.EnterpriseArchitect.Logging;
+using MDD4All.EnterpriseArchitect.Manipulations;
+using MDD4All.SpecIF.Apps.EaPlugin.Configuration;
 using MDD4All.SpecIF.Apps.EaPlugin.ViewModels;
 using MDD4All.SpecIF.DataProvider.Contracts;
-using MDD4All.SpecIF.DataProvider.MongoDB;
+using MDD4All.SpecIF.DataProvider.File;
+using MDD4All.SpecIF.DataProvider.Jira;
+using NLog;
 using System.Collections.Generic;
 using System.Net;
 using EAAPI = EA;
@@ -10,9 +17,11 @@ namespace MDD4All.SpecIF.Apps.EaPlugin
 {
     public class SpecIfPlugin
     {
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
         private const string MAIN_MENU = "-&SpecIF";
 
-        private const string EXPORT_MENU = "&Export to SpecIF...";
+        //private const string EXPORT_MENU = "&Export to SpecIF...";
 
         private const string SYNC_PROJECT_ROOTS_MENU = "&Synchronize project roots";
 
@@ -24,35 +33,67 @@ namespace MDD4All.SpecIF.Apps.EaPlugin
 
         private const string ADD_SPECIFICATION_TO_SPECIF_MENU = "Add specification to SpecIF repository";
 
-        private const string ABOUT_MENU = "&About FMC4SE...";
+        private const string EDIT_SETTINGS_MENU = "&Edit Plugin Settings";
 
         private MainViewModel _mainViewModel;
 
-        private string _specIfURL = "";
+        private SpecIfPluginConfiguration _configuration;
 
-        
+        private ISpecIfMetadataReader _specIfMetadataReader;
+        private ISpecIfDataReader _specIfDataReader;
+        private ISpecIfDataWriter _specIfRequirementDataWriter;
 
         public string EA_Connect(EAAPI.Repository repository)
         {
             ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 
-            
+            SimpleIoc.Default.Register<IConfigurationReaderWriter<SpecIfPluginConfiguration>, FileConfigurationReaderWriter<SpecIfPluginConfiguration>>();
+
+            IConfigurationReaderWriter<SpecIfPluginConfiguration> configurationReaderWriter = SimpleIoc.Default.GetInstance<IConfigurationReaderWriter<SpecIfPluginConfiguration>>();
+
+            if (configurationReaderWriter != null)
+            {
+                _configuration = configurationReaderWriter.GetConfiguration();
+
+                if(_configuration == null)
+                {
+                    _configuration = new SpecIfPluginConfiguration();
+                    configurationReaderWriter.StoreConfiguration(_configuration);
+                }
+            }
+
+            _mainViewModel = new MainViewModel(repository, null, null, null);
 
             return "";
         }
 
         public void EA_FileOpen(EAAPI.Repository repository)
         {
-            ISpecIfMetadataReader metadataReader = new SpecIfMongoDbMetadataReader("mongodb://localhost:27017");
+            EaPluginNlogConfigurator.InitializePluginLogging(repository, "SpecIF");
 
-            _mainViewModel = new MainViewModel(repository, metadataReader);
+            
+            _specIfMetadataReader = new SpecIfFileMetadataReader(_configuration.SpecIfMetadataDirectory);
+            _specIfDataReader = new SpecIfJiraDataReader(_configuration.JiraURL,
+                                                         _configuration.JiraUserName,
+                                                         _configuration.JiraApiKey,
+                                                         _specIfMetadataReader);
 
-            _specIfURL = _mainViewModel.GetSpecIfRepositoryURL();
+            _specIfRequirementDataWriter = new SpecIfJiraDataWriter(_configuration.JiraURL,
+                                                         _configuration.JiraUserName,
+                                                         _configuration.JiraApiKey,
+                                                         _specIfMetadataReader,
+                                                         _specIfDataReader);
+
+            _mainViewModel = new MainViewModel(repository, 
+                                               _specIfMetadataReader,
+                                               _specIfDataReader,
+                                               _specIfRequirementDataWriter);
         }
 
         public object EA_GetMenuItems(EAAPI.Repository repository,
-                                      string location, string menuName)
+                                      string location, 
+                                      string menuName)
         {
 
             object result = "";
@@ -86,8 +127,8 @@ namespace MDD4All.SpecIF.Apps.EaPlugin
                 case MAIN_MENU:
                     if (location == "TreeView")
                     {
-                        menuEntries.Add(EXPORT_MENU);
-                        menuEntries.Add("-");
+                        //menuEntries.Add(EXPORT_MENU);
+                        //menuEntries.Add("-");
                         menuEntries.Add(SYNC_PROJECT_ROOTS_MENU);
                         menuEntries.Add(SYNC_HIERARHY_ROOTS_MENU);
                         menuEntries.Add(SYNC_HIERARHY_MENU);
@@ -95,7 +136,7 @@ namespace MDD4All.SpecIF.Apps.EaPlugin
                         if(selectedElement != null && 
                             selectedElement.Type == "Requirement" && 
                             selectedElement.Stereotype == "fmcreq" &&
-                            !string.IsNullOrEmpty(_specIfURL) &&
+                            !string.IsNullOrEmpty(_configuration.JiraURL) &&
                             string.IsNullOrEmpty(selectedElement.GetTaggedValueString("specifId")))
                         {
                             menuEntries.Add("-");
@@ -109,6 +150,12 @@ namespace MDD4All.SpecIF.Apps.EaPlugin
                             menuEntries.Add("-");
                             menuEntries.Add(ADD_SPECIFICATION_TO_SPECIF_MENU);
                         }
+
+                        
+                    }
+                    else if(location == "MainMenu")
+                    {
+                        menuEntries.Add(EDIT_SETTINGS_MENU);
                     }
                     result = menuEntries.ToArray();
                 break;
@@ -117,41 +164,41 @@ namespace MDD4All.SpecIF.Apps.EaPlugin
             return result;
         }
 
-        public void EA_GetMenuState(EAAPI.Repository Repository, 
-                                    string Location, 
-                                    string MenuName, 
-                                    string ItemName, 
-                                    ref bool IsEnabled, 
-                                    ref bool IsChecked)
+        public void EA_GetMenuState(EAAPI.Repository repository, 
+                                    string location, 
+                                    string menuName, 
+                                    string itemName, 
+                                    ref bool isEnabled, 
+                                    ref bool isChecked)
         {
-            IsEnabled = false;
+            isEnabled = false;
 
-            switch (ItemName)
+            switch (itemName)
             {
 
-                case EXPORT_MENU:
-                    IsEnabled = true;
-                    break;
+                //case EXPORT_MENU:
+                //    isEnabled = true;
+                //    break;
 
                 default:
-                    IsEnabled = true;
+                    isEnabled = true;
                     break;
             }
 
 
         }
 
-        public void EA_MenuClick(EAAPI.Repository Repository, string Location, string MenuName, string ItemName)
+        public void EA_MenuClick(EAAPI.Repository repository, string location, string menuName, string itemName)
         {
             if (_mainViewModel != null)
             {
-
-                switch (ItemName)
+                
+                switch (itemName)
                 {
 
-                    case EXPORT_MENU:
-                        _mainViewModel.ExportToSpecIfCommand.Execute(null);
-                        break;
+                    //case EXPORT_MENU:
+                    //    _mainViewModel.ExportToSpecIfCommand.Execute(null);
+                    //    break;
 
                     case SYNC_PROJECT_ROOTS_MENU:
                         _mainViewModel.SynchronizeProjectRootsCommand.Execute(null);
@@ -179,11 +226,38 @@ namespace MDD4All.SpecIF.Apps.EaPlugin
                 }
             }
 
+            switch(itemName)
+            {
+                case EDIT_SETTINGS_MENU:
+                    _mainViewModel.EditSettingsCommand.Execute(null);
+                    break;
+            }
+
         }
 
         public void EA_OnNotifyContextItemModified(EAAPI.Repository repository, string guid, EAAPI.ObjectType objectType)
         {
             ;
+        }
+
+        public bool EA_OnContextItemDoubleClicked(EAAPI.Repository repopsitory, string guid, EAAPI.ObjectType objectType)
+        {
+            bool result = false;
+
+            if (objectType == EAAPI.ObjectType.otElement && _mainViewModel != null)
+            {
+                EAAPI.Element element = repopsitory.GetElementByGuid(guid);
+
+                if (element.Type == "Requirement")
+                {
+
+                    _mainViewModel.OpenJiraViewCommand.Execute(guid);
+                    result = true;
+                }
+            }
+
+            return result;
+
         }
 
         public bool EA_OnPreNewElement(EAAPI.Repository repository, EAAPI.EventProperties properties)
@@ -215,5 +289,7 @@ namespace MDD4All.SpecIF.Apps.EaPlugin
 
             return result;
         }
+
+        
     }
 }
