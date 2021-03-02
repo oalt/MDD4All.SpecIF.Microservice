@@ -82,8 +82,8 @@
     <Reference Include="MDD4All.MongoDB.DataAccess.Generic, Version=2.0.0.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MDD4All.MongoDB.DataAccess.Generic.2.0.0.3\lib\netstandard2.0\MDD4All.MongoDB.DataAccess.Generic.dll</HintPath>
     </Reference>
-    <Reference Include="MDD4All.SpecIF.DataModels, Version=3.0.0.21, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MDD4All.SpecIF.DataModels.3.0.0.21\lib\netstandard2.0\MDD4All.SpecIF.DataModels.dll</HintPath>
+    <Reference Include="MDD4All.SpecIF.DataModels, Version=3.0.1.22, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MDD4All.SpecIF.DataModels.3.0.1.22\lib\netstandard2.0\MDD4All.SpecIF.DataModels.dll</HintPath>
     </Reference>
     <Reference Include="MDD4All.SpecIF.DataProvider.Contracts, Version=2.0.0.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MDD4All.SpecIF.DataProvider.Contracts.2.0.0.2\lib\netstandard2.0\MDD4All.SpecIF.DataProvider.Contracts.dll</HintPath>
@@ -255,9 +255,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
     <None Include="_Registry\RegisterAddin.reg" />
   </ItemGroup>

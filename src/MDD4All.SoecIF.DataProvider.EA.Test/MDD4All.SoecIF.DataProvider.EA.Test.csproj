@@ -73,8 +73,8 @@
     <Reference Include="MDD4All.EnterpriseArchitect.Manipulations, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MDD4All.EnterpriseArchitect.Manipulations.3.0.0.185\lib\netstandard2.0\MDD4All.EnterpriseArchitect.Manipulations.dll</HintPath>
     </Reference>
-    <Reference Include="MDD4All.SpecIF.DataModels, Version=3.0.0.21, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MDD4All.SpecIF.DataModels.3.0.0.21\lib\netstandard2.0\MDD4All.SpecIF.DataModels.dll</HintPath>
+    <Reference Include="MDD4All.SpecIF.DataModels, Version=3.0.1.22, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MDD4All.SpecIF.DataModels.3.0.1.22\lib\netstandard2.0\MDD4All.SpecIF.DataModels.dll</HintPath>
     </Reference>
     <Reference Include="MDD4All.SpecIF.DataProvider.Contracts, Version=2.0.0.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MDD4All.SpecIF.DataProvider.Contracts.2.0.0.2\lib\netstandard2.0\MDD4All.SpecIF.DataProvider.Contracts.dll</HintPath>
