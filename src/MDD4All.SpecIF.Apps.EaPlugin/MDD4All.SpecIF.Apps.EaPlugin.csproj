@@ -39,8 +39,8 @@
     <RegisterForComInterop>true</RegisterForComInterop>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CommonServiceLocator, Version=2.0.5.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
-      <HintPath>..\packages\CommonServiceLocator.2.0.5\lib\net46\CommonServiceLocator.dll</HintPath>
+    <Reference Include="CommonServiceLocator, Version=2.0.2.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommonServiceLocator.2.0.2\lib\net45\CommonServiceLocator.dll</HintPath>
     </Reference>
     <Reference Include="DnsClient, Version=1.3.1.0, Culture=neutral, PublicKeyToken=4574bb5573c51424, processorArchitecture=MSIL">
       <HintPath>..\packages\DnsClient.1.3.1\lib\net45\DnsClient.dll</HintPath>
@@ -54,12 +54,15 @@
     <Reference Include="GalaSoft.MvvmLight.Platform, Version=5.4.1.0, Culture=neutral, PublicKeyToken=5f873c45e98af8a1, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmLightLibs.5.4.1.1\lib\net45\GalaSoft.MvvmLight.Platform.dll</HintPath>
     </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.11.1.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.11.1\lib\Net45\HtmlAgilityPack.dll</HintPath>
+    </Reference>
     <Reference Include="Interop.EA">
       <HintPath>..\libs\Interop.EA.dll</HintPath>
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
-    <Reference Include="MDD4All.EAFacade.DataAccess.Cached, Version=2.1.0.207, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MDD4All.EAFacade.DataAccess.Cached.2.1.0.207\lib\netstandard2.0\MDD4All.EAFacade.DataAccess.Cached.dll</HintPath>
+    <Reference Include="MDD4All.EAFacade.DataAccess.Cached, Version=2.2.0.214, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MDD4All.EAFacade.DataAccess.Cached.2.2.0.214\lib\netstandard2.0\MDD4All.EAFacade.DataAccess.Cached.dll</HintPath>
     </Reference>
     <Reference Include="MDD4All.EAFacade.DataModels.Contracts, Version=2.1.0.183, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MDD4All.EAFacade.DataModels.Contracts.2.1.0.183\lib\netstandard2.0\MDD4All.EAFacade.DataModels.Contracts.dll</HintPath>
@@ -70,11 +73,32 @@
     <Reference Include="MDD4All.EnterpriseArchitect.DataModels.Contracts, Version=2.0.0.139, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MDD4All.EnterpriseArchitect.DataModels.Contracts.2.0.0.139\lib\netstandard2.0\MDD4All.EnterpriseArchitect.DataModels.Contracts.dll</HintPath>
     </Reference>
+    <Reference Include="MDD4All.EnterpriseArchitect.Logging, Version=2.0.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MDD4All.EnterpriseArchitect.Logging.2.0.0.2\lib\netstandard2.0\MDD4All.EnterpriseArchitect.Logging.dll</HintPath>
+    </Reference>
     <Reference Include="MDD4All.EnterpriseArchitect.Manipulations, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MDD4All.EnterpriseArchitect.Manipulations.3.0.0.185\lib\netstandard2.0\MDD4All.EnterpriseArchitect.Manipulations.dll</HintPath>
     </Reference>
+    <Reference Include="MDD4All.MongoDB.DataAccess.Generic, Version=2.0.0.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MDD4All.MongoDB.DataAccess.Generic.2.0.0.3\lib\netstandard2.0\MDD4All.MongoDB.DataAccess.Generic.dll</HintPath>
+    </Reference>
+    <Reference Include="MDD4All.SpecIF.DataModels, Version=3.0.0.21, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MDD4All.SpecIF.DataModels.3.0.0.21\lib\netstandard2.0\MDD4All.SpecIF.DataModels.dll</HintPath>
+    </Reference>
+    <Reference Include="MDD4All.SpecIF.DataProvider.Contracts, Version=2.0.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MDD4All.SpecIF.DataProvider.Contracts.2.0.0.2\lib\netstandard2.0\MDD4All.SpecIF.DataProvider.Contracts.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.WebView2.Core, Version=1.0.705.50, Culture=neutral, PublicKeyToken=2a8ab48044d2601e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.WebView2.1.0.705.50\lib\net45\Microsoft.Web.WebView2.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.WebView2.WinForms, Version=1.0.705.50, Culture=neutral, PublicKeyToken=2a8ab48044d2601e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.WebView2.1.0.705.50\lib\net45\Microsoft.Web.WebView2.WinForms.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.WebView2.Wpf, Version=1.0.705.50, Culture=neutral, PublicKeyToken=2a8ab48044d2601e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.WebView2.1.0.705.50\lib\net45\Microsoft.Web.WebView2.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="MongoDB.Bson, Version=2.11.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MongoDB.Bson.2.11.4\lib\net452\MongoDB.Bson.dll</HintPath>
@@ -96,6 +120,9 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="ReverseMarkdown, Version=3.11.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ReverseMarkdown.3.11.0\lib\net46\ReverseMarkdown.dll</HintPath>
+    </Reference>
     <Reference Include="SharpCompress, Version=0.23.0.0, Culture=neutral, PublicKeyToken=afb0a02973931d96, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpCompress.0.23.0\lib\net45\SharpCompress.dll</HintPath>
     </Reference>
@@ -178,9 +205,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\SpecIfPluginConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SpecIfPlugin.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\ProjectDescriptorViewModel.cs" />
     <Compile Include="ViewModels\ProjectSelectionViewModel.cs" />
     <Compile Include="Views\ProjectSelectionWindow.xaml.cs">
       <DependentUpon>ProjectSelectionWindow.xaml</DependentUpon>
@@ -191,6 +220,14 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MDD4All.Configuration\src\MDD4All.Configuration.Views\MDD4All.Configuration.Views.csproj">
+      <Project>{49d188e4-da77-408d-a618-b4467cd3c4bd}</Project>
+      <Name>MDD4All.Configuration.Views</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MDD4All.Configuration\src\MDD4All.Configuration\MDD4All.Configuration.csproj">
+      <Project>{2f1e85ae-67c5-410a-8569-d9d00e403dda}</Project>
+      <Name>MDD4All.Configuration</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MDD4All.SpecIF.DataIntegrator.EA\MDD4All.SpecIF.DataIntegrator.EA.csproj">
       <Project>{25D7E2F2-7FFD-4A66-B75F-C84EAF7298C3}</Project>
       <Name>MDD4All.SpecIF.DataIntegrator.EA</Name>
@@ -199,14 +236,6 @@
       <Project>{061251c4-ed5c-4815-8963-0b6c7fedc77c}</Project>
       <Name>MDD4All.SpecIF.DataModels.Manipulation</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MDD4All.SpecIF.DataModels\MDD4All.SpecIF.DataModels.csproj">
-      <Project>{c85c9648-0c50-4ffc-9eb1-584ad2eda85f}</Project>
-      <Name>MDD4All.SpecIF.DataModels</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.Contracts\MDD4All.SpecIF.DataProvider.Contracts.csproj">
-      <Project>{4174d427-c31a-44c0-a4ba-9873fb40a1ec}</Project>
-      <Name>MDD4All.SpecIF.DataProvider.Contracts</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.EA\MDD4All.SpecIF.DataProvider.EA.csproj">
       <Project>{b2723cf2-cfc2-494f-b221-b1af42575342}</Project>
       <Name>MDD4All.SpecIF.DataProvider.EA</Name>
@@ -214,6 +243,10 @@
     <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.File\MDD4All.SpecIF.DataProvider.File.csproj">
       <Project>{e7729686-625a-4802-84b7-de8964df0a3e}</Project>
       <Name>MDD4All.SpecIF.DataProvider.File</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.Jira\MDD4All.SpecIF.DataProvider.Jira.csproj">
+      <Project>{7475d15f-467a-4818-8b9b-a339e235c4de}</Project>
+      <Name>MDD4All.SpecIF.DataProvider.Jira</Name>
     </ProjectReference>
     <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.MongoDB\MDD4All.SpecIF.DataProvider.MongoDB.csproj">
       <Project>{50A9FAC7-3478-4B55-B5F8-777F95FD4D46}</Project>
@@ -247,6 +280,8 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\MongoDB.Libmongocrypt.1.0.0\build\MongoDB.Libmongocrypt.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MongoDB.Libmongocrypt.1.0.0\build\MongoDB.Libmongocrypt.targets'))" />
     <Error Condition="!Exists('..\packages\MongoDB.Driver.Core.2.11.4\build\MongoDB.Driver.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MongoDB.Driver.Core.2.11.4\build\MongoDB.Driver.Core.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Web.WebView2.1.0.705.50\build\Microsoft.Web.WebView2.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Web.WebView2.1.0.705.50\build\Microsoft.Web.WebView2.targets'))" />
   </Target>
   <Import Project="..\packages\MongoDB.Driver.Core.2.11.4\build\MongoDB.Driver.Core.targets" Condition="Exists('..\packages\MongoDB.Driver.Core.2.11.4\build\MongoDB.Driver.Core.targets')" />
+  <Import Project="..\packages\Microsoft.Web.WebView2.1.0.705.50\build\Microsoft.Web.WebView2.targets" Condition="Exists('..\packages\Microsoft.Web.WebView2.1.0.705.50\build\Microsoft.Web.WebView2.targets')" />
 </Project>

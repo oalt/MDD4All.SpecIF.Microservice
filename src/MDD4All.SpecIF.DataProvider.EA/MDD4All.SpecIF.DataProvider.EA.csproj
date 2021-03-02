@@ -17,18 +17,22 @@
       <None Remove="Cache\**" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="Converters\EaToSpecIfConverter.cs" />
+    </ItemGroup>
+
   <ItemGroup>
-    <PackageReference Include="MDD4All.EAFacade.DataAccess.Cached" Version="2.1.0.207" />
+    <PackageReference Include="MDD4All.EAFacade.DataAccess.Cached" Version="2.2.0.214" />
     <PackageReference Include="MDD4All.EnterpriseArchitect.Manipulations" Version="3.0.0.185" />
+    <PackageReference Include="MDD4All.SpecIF.DataModels" Version="3.0.0.21" />
+    <PackageReference Include="MDD4All.SpecIF.DataProvider.Contracts" Version="2.0.0.2" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\SVGGenerator\src\MDD4All.EnterpriseArchitect.SvgGenerator\MDD4All.EnterpriseArchitect.SvgGenerator.csproj" />
-    <ProjectReference Include="..\..\..\SVGGenerator\src\MDD4All.SVG.DataModels\MDD4All.SVG.DataModels.csproj" />
-    <ProjectReference Include="..\MDD4All.SpecIF.DataModels.DiagramInterchange\MDD4All.SpecIF.DataModels.DiagramInterchange.csproj" />
-    <ProjectReference Include="..\MDD4All.SpecIF.DataModels\MDD4All.SpecIF.DataModels.csproj" />
-    <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.Contracts\MDD4All.SpecIF.DataProvider.Contracts.csproj" />
+    <ProjectReference Include="..\SvgGeneration\src\MDD4All.EnterpriseArchitect.SvgGenerator\MDD4All.EnterpriseArchitect.SvgGenerator.csproj" />
+    <ProjectReference Include="..\SvgGeneration\src\MDD4All.SpecIF.DataModels.DiagramInterchange\MDD4All.SpecIF.DataModels.DiagramInterchange.csproj" />
+    <ProjectReference Include="..\SvgGeneration\src\MDD4All.SVG.DataModels\MDD4All.SVG.DataModels.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -51,10 +51,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MDD4All.SpecIF.DataModels\MDD4All.SpecIF.DataModels.csproj">
-      <Project>{c85c9648-0c50-4ffc-9eb1-584ad2eda85f}</Project>
-      <Name>MDD4All.SpecIF.DataModels</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.EA\MDD4All.SpecIF.DataProvider.EA.csproj">
       <Project>{b2723cf2-cfc2-494f-b221-b1af42575342}</Project>
       <Name>MDD4All.SpecIF.DataProvider.EA</Name>
@@ -68,23 +64,43 @@
     <Reference Include="Interop.EA">
       <HintPath>..\libs\Interop.EA.dll</HintPath>
     </Reference>
+    <Reference Include="MDD4All.EAFacade.DataAccess.Cached, Version=2.2.0.214, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MDD4All.EAFacade.DataAccess.Cached.2.2.0.214\lib\netstandard2.0\MDD4All.EAFacade.DataAccess.Cached.dll</HintPath>
+    </Reference>
     <Reference Include="MDD4All.EAFacade.DataModels.Contracts, Version=2.1.0.183, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MDD4All.EAFacade.DataModels.Contracts.2.1.0.183\lib\netstandard2.0\MDD4All.EAFacade.DataModels.Contracts.dll</HintPath>
     </Reference>
     <Reference Include="MDD4All.EnterpriseArchitect.Manipulations, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MDD4All.EnterpriseArchitect.Manipulations.3.0.0.185\lib\netstandard2.0\MDD4All.EnterpriseArchitect.Manipulations.dll</HintPath>
     </Reference>
+    <Reference Include="MDD4All.SpecIF.DataModels, Version=3.0.0.21, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MDD4All.SpecIF.DataModels.3.0.0.21\lib\netstandard2.0\MDD4All.SpecIF.DataModels.dll</HintPath>
+    </Reference>
+    <Reference Include="MDD4All.SpecIF.DataProvider.Contracts, Version=2.0.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MDD4All.SpecIF.DataProvider.Contracts.2.0.0.2\lib\netstandard2.0\MDD4All.SpecIF.DataProvider.Contracts.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="MongoDB.Bson, Version=2.11.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MongoDB.Bson.2.11.4\lib\net452\MongoDB.Bson.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.5.11\lib\net45\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Drawing.Common, Version=4.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Drawing.Common.4.5.1\lib\net461\System.Drawing.Common.dll</HintPath>
+      <HintPath>..\packages\System.Drawing.Common.5.0.0\lib\net461\System.Drawing.Common.dll</HintPath>
     </Reference>
+    <Reference Include="System.IO.Compression, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
