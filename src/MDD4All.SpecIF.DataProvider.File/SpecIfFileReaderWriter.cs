@@ -15,22 +15,30 @@ namespace MDD4All.SpecIF.DataProvider.File
 		{
 			DataModels.SpecIF result = null;
 
+			StreamReader file = null;
+
 			try
 			{
 
-				StreamReader file = new StreamReader(path);
+				file = new StreamReader(path);
 
 				JsonSerializer serializer = new JsonSerializer();
 
 				result = (DataModels.SpecIF)serializer.Deserialize(file, typeof(DataModels.SpecIF));
-
-				file.Close();
 			}
 			catch(Exception exception)
 			{
+				
                 Debug.WriteLine(path);
 				Debug.WriteLine(exception);
 			}
+			finally
+            {
+				if(file != null)
+                {
+					file.Close();
+                }
+            }
 
 			return result;
 		}
