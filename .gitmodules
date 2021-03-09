@@ -10,3 +10,6 @@
 [submodule "src/SvgGeneration"]
 	path = src/SvgGeneration
 	url = https://github.com/oalt/fmc4seSvgGenerator.git
+[submodule "src/MDD4All.SpecIF.DataFactory"]
+	path = src/MDD4All.SpecIF.DataFactory
+	url = https://github.com/oalt/MDD4All.SpecIF.DataFactory.git
