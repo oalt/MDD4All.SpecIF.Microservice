@@ -6,6 +6,7 @@ using MDD4All.SpecIF.DataProvider.Contracts;
 using MDD4All.SpecIF.DataModels.Manipulation;
 using MDD4All.SpecIF.DataModels.Helpers;
 using System.Collections.Generic;
+using MDD4All.SpecIF.DataFactory;
 
 namespace MDD4All.SpecIF.DataAccess.Jira
 {
@@ -31,7 +32,7 @@ namespace MDD4All.SpecIF.DataAccess.Jira
 
             Key classKey = new Key("RC-Requirement", "1");
 
-            result = SpecIfElementCreator.CreateResource(classKey, _metadataReader);
+            result = SpecIfDataFactory.CreateResource(classKey, _metadataReader);
 
             if (jiraIssue.Fields.IssueType.Name == "Requirement")
             {

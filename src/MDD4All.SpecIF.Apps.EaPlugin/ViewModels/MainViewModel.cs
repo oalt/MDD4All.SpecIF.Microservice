@@ -17,6 +17,8 @@ using GalaSoft.MvvmLight.Ioc;
 using MDD4All.Configuration.Contracts;
 using MDD4All.Configuration.Views;
 using NLog;
+using MDD4All.SpecIF.DataProvider.Jira;
+using System.Threading.Tasks;
 
 namespace MDD4All.SpecIF.Apps.EaPlugin.ViewModels
 {
@@ -32,25 +34,13 @@ namespace MDD4All.SpecIF.Apps.EaPlugin.ViewModels
 
         private ProjectIntegrator _projectIntegrator;
 
-        private SpecIfPluginConfiguration _configuration;
+        IConfigurationReaderWriter<SpecIfPluginConfiguration> _configurationReaderWriter;
 
-        public MainViewModel(EAAPI.Repository repository,
-                             ISpecIfMetadataReader metadataReader,
-                             ISpecIfDataReader specIfDataReader,
-                             ISpecIfDataWriter requirementMasterDataWriter)
+        public MainViewModel(EAAPI.Repository repository)
         {
             _repository = repository;
-            _metadataReader = metadataReader;
-            _specIfDataReader = specIfDataReader;
-            _requirementMasterDataWriter = requirementMasterDataWriter;
 
-            _repository.CreateOutputTab("SpecIF");
 
-            _repository.EnsureOutputVisible("SpecIF");
-
-            _projectIntegrator = new ProjectIntegrator(_repository, 
-                                                       _metadataReader,
-                                                       _specIfDataReader);
 
             ExportToSpecIfCommand = new RelayCommand(ExecuteExportToSpecIfCommand);
             SynchronizeProjectRootsCommand = new RelayCommand(ExecuteSynchronizeProjectRoots);
@@ -61,13 +51,34 @@ namespace MDD4All.SpecIF.Apps.EaPlugin.ViewModels
             AddSpecificationToSpecIfCommand = new RelayCommand(ExecuteAddSpecificationToSpecIF);
             EditSettingsCommand = new RelayCommand(ExecuteEditSettings);
             OpenJiraViewCommand = new RelayCommand<string>(ExecuteOpenJiraView);
+            SynchonizeSingleElementCommand = new RelayCommand(ExecuteSynchronizeSingleElement);
 
-            IConfigurationReaderWriter<SpecIfPluginConfiguration> configurationReaderWriter = SimpleIoc.Default.GetInstance<IConfigurationReaderWriter<SpecIfPluginConfiguration>>();
-            
-            if(configurationReaderWriter != null)
-            {
-                _configuration = configurationReaderWriter.GetConfiguration();
-            }
+
+            _configurationReaderWriter = SimpleIoc.Default.GetInstance<IConfigurationReaderWriter<SpecIfPluginConfiguration>>();
+
+            InitializeDataProviders();
+        }
+
+        private void InitializeDataProviders()
+        {
+            SpecIfPluginConfiguration configuration = _configurationReaderWriter.GetConfiguration();
+
+            _metadataReader = new SpecIfFileMetadataReader(configuration.SpecIfMetadataDirectory);
+
+            _specIfDataReader = new SpecIfJiraDataReader(configuration.JiraURL,
+                                                         configuration.JiraUserName,
+                                                         configuration.JiraApiKey,
+                                                         _metadataReader);
+
+            _requirementMasterDataWriter = new SpecIfJiraDataWriter(configuration.JiraURL,
+                                                                    configuration.JiraUserName,
+                                                                    configuration.JiraApiKey,
+                                                                    _metadataReader,
+                                                                    _specIfDataReader);
+
+            _projectIntegrator = new ProjectIntegrator(_repository,
+                                                       _metadataReader,
+                                                       _specIfDataReader);
         }
 
         public ICommand ExportToSpecIfCommand { get; private set; }
@@ -79,6 +90,8 @@ namespace MDD4All.SpecIF.Apps.EaPlugin.ViewModels
         public ICommand AddSpecificationToSpecIfCommand { get; private set; }
         public ICommand EditSettingsCommand { get; private set; }
         public ICommand OpenJiraViewCommand { get; private set; }
+        public ICommand SynchonizeSingleElementCommand { get; private set; }
+
 
         private void ExecuteExportToSpecIfCommand()
         {
@@ -119,18 +132,47 @@ namespace MDD4All.SpecIF.Apps.EaPlugin.ViewModels
 
         private void ExecuteSynchronizeProjectRoots()
         {
-            _projectIntegrator.SynchronizeProjectRoots();
+            logger.Info("Starting synchonization of Project roots...");
+            SynchronizeProjectRootsAsync();
+        }
+
+        private async void SynchronizeProjectRootsAsync()
+        {
+            await Task.Run(() =>
+            {
+                _projectIntegrator.SynchronizeProjectRoots();
+            });
+            logger.Info("Synchonization finished.");
         }
 
         private void ExecuteSynchronizeProjectHierarchyRoots()
         {
-            _projectIntegrator.SynchronizeProjectHierarchyRoots();
+            logger.Info("Starting synchonization of Hierarchy roots...");
+            SynchronizeProjectHierarchyRootsAsync();
+        }
+
+        private async void SynchronizeProjectHierarchyRootsAsync()
+        {
+            await Task.Run(() =>
+            {
+                _projectIntegrator.SynchronizeProjectHierarchyRoots();
+            });
+            logger.Info("Synchonization finished.");
         }
 
         private void ExecuteSynchronizeHierarchyResources()
         {
             logger.Info("Starting synchonization...");
-            _projectIntegrator.SynchronizeHierarchyResources();
+            SynchronizeHierarchiyResourcesAsync();
+        }
+
+        private async void SynchronizeHierarchiyResourcesAsync()
+        {
+            await Task.Run(() =>
+            {
+                _projectIntegrator.SynchronizeHierarchyResources();
+                
+            });
             logger.Info("Synchonization finished.");
         }
 
@@ -142,6 +184,17 @@ namespace MDD4All.SpecIF.Apps.EaPlugin.ViewModels
             {
 
             }
+        }
+
+        private void ExecuteSynchronizeSingleElement()
+        {
+            object selectedItem;
+
+            EAAPI.ObjectType objectType = _repository.GetTreeSelectedItem(out selectedItem);
+
+            EAAPI.Element element = selectedItem as EAAPI.Element;
+
+            _projectIntegrator.SynchronizeSingleElement(element);
         }
 
 
@@ -157,16 +210,16 @@ namespace MDD4All.SpecIF.Apps.EaPlugin.ViewModels
 
             if (project != null)
             {
-                _repository.WriteOutput("SpecIF", "Integrating requirement " + element.Name + "...", element.ElementID);
+                logger.Info("Integrating requirement " + element.Name + "...");
                 Resource repositoryResource = _projectIntegrator.AddRequirementToSpecIF(_requirementMasterDataWriter, element, project.ID);
 
                 if(repositoryResource == null)
                 {
-                    _repository.WriteOutput("SpecIF", "Error integrating requirement.", element.ElementID);
+                    logger.Error("Error integrating requirement.");
                 }
                 else
                 {
-                    _repository.WriteOutput("SpecIF", "Finished.", 0);
+                    logger.Info("Finished.");
                 }
 
             }
@@ -176,6 +229,13 @@ namespace MDD4All.SpecIF.Apps.EaPlugin.ViewModels
         }
 
         private void ExecuteAddSpecificationToSpecIF()
+        {
+            logger.Info("Starting integration...");
+            ExecuteAddSpecificationToSpecIfAsync();
+        }
+
+
+        private async void ExecuteAddSpecificationToSpecIfAsync()
         {
             EAAPI.Package treeSelectedPackage = _repository.GetTreeSelectedPackage();
 
@@ -196,29 +256,32 @@ namespace MDD4All.SpecIF.Apps.EaPlugin.ViewModels
 
                     if(project != null)
                     {
-                        bool error = false;
-
-                        foreach (EADM.Element cachedElement in cachedRequirements)
+                        await Task.Run(() =>
                         {
-                            EAAPI.Element element = _repository.GetElementByID(cachedElement.ElementID);
+                            bool error = false;
 
-                            if(element != null)
+                            foreach (EADM.Element cachedElement in cachedRequirements)
                             {
-                                _repository.WriteOutput("SpecIF", "Integrating requirement " + cachedElement.Name + "...", cachedElement.ElementID);
-                                Resource repositoryResource = _projectIntegrator.AddRequirementToSpecIF(_requirementMasterDataWriter, element, project.ID);
-                                if(repositoryResource == null)
+                                EAAPI.Element element = _repository.GetElementByID(cachedElement.ElementID);
+
+                                if (element != null)
                                 {
-                                    _repository.WriteOutput("SpecIF", "Error integrating requirement. Abort.", cachedElement.ElementID);
-                                    error = true;
-                                    break;
+                                    logger.Info("Integrating requirement " + cachedElement.Name + "...");
+                                    Resource repositoryResource = _projectIntegrator.AddRequirementToSpecIF(_requirementMasterDataWriter, element, project.ID);
+                                    if (repositoryResource == null)
+                                    {
+                                        logger.Error("Error integrating requirement. Abort.");
+                                        error = true;
+                                        break;
+                                    }
                                 }
                             }
-                        }
 
-                        if(!error)
-                        {
-                            _repository.WriteOutput("SpecIF", "Integration finished.", 0);
-                        }
+                            if (!error)
+                            {
+                                logger.Info("Integration finished.");
+                            }
+                        });
                     }
                 }
 
@@ -227,17 +290,19 @@ namespace MDD4All.SpecIF.Apps.EaPlugin.ViewModels
 
         private void ExecuteEditSettings()
         {
-            PropertyDialog propertyDialog = new PropertyDialog();
-
-            propertyDialog.SetPropertyData(_configuration);
-
-            propertyDialog.ShowDialog();
-
-            IConfigurationReaderWriter<SpecIfPluginConfiguration> configurationReaderWriter = SimpleIoc.Default.GetInstance<IConfigurationReaderWriter<SpecIfPluginConfiguration>>();
-
-            if (configurationReaderWriter != null)
+            if (_configurationReaderWriter != null)
             {
-                configurationReaderWriter.StoreConfiguration(_configuration);
+                PropertyDialog propertyDialog = new PropertyDialog();
+
+                SpecIfPluginConfiguration configuration = _configurationReaderWriter.GetConfiguration();
+
+                propertyDialog.SetPropertyData(configuration);
+
+                propertyDialog.ShowDialog();
+
+                _configurationReaderWriter.StoreConfiguration(configuration);
+
+                InitializeDataProviders();
             }
 
         }
@@ -265,11 +330,13 @@ namespace MDD4All.SpecIF.Apps.EaPlugin.ViewModels
             return result;
         }
 
-        private void ExecuteOpenJiraView(string url)
+        private void ExecuteOpenJiraView(string identifier)
         {
-            //JiraIssueBrowswerWindow jiraIssueBrowswerWindow = new JiraIssueBrowswerWindow();
-            //jiraIssueBrowswerWindow.ShowDialog();
-            System.Diagnostics.Process.Start("https://karlmayer.atlassian.net/browse/WIN-1");
+            if(_configurationReaderWriter != null)
+            {
+                string jiraURL = _configurationReaderWriter.GetConfiguration().JiraURL;
+                System.Diagnostics.Process.Start(jiraURL + "/browse/" + identifier);
+            }   
         }
     }
 }

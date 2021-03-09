@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using MDD4All.SpecIF.DataModels.Manipulation;
 using System.Diagnostics;
 using Jira3 = MDD4All.Jira.DataModels.V3;
+using MDD4All.SpecIF.DataFactory;
 
 namespace MDD4All.SpecIF.DataProvider.Jira
 {
@@ -188,7 +189,7 @@ namespace MDD4All.SpecIF.DataProvider.Jira
 
                         Key resourceClass = new Key("RC-Hierarchy", "1");
 
-                        Resource projectHierarchyResource = SpecIfElementCreator.CreateResource(resourceClass, _metadataReader);
+                        Resource projectHierarchyResource = SpecIfDataFactory.CreateResource(resourceClass, _metadataReader);
 
                         projectHierarchyResource.ID = projectResourceID;
                         projectHierarchyResource.Revision = "1";

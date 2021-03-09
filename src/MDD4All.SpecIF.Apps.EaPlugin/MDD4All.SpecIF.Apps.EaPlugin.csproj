@@ -228,6 +228,10 @@
       <Project>{2f1e85ae-67c5-410a-8569-d9d00e403dda}</Project>
       <Name>MDD4All.Configuration</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MDD4All.SpecIF.DataFactory\src\MDD4All.SpecIF.DataFactory\MDD4All.SpecIF.DataFactory.csproj">
+      <Project>{d4c665e0-e96f-4e8e-a931-a44c4ed13414}</Project>
+      <Name>MDD4All.SpecIF.DataFactory</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MDD4All.SpecIF.DataIntegrator.EA\MDD4All.SpecIF.DataIntegrator.EA.csproj">
       <Project>{25D7E2F2-7FFD-4A66-B75F-C84EAF7298C3}</Project>
       <Name>MDD4All.SpecIF.DataIntegrator.EA</Name>

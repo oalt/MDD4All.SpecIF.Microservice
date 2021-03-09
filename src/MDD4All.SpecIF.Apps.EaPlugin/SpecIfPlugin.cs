@@ -5,12 +5,11 @@ using MDD4All.EnterpriseArchitect.Logging;
 using MDD4All.EnterpriseArchitect.Manipulations;
 using MDD4All.SpecIF.Apps.EaPlugin.Configuration;
 using MDD4All.SpecIF.Apps.EaPlugin.ViewModels;
-using MDD4All.SpecIF.DataProvider.Contracts;
-using MDD4All.SpecIF.DataProvider.File;
-using MDD4All.SpecIF.DataProvider.Jira;
 using NLog;
+using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Windows;
 using EAAPI = EA;
 
 namespace MDD4All.SpecIF.Apps.EaPlugin
@@ -18,6 +17,8 @@ namespace MDD4All.SpecIF.Apps.EaPlugin
     public class SpecIfPlugin
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
+
+        private const string PLUGIN_NAME = "SpecIF-Plugin";
 
         private const string MAIN_MENU = "-&SpecIF";
 
@@ -29,6 +30,8 @@ namespace MDD4All.SpecIF.Apps.EaPlugin
 
         private const string SYNC_HIERARHY_MENU = "&Synchronize hierarchy";
 
+        private const string SYNC_SINGLE_ELEMENT_MENU = "&Synchronize this SpecIF resource";
+
         private const string ADD_REQIOREMENT_TO_SPECIF_REPOSITORY_MENU = "Add requirement to SpecIF repository";
 
         private const string ADD_SPECIFICATION_TO_SPECIF_MENU = "Add specification to SpecIF repository";
@@ -39,9 +42,7 @@ namespace MDD4All.SpecIF.Apps.EaPlugin
 
         private SpecIfPluginConfiguration _configuration;
 
-        private ISpecIfMetadataReader _specIfMetadataReader;
-        private ISpecIfDataReader _specIfDataReader;
-        private ISpecIfDataWriter _specIfRequirementDataWriter;
+        
 
         public string EA_Connect(EAAPI.Repository repository)
         {
@@ -63,7 +64,7 @@ namespace MDD4All.SpecIF.Apps.EaPlugin
                 }
             }
 
-            _mainViewModel = new MainViewModel(repository, null, null, null);
+            _mainViewModel = new MainViewModel(repository);
 
             return "";
         }
@@ -72,23 +73,10 @@ namespace MDD4All.SpecIF.Apps.EaPlugin
         {
             EaPluginNlogConfigurator.InitializePluginLogging(repository, "SpecIF");
 
-            
-            _specIfMetadataReader = new SpecIfFileMetadataReader(_configuration.SpecIfMetadataDirectory);
-            _specIfDataReader = new SpecIfJiraDataReader(_configuration.JiraURL,
-                                                         _configuration.JiraUserName,
-                                                         _configuration.JiraApiKey,
-                                                         _specIfMetadataReader);
+            _mainViewModel = new MainViewModel(repository);
 
-            _specIfRequirementDataWriter = new SpecIfJiraDataWriter(_configuration.JiraURL,
-                                                         _configuration.JiraUserName,
-                                                         _configuration.JiraApiKey,
-                                                         _specIfMetadataReader,
-                                                         _specIfDataReader);
-
-            _mainViewModel = new MainViewModel(repository, 
-                                               _specIfMetadataReader,
-                                               _specIfDataReader,
-                                               _specIfRequirementDataWriter);
+            repository.CreateOutputTab("SpecIF");
+            repository.EnsureOutputVisible("SpecIF");
         }
 
         public object EA_GetMenuItems(EAAPI.Repository repository,
@@ -143,7 +131,14 @@ namespace MDD4All.SpecIF.Apps.EaPlugin
                             menuEntries.Add(ADD_REQIOREMENT_TO_SPECIF_REPOSITORY_MENU);
                         }
 
-                        if(objectType == EAAPI.ObjectType.otPackage &&
+                        if (selectedElement != null &&
+                            !string.IsNullOrEmpty(selectedElement.GetTaggedValueString("specifId")))
+                        {
+                            menuEntries.Add("-");
+                            menuEntries.Add(SYNC_SINGLE_ELEMENT_MENU);
+                        }
+
+                        if (objectType == EAAPI.ObjectType.otPackage &&
                            selectedElement != null &&
                            selectedElement.Stereotype == "specification")
                         {
@@ -190,49 +185,62 @@ namespace MDD4All.SpecIF.Apps.EaPlugin
 
         public void EA_MenuClick(EAAPI.Repository repository, string location, string menuName, string itemName)
         {
-            if (_mainViewModel != null)
+            try
             {
-                
-                switch (itemName)
+                if (_mainViewModel != null)
                 {
 
-                    //case EXPORT_MENU:
-                    //    _mainViewModel.ExportToSpecIfCommand.Execute(null);
-                    //    break;
+                    switch (itemName)
+                    {
 
-                    case SYNC_PROJECT_ROOTS_MENU:
-                        _mainViewModel.SynchronizeProjectRootsCommand.Execute(null);
-                        break;
+                        //case EXPORT_MENU:
+                        //    _mainViewModel.ExportToSpecIfCommand.Execute(null);
+                        //    break;
 
-                    case SYNC_HIERARHY_ROOTS_MENU:
-                        _mainViewModel.SynchronizeProjectHierarchyRootsCommand.Execute(null);
-                        break;
+                        case SYNC_PROJECT_ROOTS_MENU:
+                            _mainViewModel.SynchronizeProjectRootsCommand.Execute(null);
+                            break;
 
-                    case SYNC_HIERARHY_MENU:
-                        _mainViewModel.SynchronizeHierarchyResourcesCommand.Execute(null);
-                        break;
+                        case SYNC_HIERARHY_ROOTS_MENU:
+                            _mainViewModel.SynchronizeProjectHierarchyRootsCommand.Execute(null);
+                            break;
 
-                    case ADD_REQIOREMENT_TO_SPECIF_REPOSITORY_MENU:
-                        _mainViewModel.AddSingleRequirementToSpecIfCommand.Execute(null);
-                        break;
+                        case SYNC_HIERARHY_MENU:
+                            _mainViewModel.SynchronizeHierarchyResourcesCommand.Execute(null);
+                            break;
 
-                    case ADD_SPECIFICATION_TO_SPECIF_MENU:
-                        _mainViewModel.AddSpecificationToSpecIfCommand.Execute(null);
-                        break;
+                        case SYNC_SINGLE_ELEMENT_MENU:
+                            _mainViewModel.SynchonizeSingleElementCommand.Execute(null);
+                            break;
 
-                    default:
+                        case ADD_REQIOREMENT_TO_SPECIF_REPOSITORY_MENU:
+                            _mainViewModel.AddSingleRequirementToSpecIfCommand.Execute(null);
+                            break;
 
+                        case ADD_SPECIFICATION_TO_SPECIF_MENU:
+                            _mainViewModel.AddSpecificationToSpecIfCommand.Execute(null);
+                            break;
+
+
+
+                        default:
+
+                            break;
+                    }
+                }
+
+                switch (itemName)
+                {
+                    case EDIT_SETTINGS_MENU:
+                        _mainViewModel.EditSettingsCommand.Execute(null);
                         break;
                 }
             }
-
-            switch(itemName)
+            catch (Exception exception)
             {
-                case EDIT_SETTINGS_MENU:
-                    _mainViewModel.EditSettingsCommand.Execute(null);
-                    break;
+                logger.Error(exception);
+                MessageBox.Show("Error executing a command (" + itemName + ").\r\n" + exception, PLUGIN_NAME, MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
         }
 
         public void EA_OnNotifyContextItemModified(EAAPI.Repository repository, string guid, EAAPI.ObjectType objectType)
@@ -248,11 +256,17 @@ namespace MDD4All.SpecIF.Apps.EaPlugin
             {
                 EAAPI.Element element = repopsitory.GetElementByGuid(guid);
 
+
+
                 if (element.Type == "Requirement")
                 {
+                    string identifier = element.GetTaggedValueString("Identifier");
 
-                    _mainViewModel.OpenJiraViewCommand.Execute(guid);
-                    result = true;
+                    if (!string.IsNullOrEmpty(identifier))
+                    {
+                        _mainViewModel.OpenJiraViewCommand.Execute(identifier);
+                        result = true;
+                    }
                 }
             }
 

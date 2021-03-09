@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MDD4All.SpecIF.DataAccess.Jira\MDD4All.SpecIF.DataAccess.Jira.csproj" />
+    <ProjectReference Include="..\MDD4All.SpecIF.DataFactory\src\MDD4All.SpecIF.DataFactory\MDD4All.SpecIF.DataFactory.csproj" />
     <ProjectReference Include="..\MDD4All.SpecIF.DataModels.Manipulation\MDD4All.SpecIF.DataModels.Manipulation.csproj" />
   </ItemGroup>
 

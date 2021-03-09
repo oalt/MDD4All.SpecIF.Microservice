@@ -143,7 +143,7 @@ namespace MDD4All.SpecIF.DataIntegrator.EA
 
                             if(hierarchy != null)
                             {
-                                SynchronizeHierarchyResourcesRecusrively(hierarchy, hierarchyPackage.Element);
+                                SynchronizeHierarchyResourcesRecursively(hierarchy, hierarchyPackage.Element);
                             }
 
                         }
@@ -152,7 +152,7 @@ namespace MDD4All.SpecIF.DataIntegrator.EA
             }
         }
 
-        private void SynchronizeHierarchyResourcesRecusrively(Node currentNode, EAAPI.Element parentElement)
+        private void SynchronizeHierarchyResourcesRecursively(Node currentNode, EAAPI.Element parentElement)
         {
             Resource resource = _specIfDataReader.GetResourceByKey(currentNode.ResourceReference);
 
@@ -170,6 +170,7 @@ namespace MDD4All.SpecIF.DataIntegrator.EA
 
                     if (eaRevision != resource.Revision)
                     {
+                        logger.Info("Synchronizing existing resource " + resource.ID);
                         eaSpecIfElement.SetRequirementDataFromSpecIF(resource, _metadataReader);
                     }
                 }
@@ -190,6 +191,7 @@ namespace MDD4All.SpecIF.DataIntegrator.EA
 
                     if (eaSpecIfElement != null)
                     {
+                        logger.Info("Synchronizing existing resource " + resource.ID);
                         eaSpecIfElement.SetRequirementDataFromSpecIF(resource, _metadataReader);
                     }
                     
@@ -199,13 +201,39 @@ namespace MDD4All.SpecIF.DataIntegrator.EA
                 if (eaSpecIfElement == null)
                 {
                     ResourceToElementConverter resourceToElementConverter = new ResourceToElementConverter();
-
+                    logger.Info("Adding new resource " + resource.ID);
                     resourceToElementConverter.AddResource(parentElement, resource, _repository, _metadataReader);
                 }
 
                 foreach (Node childNode in currentNode.Nodes)
                 {
-                    SynchronizeHierarchyResourcesRecusrively(childNode, parentElement);
+                    SynchronizeHierarchyResourcesRecursively(childNode, parentElement);
+                }
+            }
+        }
+
+        public void SynchronizeSingleElement(EAAPI.Element element)
+        {
+            string specifID = element.GetTaggedValueString("specifId");
+            string specifRevision = element.GetTaggedValueString("specifRevision");
+
+            if (!string.IsNullOrEmpty(specifID) && !string.IsNullOrEmpty(specifRevision))
+            {
+                Key key = new Key(specifID, specifRevision);
+
+                logger.Info("Synchronizing element: " + key.ToString());
+
+                Resource resource = _specIfDataReader.GetResourceByKey(key);
+
+                if (resource != null)
+                {
+                    
+                    element.SetRequirementDataFromSpecIF(resource, _metadataReader);
+                    logger.Info("Synchronization finished.");
+                }
+                else
+                {
+                    logger.Error("Error getting SpecIF data.");
                 }
             }
         }
