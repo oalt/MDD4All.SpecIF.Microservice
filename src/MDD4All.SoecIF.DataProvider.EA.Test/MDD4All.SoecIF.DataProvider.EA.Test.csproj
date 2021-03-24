@@ -51,6 +51,14 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MDD4All.SpecIF.DataModels\src\MDD4All.SpecIF.DataModels\MDD4All.SpecIF.DataModels.csproj">
+      <Project>{c33e488b-dafe-4ff6-a62c-e090425d84f2}</Project>
+      <Name>MDD4All.SpecIF.DataModels</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.Contracts\src\MDD4All.SpecIF.DataProvider.Contracts\MDD4All.SpecIF.DataProvider.Contracts.csproj">
+      <Project>{5c8480d4-651e-4bba-a827-3b4733611382}</Project>
+      <Name>MDD4All.SpecIF.DataProvider.Contracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.EA\MDD4All.SpecIF.DataProvider.EA.csproj">
       <Project>{b2723cf2-cfc2-494f-b221-b1af42575342}</Project>
       <Name>MDD4All.SpecIF.DataProvider.EA</Name>
@@ -72,12 +80,6 @@
     </Reference>
     <Reference Include="MDD4All.EnterpriseArchitect.Manipulations, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MDD4All.EnterpriseArchitect.Manipulations.3.0.0.185\lib\netstandard2.0\MDD4All.EnterpriseArchitect.Manipulations.dll</HintPath>
-    </Reference>
-    <Reference Include="MDD4All.SpecIF.DataModels, Version=3.0.1.22, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MDD4All.SpecIF.DataModels.3.0.1.22\lib\netstandard2.0\MDD4All.SpecIF.DataModels.dll</HintPath>
-    </Reference>
-    <Reference Include="MDD4All.SpecIF.DataProvider.Contracts, Version=2.0.0.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MDD4All.SpecIF.DataProvider.Contracts.2.0.0.2\lib\netstandard2.0\MDD4All.SpecIF.DataProvider.Contracts.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="MongoDB.Bson, Version=2.11.4.0, Culture=neutral, processorArchitecture=MSIL">

@@ -82,12 +82,6 @@
     <Reference Include="MDD4All.MongoDB.DataAccess.Generic, Version=2.0.0.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MDD4All.MongoDB.DataAccess.Generic.2.0.0.3\lib\netstandard2.0\MDD4All.MongoDB.DataAccess.Generic.dll</HintPath>
     </Reference>
-    <Reference Include="MDD4All.SpecIF.DataModels, Version=3.0.1.22, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MDD4All.SpecIF.DataModels.3.0.1.22\lib\netstandard2.0\MDD4All.SpecIF.DataModels.dll</HintPath>
-    </Reference>
-    <Reference Include="MDD4All.SpecIF.DataProvider.Contracts, Version=2.0.0.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MDD4All.SpecIF.DataProvider.Contracts.2.0.0.2\lib\netstandard2.0\MDD4All.SpecIF.DataProvider.Contracts.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
@@ -239,6 +233,14 @@
     <ProjectReference Include="..\MDD4All.SpecIF.DataModels.Manipulation\MDD4All.SpecIF.DataModels.Manipulation.csproj">
       <Project>{061251c4-ed5c-4815-8963-0b6c7fedc77c}</Project>
       <Name>MDD4All.SpecIF.DataModels.Manipulation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MDD4All.SpecIF.DataModels\src\MDD4All.SpecIF.DataModels\MDD4All.SpecIF.DataModels.csproj">
+      <Project>{c33e488b-dafe-4ff6-a62c-e090425d84f2}</Project>
+      <Name>MDD4All.SpecIF.DataModels</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.Contracts\src\MDD4All.SpecIF.DataProvider.Contracts\MDD4All.SpecIF.DataProvider.Contracts.csproj">
+      <Project>{5c8480d4-651e-4bba-a827-3b4733611382}</Project>
+      <Name>MDD4All.SpecIF.DataProvider.Contracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.EA\MDD4All.SpecIF.DataProvider.EA.csproj">
       <Project>{b2723cf2-cfc2-494f-b221-b1af42575342}</Project>

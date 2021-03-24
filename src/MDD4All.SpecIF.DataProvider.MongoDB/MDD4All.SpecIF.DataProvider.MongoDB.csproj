@@ -8,14 +8,13 @@
 
   <ItemGroup>
     <PackageReference Include="MDD4All.MongoDB.DataAccess.Generic" Version="2.0.0.3" />
-    <PackageReference Include="MDD4All.SpecIF.DataModels" Version="3.0.1.22" />
-    <PackageReference Include="MDD4All.SpecIF.DataProvider.Contracts" Version="2.0.0.2" />
     <PackageReference Include="MongoDB.Driver" Version="2.11.4" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MDD4All.SpecIF.DataModels.Manipulation\MDD4All.SpecIF.DataModels.Manipulation.csproj" />
+    <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.Contracts\src\MDD4All.SpecIF.DataProvider.Contracts\MDD4All.SpecIF.DataProvider.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

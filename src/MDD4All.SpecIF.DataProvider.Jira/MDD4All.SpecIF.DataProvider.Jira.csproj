@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MDD4All.SpecIF.DataProvider.Contracts" Version="2.0.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="ReverseMarkdown" Version="3.11.0" />
   </ItemGroup>
@@ -14,6 +13,7 @@
     <ProjectReference Include="..\MDD4All.SpecIF.DataAccess.Jira\MDD4All.SpecIF.DataAccess.Jira.csproj" />
     <ProjectReference Include="..\MDD4All.SpecIF.DataFactory\src\MDD4All.SpecIF.DataFactory\MDD4All.SpecIF.DataFactory.csproj" />
     <ProjectReference Include="..\MDD4All.SpecIF.DataModels.Manipulation\MDD4All.SpecIF.DataModels.Manipulation.csproj" />
+    <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.Contracts\src\MDD4All.SpecIF.DataProvider.Contracts\MDD4All.SpecIF.DataProvider.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

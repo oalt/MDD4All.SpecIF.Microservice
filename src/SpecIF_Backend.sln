@@ -108,6 +108,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.EnterpriseArchitect
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SpecIF.DataFactory", "MDD4All.SpecIF.DataFactory\src\MDD4All.SpecIF.DataFactory\MDD4All.SpecIF.DataFactory.csproj", "{D4C665E0-E96F-4E8E-A931-A44C4ED13414}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SpecIF.DataProvider.Contracts", "MDD4All.SpecIF.DataProvider.Contracts\src\MDD4All.SpecIF.DataProvider.Contracts\MDD4All.SpecIF.DataProvider.Contracts.csproj", "{5C8480D4-651E-4BBA-A827-3B4733611382}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -246,6 +248,10 @@ Global
 		{D4C665E0-E96F-4E8E-A931-A44C4ED13414}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4C665E0-E96F-4E8E-A931-A44C4ED13414}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4C665E0-E96F-4E8E-A931-A44C4ED13414}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C8480D4-651E-4BBA-A827-3B4733611382}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C8480D4-651E-4BBA-A827-3B4733611382}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C8480D4-651E-4BBA-A827-3B4733611382}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C8480D4-651E-4BBA-A827-3B4733611382}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -290,6 +296,7 @@ Global
 		{C94185F2-D525-4D52-AE32-E03BC1182458} = {B5974E23-6F5A-4D50-AE40-B5A8F74F950C}
 		{7D87B88B-9D7B-4AAE-ADD8-4145E64C628F} = {7D0FA414-B3D2-4264-A91F-EAA551CA5A5D}
 		{D4C665E0-E96F-4E8E-A931-A44C4ED13414} = {7DC60D00-FA4B-4C26-B32F-25D27611923A}
+		{5C8480D4-651E-4BBA-A827-3B4733611382} = {7DC60D00-FA4B-4C26-B32F-25D27611923A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C8F9327E-C222-4E00-A62F-20527B230190}

@@ -1,6 +1,5 @@
 ﻿using MDD4All.MongoDB.DataAccess.Generic;
 using MDD4All.SpecIF.DataModels.RightsManagement;
-using MDD4All.SpecIF.DataProvider.Contracts.DataModels;
 using System;
 
 namespace MDD4All.SpecIF.Apps.MongoDbInitializer

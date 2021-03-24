@@ -17,7 +17,6 @@
     <PackageReference Include="CommonServiceLocator" Version="2.0.5" />
     <PackageReference Include="Consul" Version="1.6.1.1" />
     <PackageReference Include="MDD4All.EAFacade.DataModels.Contracts" Version="2.1.0.183" />
-    <PackageReference Include="MDD4All.SpecIF.DataModels" Version="3.0.1.22" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.10" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.10" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="4.2.0" />
