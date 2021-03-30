@@ -4,6 +4,7 @@
 using MDD4All.SpecIF.DataModels.Helpers;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -44,25 +45,37 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 			return result;
 		}
 
-		public static void SetPropertyValue(this Resource resource, string propertyTitle, object value, ISpecIfMetadataReader dataProvider)
+		public static void SetPropertyValue(this Resource resource,
+											string propertyTitle,
+											string stringValue,
+											ISpecIfMetadataReader dataProvider)
+        {
+			Value value = new Value(stringValue);
+			SetPropertyValue(resource, propertyTitle, value, dataProvider);
+        }
+
+		public static void SetPropertyValue(this Resource resource, 
+											string propertyTitle, 
+											Value value, 
+											ISpecIfMetadataReader dataProvider)
 		{
 			bool propertyFound = false;
 
 			foreach (Property property in resource.Properties)
 			{
-				string title = "";
 
-				if (property.Title is string)
-				{
-					title = property.Title.ToString();
-				}
+				PropertyClass propertyClass = dataProvider.GetPropertyClassByKey(property.Class);
 
-				if (title == propertyTitle)
-				{
-					property.Value = value;
-					propertyFound = true;
-					break;
-				}
+				if(propertyClass != null)
+                {
+					if(propertyClass.Title == propertyTitle)
+                    {
+						property.Values[0] = value;
+						propertyFound = true;
+						break;
+                    }
+                }
+
 			}
 
 			if (!propertyFound)
@@ -101,11 +114,8 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 					{
 						Property property = new Property()
 						{
-							ID = SpecIfGuidGenerator.CreateNewSpecIfGUID(),
-							Description = matchingPropertyClass.Description,
-							PropertyClass = matchingPropertyKey,
-							Title = matchingPropertyClass.Title,
-							Value = value
+							Class = matchingPropertyKey,
+							Values = new List<Value> { value }
 						};
 
 						resource.Properties.Add(property);
@@ -116,15 +126,15 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 			}
 		}
 
-		public static void SetPropertyValue(this Resource resource, Key propertyClassKey, object value)
+		public static void SetPropertyValue(this Resource resource, Key propertyClassKey, Value value)
 		{
 			bool propertyFound = false;
 
 			foreach (Property property in resource.Properties)
 			{
-				if (property.ID == propertyClassKey.ID && property.Revision == propertyClassKey.Revision)
+				if (property.Class.ID == propertyClassKey.ID && property.Class.Revision == propertyClassKey.Revision)
 				{
-					property.Value = value;
+					property.Values[0] = value;
 					propertyFound = true;
 					break;
 				}
@@ -135,9 +145,9 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 
 				Property property = new Property()
 				{
-					ID = SpecIfGuidGenerator.CreateNewSpecIfGUID(),
-					PropertyClass = propertyClassKey,
-					Value = value
+					
+					Class = propertyClassKey,
+					Values = new List<Value> { value }
 				};
 
 				resource.Properties.Add(property);
@@ -154,12 +164,16 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 			{
 				foreach (Property property in resource.Properties)
 				{
-                    string title = property.Title.ToString();
+					PropertyClass propertyClass = dataProvider.GetPropertyClassByKey(property.Class);
 
-					if (title == propertyTitle)
+					if (propertyClass != null)
 					{
-						result = property.GetStringValue(dataProvider);
-						break;
+
+						if (propertyClass.Title == propertyTitle)
+						{
+							result = property.GetStringValue(dataProvider);
+							break;
+						}
 					}
 				}
 			}
@@ -167,9 +181,9 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 			return result;
 		}
 
-		public static object GetPropertyValue(this Resource resource, Key propertyClassKey)
+		public static List<Value> GetPropertyValue(this Resource resource, Key propertyClassKey)
         {
-			string result = "";
+			List<Value> result = new List<Value>();
 
 			if (resource != null && resource.Properties != null)
 			{
@@ -177,9 +191,9 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 				{
 					
 
-					if (propertyClassKey.ID == property.PropertyClass.ID && propertyClassKey.Revision == property.PropertyClass.Revision)
+					if (propertyClassKey.ID == property.Class.ID && propertyClassKey.Revision == property.Class.Revision)
 					{
-						result = property.Value.ToString();
+						result = property.Values;
 						break;
 					}
 				}

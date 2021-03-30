@@ -78,7 +78,7 @@ namespace MDD4All.SpecIF.DataAccess.Jira
                 result.ChangedBy = jiraIssue.ChangeLog.Histories[0].Author.DisplayName;
             }
 
-            result.Title = jiraIssue.Fields.Summary;
+            //result.Title = jiraIssue.Fields.Summary;
 
             if(jiraIssue.ChangeLog.Total > 1)
             {

@@ -2,15 +2,17 @@
 {
     public static class ProjectDescriptorManipulationExtensions
     {
-        public static string GetTitleValue(this ProjectDescriptor projectDescriptor, string language = "de")
+        public static string GetTitleValue(this ProjectDescriptor projectDescriptor, string language = "en")
         {
             string result = "";
 
-            if(projectDescriptor.Title is string)
+            foreach(MultilanguageText multilanguageText in projectDescriptor.Title)
             {
-                result = projectDescriptor.Title as string;
+                if(multilanguageText.Language == language)
+                {
+                    result = multilanguageText.Text;
+                }
             }
-            // TODO Language value
 
             return result;
         }

@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MDD4All.SpecIf.Microservice.Controllers
 {
-    [ApiVersion("1.0")]
+    [ApiVersion("1.1")]
     [Produces("application/json")]
     [Route("specif/v{version:apiVersion}/serviceDescription")]
     [ApiController]

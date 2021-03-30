@@ -2,6 +2,7 @@
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
 using MDD4All.SpecIF.DataProvider.Contracts;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace MDD4All.SpecIF.DataModels.Manipulation
@@ -12,7 +13,7 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 		{
 			string result = "";
 
-			PropertyClass propertyClass = dataProvider.GetPropertyClassByKey(property.PropertyClass);
+			PropertyClass propertyClass = dataProvider.GetPropertyClassByKey(property.Class);
 
 			if (propertyClass != null)
 			{
@@ -26,7 +27,7 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 		{
 			DataType result = null;
 
-			PropertyClass propertyClass = dataProvider.GetPropertyClassByKey(property.PropertyClass);
+			PropertyClass propertyClass = dataProvider.GetPropertyClassByKey(property.Class);
 
 			if (propertyClass != null)
 			{
@@ -36,20 +37,22 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 			return result;
 		}
 
-		public static string GetStringValue(this Property property, ISpecIfMetadataReader dataProvider, string language = "de")
+		public static string GetStringValue(this Property property, ISpecIfMetadataReader dataProvider, string language = "en")
 		{
 			string result = "";
 
-			if(property.GetDataTypeType(dataProvider) == "xs:enumeration")
+			PropertyClass propertyClass = dataProvider.GetPropertyClassByKey(property.Class);
+
+			bool? isMultiple = null;
+
+			if (propertyClass != null)
 			{
-				PropertyClass propertyClass = dataProvider.GetPropertyClassByKey(property.PropertyClass);
+				isMultiple = propertyClass.Multiple;
+			}
 
-				bool? isMultiple = null;
-
-				if(propertyClass != null)
-				{
-					isMultiple = propertyClass.Multiple;
-				}
+			if (property.GetDataTypeType(dataProvider) == "xs:enumeration")
+			{
+				
 
 				DataType enumDataType = property.GetDataType(dataProvider);
 
@@ -87,10 +90,15 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 					}
 					else
 					{
-						if(property.Value is string)
+						if(property.Values.Count > 0)
                         {
-							result = property.Value.ToString();
+							Value firstValue = property.Values[0];
+
+							result = firstValue.ToString();
                         }
+
+
+						
 						//if (property.Value.LanguageValues?.FirstOrDefault() != null)
 						//{
 						//	string enumId = property.Value.LanguageValues[0].Text;
@@ -112,21 +120,30 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 			}
 			else
 			{
-                if(property.Value is string)
-                {
-                    result = property.Value as string;
-                }
-				//LanguageValue languageValue = property.Value.LanguageValues.FirstOrDefault(val => val.Language == language);
-				
-				//if(languageValue == null)
-				//{
-				//	languageValue = property.Value.LanguageValues?.FirstOrDefault();
-				//}
+				if (isMultiple != null && isMultiple == true)
+				{
+				}
+				else
+				{
 
-				//if (languageValue != null)
-				//{
-				//	result = languageValue.Text;
-				//}
+					if (property.Values.Count > 0)
+					{
+						Value firstValue = property.Values[0];
+
+						result = firstValue.ToString();
+					}
+					//LanguageValue languageValue = property.Value.LanguageValues.FirstOrDefault(val => val.Language == language);
+
+					//if(languageValue == null)
+					//{
+					//	languageValue = property.Value.LanguageValues?.FirstOrDefault();
+					//}
+
+					//if (languageValue != null)
+					//{
+					//	result = languageValue.Text;
+					//}
+				}
 			}
 			return result;
 		}

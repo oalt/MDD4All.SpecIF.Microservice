@@ -485,12 +485,12 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
 
                         foreach (Property property in resource.Properties)
                         {
-                            if (!propertyClasses.ContainsKey(property.PropertyClass))
+                            if (!propertyClasses.ContainsKey(property.Class))
                             {
-                                PropertyClass propertyClass = metadataReader.GetPropertyClassByKey(property.PropertyClass);
+                                PropertyClass propertyClass = metadataReader.GetPropertyClassByKey(property.Class);
                                 if(propertyClass != null)
                                 {
-                                    propertyClasses.Add(property.PropertyClass, propertyClass);
+                                    propertyClasses.Add(property.Class, propertyClass);
 
                                     if(!dataTypes.ContainsKey(propertyClass.DataType))
                                     {

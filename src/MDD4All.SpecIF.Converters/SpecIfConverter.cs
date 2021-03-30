@@ -4,6 +4,7 @@
 using MDD4All.SpecIF.DataModels;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using System;
+using System.Collections.Generic;
 
 namespace MDD4All.SpecIF.Converters
 {
@@ -18,14 +19,20 @@ namespace MDD4All.SpecIF.Converters
 			ConvertMetadata(sourceData, targetMetadataWriter);
 			ConvertData(sourceData, targetDataWriter);
 
-            ProjectDescriptor project = new ProjectDescriptor()
-            {
-                CreatedAt = DateTime.Now,
-                Description = "SpecIF default project.",
-                ID = "PRJ-DEFAULT",
-                Title = "Default Project"
+			ProjectDescriptor project = new ProjectDescriptor()
+			{
+				CreatedAt = DateTime.Now,
+				Description = new List<MultilanguageText> 
+				{
+					new MultilanguageText { Text = "SpecIF default project." }
+				},
+				ID = "PRJ-DEFAULT",
+				Title = new List<MultilanguageText> 
+				{
+					new MultilanguageText { Text = "Default Project" }
+				}
 
-            };
+			};
 
             DataModels.SpecIF specif = new DataModels.SpecIF();
 

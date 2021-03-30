@@ -73,7 +73,9 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
             Node node = new Node()
             {
                 ResourceReference = new Key(specIfResourceID, specIfResourceRevision),
-                Description = currentElement.ToString(),
+                Description = new List<MultilanguageText> {
+                    new MultilanguageText(currentElement.ToString())
+                },
                 ID = eaSpecIfID + "_Node"
             };
 

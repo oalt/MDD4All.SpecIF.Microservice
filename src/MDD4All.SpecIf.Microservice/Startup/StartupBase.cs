@@ -106,7 +106,7 @@ namespace MDD4All.SpecIf.Microservice.Startup
                     options.ReportApiVersions = true;
                     options.AssumeDefaultVersionWhenUnspecified = true;
                     //options.UseApiBehavior = false;
-                    options.DefaultApiVersion = new ApiVersion(1, 0);
+                    options.DefaultApiVersion = new ApiVersion(1, 1);
                 });
 
             // Swagger generation
@@ -114,10 +114,10 @@ namespace MDD4All.SpecIf.Microservice.Startup
             {
                 options.DescribeAllParametersInCamelCase();
 
-                options.SwaggerDoc("v1.0", new Microsoft.OpenApi.Models.OpenApiInfo
+                options.SwaggerDoc("v1.1", new Microsoft.OpenApi.Models.OpenApiInfo
                 {
                     Title = "SpecIF API (" + _serviceDescription.ServiceName + ")",
-                    Version = "v1.0",
+                    Version = "v1.1",
                     Description = "Web API for the Specification Integration Facility (SpecIF).",
                     Contact = new Microsoft.OpenApi.Models.OpenApiContact
                     {
@@ -220,7 +220,7 @@ namespace MDD4All.SpecIf.Microservice.Startup
 
             app.UseSwagger();
             app.UseSwaggerUI(c => {
-                c.SwaggerEndpoint("/swagger/v1.0/swagger.json", "v1.0");
+                c.SwaggerEndpoint("/swagger/v1.1/swagger.json", "v1.1");
 
 
             });

@@ -14,7 +14,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
     /// API controller for SpecIF resource classes.
     /// </summary>
     [Produces("application/json")]
-    [ApiVersion("1.0")]
+    [ApiVersion("1.1")]
     [Route("specif/v{version:apiVersion}/resourceClasses")]
     [ApiController]
     public class ResourceClassController : Controller

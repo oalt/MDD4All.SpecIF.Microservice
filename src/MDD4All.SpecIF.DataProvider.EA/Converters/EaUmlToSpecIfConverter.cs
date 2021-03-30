@@ -76,7 +76,10 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 		{
 			SpecIF.DataModels.SpecIF result = new SpecIF.DataModels.SpecIF();
 
-			result.Title = new Value("UML data extracted from Sparx Enterprise Architect: " + selectedPackage.Name);
+			result.Title = new List<MultilanguageText>
+			{
+				new MultilanguageText("UML data extracted from Sparx Enterprise Architect: " + selectedPackage.Name)
+			};
 			result.Generator = "SpecIFicator";
 
 			Node node = new Node();
@@ -260,9 +263,11 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			string packageRevision = EaDateToRevisionConverter.ConvertDateToRevision(currentPackage.Element.Modified);
 
 			Key pakageKey = new Key(packageID, packageRevision);
-			
-            currentNode.ResourceReference = pakageKey;
-            currentNode.Description = new Value("Package: " + currentPackage.Name);
+
+			currentNode.ResourceReference = pakageKey;
+			currentNode.Description = new List<MultilanguageText> {
+				new MultilanguageText("Package: " + currentPackage.Name) 
+			};
 
 			// diagrams
 			for (short diagramCounter = 0; diagramCounter < currentPackage.Diagrams.Count; diagramCounter++)
@@ -277,7 +282,9 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				Node node = new Node()
 				{
 					ResourceReference = diagramKey,
-					Description = new Value("Diagram: " + diagram.Name)
+					Description = new List<MultilanguageText> {
+						new MultilanguageText("Diagram: " + diagram.Name)
+					}
 				};
 
 				currentNode.Nodes.Add(node);
@@ -320,7 +327,9 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			Node node = new Node()
 			{
 				ResourceReference = elememntKey,
-				Description = "Element: " + currentElement.Name
+				Description = new List<MultilanguageText> {
+					new MultilanguageText("Element: " + currentElement.Name)
+				}
 			};
 
 			currentNode.Nodes.Add(node);
@@ -338,7 +347,9 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				Node diagramNode = new Node()
 				{
 					ResourceReference = diagramKey,
-					Description = "Diagram: " + diagram.Name
+					Description = new List<MultilanguageText> {
+						new MultilanguageText("Diagram: " + diagram.Name)
+					}
 				};
 
 				node.Nodes.Add(diagramNode);
@@ -372,7 +383,10 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				Node embeddedElementNode = new Node()
 				{
 					ResourceReference = new Key(embeddedElementID, embeddedElementRevision),
-					Description = "Embedded element: " + embeddedElement.Name
+					Description = new List<MultilanguageText> {
+						new MultilanguageText("Embedded element: " + embeddedElement.Name) 
+					}
+
 				};
 
 				node.Nodes.Add(embeddedElementNode);
@@ -699,8 +713,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					Class = new Key(resourceClass.ID, resourceClass.Revision),
 					ChangedAt = eaElement.Modified,
 					ChangedBy = eaElement.Author,
-					Revision = revision,
-					Title = new Value(eaElement.Name)
+					Revision = revision
 				};
 
 				elementResource.Properties = new List<Property>();
@@ -708,24 +721,19 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				elementResource.Properties.Add(
 					new Property()
 					{
-						Title = new Value("dcterms:title"),
-						PropertyClass = new Key("PC-Name", "1"),
+						Class = new Key("PC-Name", "1"),
 						Value = eaElement.Name,
-						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID + "_NAME"),
-						ChangedAt = eaElement.Modified,
-						ChangedBy = eaElement.Author
+
 					}
 					);
 
 				elementResource.Properties.Add(
 					new Property()
 					{
-						Title = new Value("dcterms:description"),
-						PropertyClass = new Key("PC-Description", "1"),
+
+						Class = new Key("PC-Description", "1"),
 						Value = eaElement.Notes,
-						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID + "_NOTES"),
-						ChangedAt = eaElement.Modified,
-						ChangedBy = eaElement.Author
+
 					}
 					);
 
@@ -734,12 +742,9 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					elementResource.Properties.Add(
 						new Property()
 						{
-							Title = new Value("SpecIF:Status"),
-							PropertyClass = new Key("PC-Status", "1"),
-							Value = new Value(GetStatusEnumID(eaElement.Status)),
-							ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID + "_STATUS"),
-							ChangedAt = eaElement.Modified,
-							ChangedBy = eaElement.Author
+							Class = new Key("PC-Status", "1"),
+							Value = GetStatusEnumID(eaElement.Status),
+
 						}
 						);
 				}
@@ -768,12 +773,8 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					elementResource.Properties.Add(
 						new Property()
 						{
-							Title = new Value("UML:Stereotype"),
-							PropertyClass = new Key("PC-Stereotype", "1"),
-							Value = stereotypeValue,
-							ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID + "_STEREOTYPE"),
-							ChangedAt = eaElement.Modified,
-							ChangedBy = eaElement.Author
+							Class = new Key("PC-Stereotype", "1"),
+							Value = stereotypeValue
 						}
 						);
 
@@ -827,12 +828,8 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					elementResource.Properties.Add(
 						new Property()
 						{
-							Title = new Value("dcterms:type"),
-							PropertyClass = new Key("PC-Type", "1"),
-							Value = elementLegacyType,
-							ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID + "_TYPE"),
-							ChangedAt = eaElement.Modified,
-							ChangedBy = eaElement.Author
+							Class = new Key("PC-Type", "1"),
+							Value = elementLegacyType
 						}
 						);
 
@@ -852,12 +849,8 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 						elementResource.Properties.Add(
 							new Property()
 							{
-								Title = "dcterms:identifier",
-								PropertyClass = new Key("PC-VisibleId", "1"),
-								Value = identifierValue,
-								ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID + "_IDENTIFIER"),
-								ChangedAt = eaElement.Modified,
-								ChangedBy = eaElement.Author
+								Class = new Key("PC-VisibleId", "1"),
+								Value = identifierValue
 							}
 							);
 					}
@@ -870,12 +863,8 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
                         {
 							elementResource.Properties.Add(new Property()
 							{
-								Title = "SpecIF:Perspective",
-								PropertyClass = new Key("PC-Perspective", "1"),
-								Value = "V-perspective-1",
-								ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(eaElement.ElementGUID + "_PERSPECTIVE"),
-								ChangedAt = eaElement.Modified,
-								ChangedBy = eaElement.Author
+								Class = new Key("PC-Perspective", "1"),
+								Value = "V-perspective-1"
 							});
                         }
                     }
@@ -964,7 +953,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				// constraints
 
 				// alternative ID
-				result.AlternativeIDs = new List<AlternativeId>();
+				result.AlternativeIDs = new List<object>();
 
 				AlternativeId alternativeId = new AlternativeId()
 				{
@@ -1177,98 +1166,49 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
 				string specIfID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID);
 
-				
-					string tagNamespace = "";
-					string tagStereotype = "";
-					string tagName = tag.Name;
 
-					if (!string.IsNullOrEmpty(tag.FQName))
-					{
-						ParseFullQualifiedTagName(tag.FQName, out tagNamespace, out tagStereotype, out tagName);
-					}
-					
-					Resource tagResource = new Resource()
-					{
-						ID = specIfID,
-						Class = new Key("RC-State", "1"),
-						ChangedAt = eaElement.Modified,
-						ChangedBy = eaElement.Author,
-						Revision = revision,
-						Title = new Value(tagName)
-					};
+				string tagNamespace = "";
+				string tagStereotype = "";
+				string tagName = tag.Name;
 
-					tagResource.Properties = new List<Property>();
+				if (!string.IsNullOrEmpty(tag.FQName))
+				{
+					ParseFullQualifiedTagName(tag.FQName, out tagNamespace, out tagStereotype, out tagName);
+				}
 
-					tagResource.Properties.Add(
-						new Property()
-						{
-							Title = new Value("dcterms:title"),
-							PropertyClass = new Key("PC-Name", "1"),
-							Value = tagName,
-							ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID + "_NAME"),
-							ChangedAt = eaElement.Modified,
-							ChangedBy = eaElement.Author
-						}
-						);
+				Resource tagResource = new Resource()
+				{
+					ID = specIfID,
+					Class = new Key("RC-State", "1"),
+					ChangedAt = eaElement.Modified,
+					ChangedBy = eaElement.Author,
+					Revision = revision
+				};
 
-					tagResource.Properties.Add(
-						new Property()
-						{
-							Title = new Value("dcterms:description"),
-							PropertyClass = new Key("PC-Description", "1"),
-							Value = tag.Notes,
-							ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID + "_NOTES"),
-							ChangedAt = eaElement.Modified,
-							ChangedBy = eaElement.Author
-						}
-						);
+				tagResource.Properties = new List<Property>();
 
-					tagResource.Properties.Add(
-						new Property()
-						{
-							Title = new Value("dcterms:type"),
-							PropertyClass = new Key("PC-Type", "1"),
-							Value = "OMG:UML:2.5.1:TaggedValue",
-							ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID + "_TYPE"),
-							ChangedAt = eaElement.Modified,
-							ChangedBy = eaElement.Author
-						}
-						);
+				tagResource.Properties.Add(new Property(new Key("PC-Name", "1.1"), tagName));
 
-					tagResource.Properties.Add(
-						new Property()
-						{
-							Title = new Value("rdf:value"),
-							PropertyClass = new Key("PC-Value", "1"),
-							Value = eaElement.GetTaggedValueString(tag.Name),
-							ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID + "_VALUE"),
-							ChangedAt = eaElement.Modified,
-							ChangedBy = eaElement.Author
-						}
-						);
+				tagResource.Properties.Add(new Property(new Key("PC-Description", "1.1"), tag.Notes));
 
-					string stereotypeValue = "";
+				tagResource.Properties.Add(new Property(new Key("PC-Type", "1.1"), "OMG:UML:2.5.1:TaggedValue"));
 
-					if (tagStereotype != "")
-					{
-						stereotypeValue = tagNamespace + ":" + tagStereotype;
-					}
-					else
-					{
-						stereotypeValue = stereotype;
-					}
 
-					tagResource.Properties.Add(
-						new Property()
-						{
-							Title = new Value("UML:Stereotype"),
-							PropertyClass = new Key("PC-Stereotype", "1"),
-							Value = stereotypeValue,
-							ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.PropertyGUID + "_STEREOTYPE"),
-							ChangedAt = eaElement.Modified,
-							ChangedBy = eaElement.Author
-						}
-						);
+				tagResource.Properties.Add(new Property(new Key("PC-Value", "1.1"), eaElement.GetTaggedValueString(tag.Name)));
+
+				string stereotypeValue = "";
+
+				if (tagStereotype != "")
+				{
+					stereotypeValue = tagNamespace + ":" + tagStereotype;
+				}
+				else
+				{
+					stereotypeValue = stereotype;
+				}
+
+				tagResource.Properties.Add(new Property(new Key("PC-Stereotype", "1"), stereotypeValue));
+
 
 
 				ImplicitElementResource tagValueResource = new ImplicitElementResource
@@ -1278,7 +1218,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					Parent = new Key(parent.Resource.ID, parent.Resource.Revision),
 					ParentEaGUID = parent.EaGUID
 				};
-				
+
 				result.Add(tagValueResource);
 
 				_implicitElementResources.Add(GetCacheKey(tagResource), tagValueResource);
@@ -1301,8 +1241,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				{
 					ID = specIfID,
 					Class = new Key("RC-State", "1"),
-					Revision = "1",
-					Title = new Value(elementConstraint.Name)
+					Revision = "1"
 				};
 
 				result.Properties = new List<Property>();
@@ -1310,10 +1249,8 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				result.Properties.Add(
 					new Property()
 					{
-						Title = new Value("dcterms:title"),
-						PropertyClass = new Key("PC-Name", "1"),
-						Value = elementConstraint.Name,
-						ID = result.ID + "_NAME"
+						Class = new Key("PC-Name", "1"),
+						Value = elementConstraint.Name
 
 					}
 					);
@@ -1321,10 +1258,8 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				result.Properties.Add(
 					new Property()
 					{
-						Title = new Value("dcterms:type"),
-						PropertyClass = new Key("PC-Type", "1"),
-						Value = "OMG:UML:2.5.1:Constraint",
-						ID = result.ID + "_TYPE"
+						Class = new Key("PC-Type", "1"),
+						Value = "OMG:UML:2.5.1:Constraint"
 
 					}
 					);
@@ -1332,20 +1267,16 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				result.Properties.Add(
 						new Property()
 						{
-							Title = new Value("UML:Stereotype"),
-							PropertyClass = new Key("PC-Stereotype", "1"),
-							Value = elementConstraint.Type,
-							ID = result.ID + "_STEREOTYPE"
+							Class = new Key("PC-Stereotype", "1"),
+							Value = elementConstraint.Type
 						}
 						);
 
 				result.Properties.Add(
 						new Property()
 						{
-							Title = new Value("rdf:value"),
-							PropertyClass = new Key("PC-Value", "1"),
-							Value = elementConstraint.Notes,
-							ID = result.ID + "_VALUE"
+							Class = new Key("PC-Value", "1"),
+							Value = elementConstraint.Notes
 						}
 						);
 			}
@@ -1373,28 +1304,21 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					Class = new Key("RC-Actor", "1"),
 					ChangedAt = eaElement.Modified,
 					ChangedBy = eaElement.Author,
-					Revision = elementRevision,
-					Title = new Value(operation.Name)
+					Revision = elementRevision
 				};
 
 				operationResource.Properties = new List<Property>();
 
 				operationResource.Properties.Add(
-					new Property("dcterms:title", new Key("PC-Name", "1"), operation.Name,
-								 EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID + "_NAME"),
-								 eaElement.Modified, eaElement.Author));
+					new Property(new Key("PC-Name", "1"), operation.Name));
 
 
 				operationResource.Properties.Add(
-					new Property("dcterms:description", new Key("PC-Description", "1"), operation.Notes,
-								 EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID + "_NOTES"),
-								 eaElement.Modified, eaElement.Author));
+					new Property(new Key("PC-Description", "1"), operation.Notes));
 
 
 				operationResource.Properties.Add(
-					new Property("dcterms:type", new Key("PC-Type", "1"), "OMG:UML:2.5.1:Operation",
-								 EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID + "_TYPE"),
-								 eaElement.Modified, eaElement.Author));
+					new Property(new Key("PC-Type", "1"), "OMG:UML:2.5.1:Operation"));
 
 
 				string namespc = "";
@@ -1440,10 +1364,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					stereotypeValue += "do";
 				}
 
-				operationResource.Properties.Add(
-						new Property("UML:Stereotype", new Key("PC-Stereotype", "1"), stereotypeValue,
-									 EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID + "_STEREOTYPE"),
-									 eaElement.Modified, eaElement.Author));
+				operationResource.Properties.Add(new Property(new Key("PC-Stereotype", "1.1"), stereotypeValue));
 
 
 				string id = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(operation.MethodGUID) + "_VISIBILITY";
@@ -1474,8 +1395,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					Class = new Key("RC-State", "1"),
 					ChangedAt = eaElement.Modified,
 					ChangedBy = eaElement.Author,
-					Revision = elementRevision,
-					Title = new Value(parameter.Name)
+					Revision = elementRevision
 				};
 
 				result.Properties = new List<Property>();
@@ -1483,36 +1403,24 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				result.Properties.Add(
 					new Property()
 					{
-						Title = new Value("dcterms:title"),
-						PropertyClass = new Key("PC-Name", "1"),
-						Value = parameter.Name,
-						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(parameter.ParameterGUID + "_NAME"),
-						ChangedAt = eaElement.Modified,
-						ChangedBy = eaElement.Author
+						Class = new Key("PC-Name", "1"),
+						Value = parameter.Name
 					}
 					);
 
 				result.Properties.Add(
 					new Property()
 					{
-						Title = new Value("dcterms:description"),
-						PropertyClass = new Key("PC-Description", "1"),
-						Value = parameter.Notes,
-						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(parameter.ParameterGUID + "_NOTES"),
-						ChangedAt = eaElement.Modified,
-						ChangedBy = eaElement.Author
+						Class = new Key("PC-Description", "1"),
+						Value = parameter.Notes
 					}
 					);
 
 				result.Properties.Add(
 					new Property()
 					{
-						Title = new Value("dcterms:type"),
-						PropertyClass = new Key("PC-Type", "1"),
-						Value = "OMG:UML:2.5.1:Parameter",
-						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(parameter.ParameterGUID + "_TYPE"),
-						ChangedAt = eaElement.Modified,
-						ChangedBy = eaElement.Author
+						Class = new Key("PC-Type", "1"),
+						Value = "OMG:UML:2.5.1:Parameter"
 					}
 					);
 			}
@@ -1540,56 +1448,35 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					ChangedAt = eaElement.Modified,
 					ChangedBy = eaElement.Author,
 					Revision = elementRevision,
-					Title = new Value(attribute.Name)
+					
 				};
 
 				result.Properties = new List<Property>();
 
+				result.Properties.Add(new Property(new Key("PC-Name", "1"), attribute.Name));
+					
+
 				result.Properties.Add(
 					new Property()
 					{
-						Title = new Value("dcterms:title"),
-						PropertyClass = new Key("PC-Name", "1"),
-						Value = attribute.Name,
-						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(attribute.AttributeGUID + "_NAME"),
-						ChangedAt = eaElement.Modified,
-						ChangedBy = eaElement.Author
+						Class = new Key("PC-Description", "1"),
+						Value = attribute.Notes
 					}
 					);
 
 				result.Properties.Add(
 					new Property()
 					{
-						Title = new Value("dcterms:description"),
-						PropertyClass = new Key("PC-Description", "1"),
-						Value = attribute.Notes,
-						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(attribute.AttributeGUID + "_NOTES"),
-						ChangedAt = eaElement.Modified,
-						ChangedBy = eaElement.Author
-					}
-					);
-
-				result.Properties.Add(
-					new Property()
-					{
-						Title = new Value("dcterms:type"),
-						PropertyClass = new Key("PC-Type", "1"),
-						Value = "OMG:UML:2.5.1:Attribute",
-						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(attribute.AttributeGUID + "_TYPE"),
-						ChangedAt = eaElement.Modified,
-						ChangedBy = eaElement.Author
+						Class = new Key("PC-Type", "1"),
+						Value = "OMG:UML:2.5.1:Attribute"
 					}
 					);
 
 				result.Properties.Add(
 						new Property()
 						{
-							Title = new Value("rdf:value"),
-							PropertyClass = new Key("PC-Value", "1"),
-							Value = attribute.Default,
-							ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(attribute.AttributeGUID + "_VALUE"),
-							ChangedAt = eaElement.Modified,
-							ChangedBy = eaElement.Author
+							Class = new Key("PC-Value", "1"),
+							Value = attribute.Default
 						}
 						);
 
@@ -1844,8 +1731,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			{
 				ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(connector.ConnectorGUID + "_CONSTRAINT_" + index),
 				Class = new Key("RC-State", "1"),
-				Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID(),
-				Title = new Value(connectorConstraint.Name)
+				Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID()
 			};
 
 			result.Properties = new List<Property>();
@@ -1853,10 +1739,8 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			result.Properties.Add(
 				new Property()
 				{
-					Title = new Value("dcterms:title"),
-					PropertyClass = new Key("PC-Name", "1"),
-					Value = connectorConstraint.Name,
-					ID = result.ID + "_NAME"
+					Class = new Key("PC-Name", "1"),
+					Value = connectorConstraint.Name
 					
 				}
 				);
@@ -1864,10 +1748,8 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			result.Properties.Add(
 				new Property()
 				{
-					Title = new Value("dcterms:type"),
-					PropertyClass = new Key("PC-Type", "1"),
-					Value = "OMG:UML:2.5.1:Constraint",
-					ID = result.ID + "_TYPE"
+					Class = new Key("PC-Type", "1"),
+					Value = "OMG:UML:2.5.1:Constraint"
 					
 				}
 				);
@@ -1875,20 +1757,16 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			result.Properties.Add(
 					new Property()
 					{
-						Title = new Value("UML:Stereotype"),
-						PropertyClass = new Key("PC-Stereotype", "1"),
-						Value = connectorConstraint.Type,
-						ID = result.ID + "_STEREOTYPE"
+						Class = new Key("PC-Stereotype", "1"),
+						Value = connectorConstraint.Type
 					}
 					);
 
 			result.Properties.Add(
 					new Property()
 					{
-						Title = new Value("rdf:value"),
-						PropertyClass = new Key("PC-Value", "1"),
-						Value = connectorConstraint.Notes,
-						ID = result.ID + "_VALUE"
+						Class = new Key("PC-Value", "1"),
+						Value = connectorConstraint.Notes
 					}
 					);
 
@@ -1901,8 +1779,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			{
 				ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(connector.ConnectorGUID + "_GUARD"),
 				Class = new Key("RC-Actor", "1"),
-				Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID(),
-				Title = new Value(connector.TransitionGuard)
+				Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID()
 			};
 
 			result.Properties = new List<Property>();
@@ -1910,10 +1787,8 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			result.Properties.Add(
 				new Property()
 				{
-					Title = new Value("dcterms:title"),
-					PropertyClass = new Key("PC-Name", "1"),
-					Value = connector.TransitionGuard,
-					ID = result.ID + "_NAME"
+					Class = new Key("PC-Name", "1"),
+					Value = connector.TransitionGuard
 
 				}
 				);
@@ -1921,10 +1796,8 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			result.Properties.Add(
 				new Property()
 				{
-					Title = new Value("dcterms:type"),
-					PropertyClass = new Key("PC-Type", "1"),
-					Value = "OMG:UML:2.5.1:Constraint",
-					ID = result.ID + "_TYPE"
+					Class = new Key("PC-Type", "1"),
+					Value = "OMG:UML:2.5.1:Constraint"
 
 				}
 				);
@@ -1932,20 +1805,16 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			result.Properties.Add(
 					new Property()
 					{
-						Title = new Value("UML:Stereotype"),
-						PropertyClass = new Key("PC-Stereotype", "1"),
-						Value = "Guard",
-						ID = result.ID + "_STEREOTYPE"
+						Class = new Key("PC-Stereotype", "1"),
+						Value = "Guard"
 					}
 					);
 
 			result.Properties.Add(
 					new Property()
 					{
-						Title = new Value("rdf:value"),
-						PropertyClass = new Key("PC-Value", "1"),
-						Value = connector.TransitionGuard,
-						ID = result.ID + "_VALUE"
+						Class = new Key("PC-Value", "1"),
+						Value = connector.TransitionGuard
 					}
 					);
 
@@ -1977,8 +1846,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				{
 					ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.TagGUID),
 					Class = new Key("RC-State", "1"),
-					Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID(),
-					Title = new Value(tagName)
+					Revision = SpecIfGuidGenerator.CreateNewSpecIfGUID()
 				};
 
 				tagResource.Properties = new List<Property>();
@@ -1986,40 +1854,32 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				tagResource.Properties.Add(
 					new Property()
 					{
-						Title = new Value("dcterms:title"),
-						PropertyClass = new Key("PC-Name", "1"),
-						Value = tagName,
-                        ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.TagGUID + "_NAME")
+						Class = new Key("PC-Name", "1"),
+						Value = tagName
 					}
 					);
 
 				tagResource.Properties.Add(
 					new Property()
 					{
-						Title = new Value("dcterms:description"),
-						PropertyClass = new Key("PC-Description", "1"),
-						Value = tag.Notes,
-						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.TagGUID + "_NOTES")
+						Class = new Key("PC-Description", "1"),
+						Value = tag.Notes
 					}
 					);
 
 				tagResource.Properties.Add(
 					new Property()
 					{
-						Title = new Value("dcterms:type"),
-						PropertyClass = new Key("PC-Type", "1"),
-						Value = "OMG:UML:2.5.1:TaggedValue",
-                        ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.TagGUID + "_TYPE")
+						Class = new Key("PC-Type", "1"),
+						Value = "OMG:UML:2.5.1:TaggedValue"
 					}
 					);
 
 				tagResource.Properties.Add(
 					new Property()
 					{
-						Title = new Value("rdf:value"),
-						PropertyClass = new Key("PC-Value", "1"),
-						Value = tag.Value,
-						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.TagGUID + "_VALUE")
+						Class = new Key("PC-Value", "1"),
+						Value = tag.Value
 					}
 					);
 
@@ -2037,10 +1897,8 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				tagResource.Properties.Add(
 					new Property()
 					{
-						Title = new Value("UML:Stereotype"),
-						PropertyClass = new Key("PC-Stereotype", "1"),
-						Value = stereotypeValue,
-						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(tag.TagGUID + "_STEREOTYPE")
+						Class = new Key("PC-Stereotype", "1"),
+						Value = stereotypeValue
 					}
 					);
 
@@ -2151,8 +2009,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 					Class = new Key("RC-Diagram", "1"),
 					ChangedAt = diagram.ModifiedDate,
 					ChangedBy = diagram.Author,
-					Revision = revision,
-					Title = new Value(diagram.Name)
+					Revision = revision
 				};
 
 				result.Properties = new List<Property>();
@@ -2160,48 +2017,32 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				result.Properties.Add(
 					new Property()
 					{
-						Title = new Value("dcterms:title"),
-						PropertyClass = new Key("PC-Name", "1"),
-						Value = diagram.Name,
-						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID + "_NAME"),
-						ChangedAt = diagram.ModifiedDate,
-						ChangedBy = diagram.Author
+						Class = new Key("PC-Name", "1"),
+						Value = diagram.Name
 					}
 					);
 
 				result.Properties.Add(
 					new Property()
 					{
-						Title = new Value("dcterms:description"),
-						PropertyClass = new Key("PC-Description", "1"),
-						Value = diagram.Notes,
-						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID + "_NOTES"),
-						ChangedAt = diagram.ModifiedDate,
-						ChangedBy = diagram.Author
+						Class = new Key("PC-Description", "1"),
+						Value = diagram.Notes
 					}
 					);
 
 				result.Properties.Add(
 					new Property()
 					{
-						Title = new Value("SpecIF:Diagram"),
-						PropertyClass = new Key("PC-Diagram", "1"),
-						Value = diagramXHTML,
-						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID + "_DIAGRAM"),
-						ChangedAt = diagram.ModifiedDate,
-						ChangedBy = diagram.Author
+						Class = new Key("PC-Diagram", "1"),
+						Value = diagramXHTML
 					}
 					);
 
 				result.Properties.Add(
 					new Property()
 					{
-						Title = new Value("dcterms:type"),
-						PropertyClass = new Key("PC-Type", "1"),
-						Value = "OMG:UML:2.5.1:" + GetUmlDiagramTypeFromEaType(diagram.Type),
-						ID = EaSpecIfGuidConverter.ConvertEaGuidToSpecIfGuid(diagram.DiagramGUID + "_TYPE"),
-						ChangedAt = diagram.ModifiedDate,
-						ChangedBy = diagram.Author
+						Class = new Key("PC-Type", "1"),
+						Value = "OMG:UML:2.5.1:" + GetUmlDiagramTypeFromEaType(diagram.Type)
 					}
 					);
 
@@ -2260,7 +2101,6 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			{
 				ID = statementID,
 				Revision = "1",
-				Title = new Value("oslc_rm:satisfies"),
 				Class = new Key("SC-satisfies", "1"),
 				StatementSubject = new Key(subjectResource.ID, subjectResource.Revision),
 				StatementObject = new Key(objectResource.ID, objectResource.Revision)
@@ -2293,7 +2133,6 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			{
 				ID = statementID,
 				Revision = "1",
-				Title = new Value("SpecIF:contains"),
 				Class = new Key("SC-contains", "1"),
                 StatementSubject = subjectID,
                 StatementObject = objectID
@@ -2313,7 +2152,6 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			{
 				ID = statementID,
 				Revision = "1",
-				Title = new Value("SpecIF:shows"),
 				Class = new Key("SC-shows", "1"),
 				StatementSubject = new Key(subjectID.ID, subjectID.Revision),
 				StatementObject = new Key(objectID.ID, objectID.Revision)
@@ -2333,7 +2171,6 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			{
 				ID = statementID,
 				Revision = "1",
-				Title = new Value("SpecIF:writes"),
 				Class = new Key("SC-writes", "1"),
 				StatementSubject = new Key(subjectID.ID, subjectID.Revision),
 				StatementObject = new Key(objectID.ID, objectID.Revision)
@@ -2353,7 +2190,6 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			{
 				ID = statementID,
 				Revision = "1",
-				Title = new Value("SpecIF:reads"),
 				Class = new Key("SC-reads", "1"),
 				StatementSubject = new Key(subjectID.ID, subjectID.Revision),
 				StatementObject = new Key(objectID.ID, objectID.Revision)
@@ -2373,7 +2209,6 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			{
 				ID = statementID,
 				Revision = "1",
-				Title = new Value("SpecIF:stores"),
 				Class = new Key("SC-stores", "1"),
 				StatementSubject = new Key(subjectID.ID, subjectID.Revision),
 				StatementObject = new Key(objectID.ID, objectID.Revision)
@@ -2393,7 +2228,6 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			{
 				ID = statementID,
 				Revision = "1",
-				Title = new Value("IREB:refines"),
 				Class = new Key("SC-refines", "1"),
 				StatementSubject = new Key(subjectID.ID, subjectID.Revision),
 				StatementObject = new Key(objectID.ID, objectID.Revision)
@@ -2485,7 +2319,6 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 				{
 					ID = statementID,
 					Revision = "1",
-					Title = new Value("rdf:type"),
 					Class = new Key("SC-Classifier", "1"),
 					StatementSubject = new Key(specIfID, specifRevision),
 					StatementObject = new Key(classifierSpecIfID, classifierRevision)
@@ -2504,7 +2337,6 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 			{
 				ID = statementID,
 				Revision = "1",
-				Title = new Value("rdf:type"),
 				Class = new Key("SC-Classifier", "1"),
 				StatementSubject = instanceKey,
 				StatementObject = classifierKey
@@ -2574,57 +2406,41 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 		{
 			Property result = new Property()
 			{
-				ID = ID,
-				Revision = revision,
-				PropertyClass = new Key("PC-UML_VisibilityKind", revision),
-				Title = new Value("UML:VisibilityKind"),
-				Value = new Value()
+				Class = new Key("PC-UML_VisibilityKind", revision),
+				Values = new List<Value>()
 			};
 
-			if(changedAt != default(DateTime))
-			{
-				result.ChangedAt = changedAt;
-			}
-
-			if(!string.IsNullOrEmpty(changedBy))
-			{
-				result.ChangedBy = changedBy;
-			}
-
-			LanguageValue languageValue = new LanguageValue()
-			{
-				Text = "V-UML_VisibilityKind-0",
-				Language = "en-EN"
-			};
+			Value languageValue = new Value("V-UML_VisibilityKind-0");
+			
 
 			switch (visibility.ToLower())
 			{
 				case "public":
-					languageValue.Text = "V-UML_VisibilityKind-0";					
+					languageValue = new Value("V-UML_VisibilityKind-0");					
 				break;
 
 				case "private":
-					languageValue.Text = "V-UML_VisibilityKind-1";
-				break;
+					languageValue = new Value("V-UML_VisibilityKind-1");
+					break;
 
 				case "protected":
-					languageValue.Text = "V-UML_VisibilityKind-2";
-				break;
+					languageValue = new Value("V-UML_VisibilityKind-2");
+					break;
 
 				case "package":
-					languageValue.Text = "V-UML_VisibilityKind-3";
-				break;
+					languageValue = new Value("V-UML_VisibilityKind-3");
+					break;
 
 				case "internal":
-					languageValue.Text = "V-UML_VisibilityKind-4";
-				break;
+					languageValue = new Value("V-UML_VisibilityKind-4");
+					break;
 
 				case "protected internal":
-					languageValue.Text = "V-UML_VisibilityKind-5";
-				break;
+					languageValue = new Value("V-UML_VisibilityKind-5");
+					break;
 			}
 
-			result.Value = languageValue.Text;
+			result.Values.Add(languageValue);
 
 			return result;
 		}
@@ -2906,7 +2722,6 @@ will internally represent Real numbers using a floating point standard such as I
 			{
 				ID = id,
 				Revision = "A4F2DAB6-66FB-470B-98AD-DA6CA2703087",
-				Title = new Value(title),
 				Class = new Key(GetResourceClassForElementType("PrimitiveType").ID, "1"),
 				ChangedAt = new DateTime(2019, 4, 7),
 				ChangedBy = "oalt"
@@ -2918,36 +2733,24 @@ will internally represent Real numbers using a floating point standard such as I
 			result.Properties.Add(
 				new Property()
 				{
-					Title = new Value("dcterms:title"),
-					PropertyClass = new Key("PC-Name", "1"),
-					Value = title,
-    				ID = result.ID + "_NAME",
-					ChangedAt = new DateTime(2019, 4, 7),
-					ChangedBy = "oalt"
+					Class = new Key("PC-Name", "1"),
+					Value = title
 				}
 				);
 
 			result.Properties.Add(
 				new Property()
 				{
-					Title = new Value("dcterms:description"),
-					PropertyClass = new Key("PC-Description", "1"),
-					Value = description,
-					ID = result.ID + "_NOTES",
-					ChangedAt = new DateTime(2019, 4, 7),
-					ChangedBy = "oalt"
+					Class = new Key("PC-Description", "1"),
+					Value = description
 				}
 				);
 
 			result.Properties.Add(
 				new Property()
 				{
-					Title = new Value("dcterms:type"),
-					PropertyClass = new Key("PC-Type", "1"),
-					Value = "OMG:UML:2.5.1:PrimitiveType",
-					ID = result.ID + "_TYPE",
-					ChangedAt = new DateTime(2019, 4, 7),
-					ChangedBy = "oalt"
+					Class = new Key("PC-Type", "1"),
+					Value = "OMG:UML:2.5.1:PrimitiveType"
 				}
 				);
 

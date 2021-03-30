@@ -6,17 +6,18 @@ using System.IO;
 using System.Text;
 using MDD4All.SpecIF.DataModels.Manipulation;
 using MDD4All.SpecIF.DataProvider.Contracts;
+using MDD4All.SpecIF.Generators.Vocabulary.DataModels;
 
 namespace MDD4All.SpecIF.Generators.Vocabulary
 {
     public class DocumentationGenerator
     {
 
-        private Dictionary<string, DataModels.SpecIF> _domainClasses = new Dictionary<string, DataModels.SpecIF>();
+        private Dictionary<string, SpecIF.DataModels.SpecIF> _domainClasses = new Dictionary<string, SpecIF.DataModels.SpecIF>();
 
         private const string CRLF = "\r\n";
 
-        private DataModels.SpecIF _metaDataSpecIF = new DataModels.SpecIF();
+        private SpecIF.DataModels.SpecIF _metaDataSpecIF = new SpecIF.DataModels.SpecIF();
 
         private ISpecIfMetadataReader _specIfMetadataReader;
 
@@ -44,7 +45,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
 
             _specIfMetadataReader = new SpecIfFileMetadataReader(_metaDataSpecIF);
 
-            foreach (KeyValuePair<string, DataModels.SpecIF> domain in _domainClasses)
+            foreach (KeyValuePair<string, SpecIF.DataModels.SpecIF> domain in _domainClasses)
             {
                 result += GenerateDomainDocumentation(domain.Key, domain.Value);
             }
@@ -52,7 +53,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
             return result;
         }
 
-        private string GenerateDomainDocumentation(string key, DataModels.SpecIF domainClasses)
+        private string GenerateDomainDocumentation(string key, SpecIF.DataModels.SpecIF domainClasses)
         {
             string result = "";
 
@@ -68,35 +69,109 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
 
                 result += "### Data types of domain " + domainName + Environment.NewLine;
 
-                result += "|title|id|revision|type|description|" + Environment.NewLine;
+                Table table = new Table();
 
-                result += "|-|-|-|-|" + Environment.NewLine;
+                List<TableCell> headerRow = new List<TableCell>();
+
+                TableCell titleTableCell = new TableCell();
+                titleTableCell.Content.Add("title");
+
+                headerRow.Add(titleTableCell);
+
+
+                TableCell idTableCell = new TableCell();
+                idTableCell.Content.Add("id");
+
+                headerRow.Add(idTableCell);
+
+                TableCell revisionTableCell = new TableCell();
+                revisionTableCell.Content.Add("revision");
+
+                headerRow.Add(revisionTableCell);
+
+                TableCell typeTableCell = new TableCell();
+                typeTableCell.Content.Add("type");
+
+                headerRow.Add(typeTableCell);
+
+                TableCell descriptionTableCell = new TableCell();
+                descriptionTableCell.Content.Add("description");
+
+                headerRow.Add(descriptionTableCell);
+
+                table.TableCells.Add(headerRow);
 
                 foreach (DataType dataType in domainClasses.DataTypes)
                 {
-                    result += "|" + dataType.Title + "|" + dataType.ID + "|" + dataType.Revision;
-                    result += "|" + dataType.Type;
-                    result += "|" + GetDataTypeDescription(dataType) + Environment.NewLine;
+                    List<TableCell> contentRow = new List<TableCell>()
+                    {
+                        new TableCell(dataType.Title),
+                        new TableCell(dataType.ID),
+                        new TableCell(dataType.Revision),
+                        new TableCell(dataType.Type)
+                    };
+
+                    contentRow.Add(GetDataTypeDescription(dataType));
+
+                    table.TableCells.Add(contentRow);
                 }
+
+                result += table.GenerateGridTable();
             }
 
             // properties
             if (domainClasses.PropertyClasses != null && domainClasses.PropertyClasses.Count != 0)
             {
-
                 result += "### Property classes of domain " + domainName + Environment.NewLine;
 
-                result += "|title|id|revision|dataType|description|" + Environment.NewLine;
+                Table table = new Table();
 
-                result += "|-|-|-|-|-|" + Environment.NewLine;
+                List<TableCell> headerRow = new List<TableCell>();
+
+                TableCell titleTableCell = new TableCell();
+                titleTableCell.Content.Add("title");
+
+                headerRow.Add(titleTableCell);
+
+
+                TableCell idTableCell = new TableCell();
+                idTableCell.Content.Add("id");
+
+                headerRow.Add(idTableCell);
+
+                TableCell revisionTableCell = new TableCell();
+                revisionTableCell.Content.Add("revision");
+
+                headerRow.Add(revisionTableCell);
+
+                TableCell typeTableCell = new TableCell();
+                typeTableCell.Content.Add("dataType");
+
+                headerRow.Add(typeTableCell);
+
+                TableCell descriptionTableCell = new TableCell();
+                descriptionTableCell.Content.Add("description");
+
+                headerRow.Add(descriptionTableCell);
+
+                table.TableCells.Add(headerRow);
 
                 foreach (PropertyClass propertyClass in domainClasses.PropertyClasses)
                 {
-                    result += "|" + propertyClass.Title + "|" + propertyClass.ID + "|" + propertyClass.Revision;
-                    result += "|" + propertyClass.GetDataTypeTitle(_specIfMetadataReader);
-                    
-                    result += "|" + propertyClass.Description + Environment.NewLine;
+                    List<TableCell> contentRow = new List<TableCell>()
+                    {
+                        new TableCell(propertyClass.Title),
+                        new TableCell(propertyClass.ID),
+                        new TableCell(propertyClass.Revision),
+                        new TableCell(propertyClass.GetDataTypeTitle(_specIfMetadataReader)),
+                        new TableCell(propertyClass.Description[0].Text)
+                    };
+
+                    table.TableCells.Add(contentRow);
                 }
+
+                result += table.GenerateGridTable();
+
             }
 
             // resources
@@ -104,15 +179,50 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
             {
                 result += "### Resource classes of domain " + domainName + Environment.NewLine;
 
-                result += "|title|id|revision|description|" + Environment.NewLine;
+                Table table = new Table();
 
-                result += "|-|-|-|-|" + Environment.NewLine;
+                List<TableCell> headerRow = new List<TableCell>();
+
+                TableCell titleTableCell = new TableCell();
+                titleTableCell.Content.Add("title");
+
+                headerRow.Add(titleTableCell);
+
+
+                TableCell idTableCell = new TableCell();
+                idTableCell.Content.Add("id");
+
+                headerRow.Add(idTableCell);
+
+                TableCell revisionTableCell = new TableCell();
+                revisionTableCell.Content.Add("revision");
+
+                headerRow.Add(revisionTableCell);
+
+                TableCell descriptionTableCell = new TableCell();
+                descriptionTableCell.Content.Add("description");
+
+                headerRow.Add(descriptionTableCell);
+
+                table.TableCells.Add(headerRow);
 
                 foreach (ResourceClass resourceClass in domainClasses.ResourceClasses)
                 {
-                    result += "|" + resourceClass.Title + "|" + resourceClass.ID + "|" + resourceClass.Revision;
-                    result += "|" + GetResourceClassDescription(resourceClass) + Environment.NewLine;
+                    List<TableCell> contentRow = new List<TableCell>()
+                    {
+                        new TableCell(resourceClass.Title),
+                        new TableCell(resourceClass.ID),
+                        new TableCell(resourceClass.Revision)
+                    };
+
+                    contentRow.Add(GetResourceClassDescription(resourceClass));
+
+                    table.TableCells.Add(contentRow);
+
                 }
+
+                result += table.GenerateGridTable();
+
             }
 
             // statements
@@ -120,93 +230,107 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
             {
                 result += "### Statement classes of domain " + domainName + Environment.NewLine;
 
-                result += "|title|id|revision|description|" + Environment.NewLine;
+                Table table = new Table();
 
-                result += "|-|-|-|-|" + Environment.NewLine;
+                List<TableCell> headerRow = new List<TableCell>();
+
+                TableCell titleTableCell = new TableCell();
+                titleTableCell.Content.Add("title");
+
+                headerRow.Add(titleTableCell);
+
+
+                TableCell idTableCell = new TableCell();
+                idTableCell.Content.Add("id");
+
+                headerRow.Add(idTableCell);
+
+                TableCell revisionTableCell = new TableCell();
+                revisionTableCell.Content.Add("revision");
+
+                headerRow.Add(revisionTableCell);
+
+                TableCell descriptionTableCell = new TableCell();
+                descriptionTableCell.Content.Add("description");
+
+                headerRow.Add(descriptionTableCell);
+
+                table.TableCells.Add(headerRow);
 
                 foreach (StatementClass statementClass in domainClasses.StatementClasses)
                 {
-                    result += "|" + statementClass.Title + "|" + statementClass.ID + "|" + statementClass.Revision;
-                    result += "|" + GetStatementClassDescription(statementClass) + Environment.NewLine;
+                    List<TableCell> contentRow = new List<TableCell>()
+                    {
+                        new TableCell(statementClass.Title),
+                        new TableCell(statementClass.ID),
+                        new TableCell(statementClass.Revision),
+                    };
+
+                    contentRow.Add(GetResourceClassDescription(statementClass));
+
+                    table.TableCells.Add(contentRow);
+
                 }
+
+                result += table.GenerateGridTable();
             }
 
             return result;
         }
 
-        private string GetDataTypeDescription(DataType dataType)
+        private TableCell GetDataTypeDescription(DataType dataType)
         {
-            string result = "";
+            TableCell result = new TableCell();
 
             if (dataType.Type == "xs:enumeration")
             {
-                result = "<p>" + dataType.Description.ToString() + "</p>";
+                result.Content.Add(dataType.Description[0].Text);
                 
                 if (dataType.Values != null)
                 {
-                    result += "<ul>";
-                    foreach (EnumValue value in dataType.Values)
+                    foreach (EnumerationValue value in dataType.Values)
                     {
-                        result += "<li>" + value.Value.ToString() + " [" + value.ID + "]</li>";
+                        result.Content.Add("<p>" + value.Value[0].Text + " [" + value.ID + "]</p>");
                     }
-                    result += "</ul>";
                 }
             }
             else
             {
                 if (dataType.Description.ToString() == "[]")
                 {
-                    result = "";
+                    result.Content.Add("");
                 }
                 else
                 {
-                    result = dataType.Description.ToString();
+                    if (dataType.Description.Count > 0)
+                    {
+                        result.Content.Add(dataType.Description[0].Text);
+                    }
                 }
             }
 
             return result;
         }
 
-        private string GetResourceClassDescription(ResourceClass resourceClass)
+        private TableCell GetResourceClassDescription(ResourceClass resourceClass)
         {
-            string result = "";
+            TableCell result = new TableCell();
 
-            result += "<p>" + resourceClass.Description.ToString() + "</p>";
+            result.Content.Add(resourceClass.Description[0].Text);
 
             if(resourceClass.PropertyClasses != null && resourceClass.PropertyClasses.Count != 0)
             {
-                result += "<p>Property classes:<br/><ul>";
+                result.Content.Add("<p>Property classes:</p>");
 
                 foreach(Key key in resourceClass.PropertyClasses)
                 {
-                    result += "<li>" + key.GetPropertyClassTitle(_specIfMetadataReader) + "</li>";
-                }
+                    PropertyClass propertyClass = _specIfMetadataReader.GetPropertyClassByKey(key);
 
-                result += "</ul></p>";
+                    result.Content.Add("<p>" + key.GetPropertyClassTitle(_specIfMetadataReader) + " [" + propertyClass.ID + " "+ propertyClass.Revision + "]</p>");
+                }
             }
 
             
-
-            return result;
-        }
-
-        private string GetStatementClassDescription(StatementClass statementClass)
-        {
-            string result = "";
-
-            result += "<p>" + statementClass.Description.ToString() + "</p>";
-
-            if (statementClass.PropertyClasses != null && statementClass.PropertyClasses.Count != 0)
-            {
-                result += "<p>Property classes:<br/><ul>";
-
-                foreach (Key key in statementClass.PropertyClasses)
-                {
-                    result += "<li>" + key.GetPropertyClassTitle(_specIfMetadataReader) + "</li>";
-                }
-
-                result += "</ul></p>";
-            }
 
             return result;
         }
@@ -217,7 +341,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
 
             FileInfo[] specIfFiles = domainDirectory.GetFiles("*.specif");
 
-            DataModels.SpecIF domainSpecIF = null;
+            SpecIF.DataModels.SpecIF domainSpecIF = null;
 
             int fileConuter = 0;
 
@@ -225,7 +349,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
             {
                 fileConuter++;
 
-                DataModels.SpecIF specIF = SpecIfFileReaderWriter.ReadDataFromSpecIfFile(fileInfo.FullName);
+                SpecIF.DataModels.SpecIF specIF = SpecIfFileReaderWriter.ReadDataFromSpecIfFile(fileInfo.FullName);
 
                 
 

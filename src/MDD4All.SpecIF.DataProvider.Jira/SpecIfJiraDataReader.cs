@@ -374,7 +374,9 @@ namespace MDD4All.SpecIF.DataProvider.Jira
                     ProjectDescriptor projectDescriptor = new ProjectDescriptor
                     {
                         ID = projectID,
-                        Title = jiraProject.Name,
+                        Title = new List<MultilanguageText> {
+                            new MultilanguageText(jiraProject.Name)
+                        },
                         Generator = _url,
                         GeneratorVersion = "Jira REST API 2",
                         
