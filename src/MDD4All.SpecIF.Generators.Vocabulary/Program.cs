@@ -17,11 +17,19 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
 
             //SpecIfFileReaderWriter.SaveSpecIfToFile(vocabulary, @"c:\specif\GeneratedVocabulary.specif");
 
-            DocumentationGenerator documentationGenerator = new DocumentationGenerator();
 
-            string documentation = documentationGenerator.GenerateVocabularyDocumentation(classDefinitionRoots);
+            WordDocumentationGenerator wordDocumentationGenerator = new WordDocumentationGenerator();
 
-            File.WriteAllText(@"d:\specif\ClassesDocu.md", documentation);
+            string wordDocumentation = wordDocumentationGenerator.GenerateVocabularyDocumentation(classDefinitionRoots);
+
+            File.WriteAllText(@"D:\work\github\SpecIF\documentation\04_SpecIF_Domain_Classes_Word.md", wordDocumentation);
+
+
+            GithibDocumentationGenerator documentationGenerator = new GithibDocumentationGenerator();
+
+            string githubDocumentation = documentationGenerator.GenerateVocabularyDocumentation(classDefinitionRoots);
+
+            File.WriteAllText(@"D:\work\github\SpecIF\documentation\04_SpecIF_Domain_Classes_Github.md", githubDocumentation);
 
         }
 

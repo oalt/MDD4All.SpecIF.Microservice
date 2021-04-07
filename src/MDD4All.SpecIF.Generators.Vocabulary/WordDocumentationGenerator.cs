@@ -3,14 +3,13 @@ using MDD4All.SpecIF.DataProvider.File;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using MDD4All.SpecIF.DataModels.Manipulation;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using MDD4All.SpecIF.Generators.Vocabulary.DataModels;
 
 namespace MDD4All.SpecIF.Generators.Vocabulary
 {
-    public class DocumentationGenerator
+    public class WordDocumentationGenerator
     {
 
         private Dictionary<string, SpecIF.DataModels.SpecIF> _domainClasses = new Dictionary<string, SpecIF.DataModels.SpecIF>();
@@ -341,7 +340,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
 
             FileInfo[] specIfFiles = domainDirectory.GetFiles("*.specif");
 
-            SpecIF.DataModels.SpecIF domainSpecIF = null;
+            SpecIF.DataModels.SpecIF domainSpecIF = new SpecIF.DataModels.SpecIF();
 
             int fileConuter = 0;
 
@@ -351,13 +350,6 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
 
                 SpecIF.DataModels.SpecIF specIF = SpecIfFileReaderWriter.ReadDataFromSpecIfFile(fileInfo.FullName);
 
-                
-
-                if (fileConuter == 1)
-                {
-                    domainSpecIF = specIF;
-                }
-                
                 domainSpecIF.DataTypes.AddRange(specIF.DataTypes);
                 domainSpecIF.PropertyClasses.AddRange(specIF.PropertyClasses);
                 domainSpecIF.ResourceClasses.AddRange(specIF.ResourceClasses);
@@ -369,11 +361,8 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
                 _metaDataSpecIF.StatementClasses.AddRange(specIF.StatementClasses);
             }
 
-            if (domainSpecIF != null)
-            {
-                
-                _domainClasses.Add(domainName, domainSpecIF);
-            }
+            _domainClasses.Add(domainName, domainSpecIF);
+
 
 
         }
