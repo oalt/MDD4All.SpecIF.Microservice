@@ -28,9 +28,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MDD4All.SpecIF.DataModels.DiagramInterchange\src\MDD4All.SpecIF.DataModels.DiagramInterchange\MDD4All.SpecIF.DataModels.DiagramInterchange.csproj" />
     <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.Contracts\src\MDD4All.SpecIF.DataProvider.Contracts\MDD4All.SpecIF.DataProvider.Contracts.csproj" />
     <ProjectReference Include="..\SvgGeneration\src\MDD4All.EnterpriseArchitect.SvgGenerator\MDD4All.EnterpriseArchitect.SvgGenerator.csproj" />
-    <ProjectReference Include="..\SvgGeneration\src\MDD4All.SpecIF.DataModels.DiagramInterchange\MDD4All.SpecIF.DataModels.DiagramInterchange.csproj" />
     <ProjectReference Include="..\SvgGeneration\src\MDD4All.SVG.DataModels\MDD4All.SVG.DataModels.csproj" />
   </ItemGroup>
 
