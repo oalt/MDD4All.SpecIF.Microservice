@@ -2,9 +2,13 @@
 using MDD4All.SpecIf.Microservice.DocumentFilters;
 using MDD4All.SpecIf.Microservice.Hubs;
 using MDD4All.SpecIf.Microservice.OperationFilters;
+using MDD4All.SpecIf.Microservice.RightsManagement;
+using MDD4All.SpecIF.DataModels.RightsManagement;
 using MDD4All.SpecIF.DataModels.Service;
+using MDD4All.SpecIF.Microservice.RightsManagement;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -155,14 +159,23 @@ namespace MDD4All.SpecIf.Microservice.Startup
                 string filePath = Path.Combine(System.AppContext.BaseDirectory, "MDD4All.SpecIf.Microservice.xml");
                 options.IncludeXmlComments(filePath);
 
-                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                //options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                //{
+                //    Name = "Authorization",
+                //    Type = SecuritySchemeType.ApiKey,
+                //    Scheme = "Bearer",
+                //    BearerFormat = "JWT",
+                //    In = ParameterLocation.Header,
+                //    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\""
+                //});
+
+                options.AddSecurityDefinition(ApiKeyConstants.HeaderName, new OpenApiSecurityScheme()
                 {
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer",
-                    BearerFormat = "JWT",
+                    Description = "API key needed to access the endpoints. X-API-KEY: My_API_Key",
                     In = ParameterLocation.Header,
-                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\""
+                    Name = ApiKeyConstants.HeaderName,
+                    Type = SecuritySchemeType.ApiKey
+
                 });
 
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -170,11 +183,14 @@ namespace MDD4All.SpecIf.Microservice.Startup
                     {
                           new OpenApiSecurityScheme
                             {
-                                Reference = new OpenApiReference
-                                {
-                                    Type = ReferenceType.SecurityScheme,
-                                    Id = "Bearer"
-                                }
+                                    Name = ApiKeyConstants.HeaderName,
+                                    Type = SecuritySchemeType.ApiKey,
+                                    In = ParameterLocation.Header,
+                                    Reference = new OpenApiReference
+                                    {
+                                        Type = ReferenceType.SecurityScheme,
+                                        Id = ApiKeyConstants.HeaderName
+                                    }    
                             },
                             new string[] {}
 
@@ -186,7 +202,7 @@ namespace MDD4All.SpecIf.Microservice.Startup
 
             ConfigureSpecIfDataServices(services);
 
-
+            ConfigureSecurityServices(services);
 
             // Consul
             services.AddSingleton(_serviceDescription);
@@ -287,6 +303,39 @@ namespace MDD4All.SpecIf.Microservice.Startup
             
 
         }
+
+        protected void ConfigureSecurityServices(IServiceCollection services)
+        {
+            string dataSource = Configuration.GetValue<string>("dataSource");
+
+            string dataConnection = Configuration.GetValue<string>("dataConnection");
+
+            // user and role management
+            services.AddScoped<IUserStore<ApplicationUser>>(userStore =>
+            {
+                return new SpecIfApiUserStore(dataConnection);
+
+            });
+
+            services.AddScoped<IUserRoleStore<ApplicationUser>>(userStore =>
+            {
+                return new SpecIfApiUserStore(dataConnection);
+
+            });
+
+            services.AddScoped<IRoleStore<ApplicationRole>>(roleStore =>
+            {
+                return new SpecIfApiRoleStore(dataConnection);
+            });
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = SpecIfAuthenticationOptions.DefaultScheme;
+                options.DefaultChallengeScheme = SpecIfAuthenticationOptions.DefaultScheme;
+            })
+            .AddApiKeySupport(options => { });
+        }
+
 
         public abstract void ConfigureSpecIfDataServices(IServiceCollection services);
         

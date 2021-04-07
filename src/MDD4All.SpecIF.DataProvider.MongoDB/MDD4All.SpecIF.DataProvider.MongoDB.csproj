@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MDD4All.SpecIF.DataModels.Manipulation\MDD4All.SpecIF.DataModels.Manipulation.csproj" />
+    <ProjectReference Include="..\MDD4All.SpecIF.DataModels.RightsManagement\src\MDD4All.SpecIF.DataModels.RightsManagement\MDD4All.SpecIF.DataModels.RightsManagement.csproj" />
     <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.Contracts\src\MDD4All.SpecIF.DataProvider.Contracts\MDD4All.SpecIF.DataProvider.Contracts.csproj" />
   </ItemGroup>
 

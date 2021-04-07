@@ -39,43 +39,27 @@ namespace MDD4All.SpecIf.Microservice.Startup
             if (!string.IsNullOrEmpty(dataSource) && !string.IsNullOrEmpty(dataConnection))
             {
 
-                // user and role management
-                services.AddScoped<IUserStore<ApplicationUser>>(userStore =>
-                {
-                    return new SpecIfApiUserStore(dataConnection);
+                
 
-                });
+                //IJwtConfigurationReader jwtConfigurationReader = new MongoDbJwtConfigurationReader(dataConnection);
 
-                services.AddScoped<IUserRoleStore<ApplicationUser>>(userStore =>
-                {
-                    return new SpecIfApiUserStore(dataConnection);
+                //services.AddSingleton<IJwtConfigurationReader>(jwtConfigurationReader);
 
-                });
-
-                services.AddScoped<IRoleStore<ApplicationRole>>(roleStore =>
-                {
-                    return new SpecIfApiRoleStore(dataConnection);
-                });
-
-                IJwtConfigurationReader jwtConfigurationReader = new MongoDbJwtConfigurationReader(dataConnection);
-
-                services.AddSingleton<IJwtConfigurationReader>(jwtConfigurationReader);
-
-                services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = jwtConfigurationReader.GetIssuer(),
-                        ValidAudience = jwtConfigurationReader.GetIssuer(),
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfigurationReader.GetSecret()))
-                    };
-                })
-                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options => Configuration.Bind("CookieSettings", options)); ;
+                //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                //.AddJwtBearer(options =>
+                //{
+                //    options.TokenValidationParameters = new TokenValidationParameters
+                //    {
+                //        ValidateIssuer = true,
+                //        ValidateAudience = true,
+                //        ValidateLifetime = true,
+                //        ValidateIssuerSigningKey = true,
+                //        ValidIssuer = jwtConfigurationReader.GetIssuer(),
+                //        ValidAudience = jwtConfigurationReader.GetIssuer(),
+                //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfigurationReader.GetSecret()))
+                //    };
+                //})
+                //.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options => Configuration.Bind("CookieSettings", options));
 
                 // SpecIF MongoDB connections
                 services.AddScoped<ISpecIfMetadataReader>(dataProvider => new SpecIfMongoDbMetadataReader(dataConnection));
@@ -100,6 +84,10 @@ namespace MDD4All.SpecIf.Microservice.Startup
                     _logger.LogInformation("Starting Enterprise Architect...");
 
                     bool openResult = repository.OpenFile(@"D:\work\github\SpecIF-Backend\src\MDD4All.SoecIF.DataProvider.EA.Test\TestData\TestModel1.eap");
+
+                    //bool openResult = repository.OpenFile(@"D:\alto_daten\EA\TestPackage.eapx");
+
+                
 
                     if (openResult)
                     {

@@ -15,6 +15,10 @@ namespace MDD4All.SpecIf.Microservice.RightsManagement
 
 		private MongoDBDataAccessor<ApplicationUser> _userMongoDbAccessor;
 
+
+		private Dictionary<string, ApplicationUser> _userCache = new Dictionary<string, ApplicationUser>();
+
+
 		public SpecIfApiUserStore(string connectionString)
 		{
 			_userMongoDbAccessor = new MongoDBDataAccessor<ApplicationUser>(connectionString, SPECIF_ADMIN_DATABASE_NAME);
@@ -66,6 +70,32 @@ namespace MDD4All.SpecIf.Microservice.RightsManagement
 
 			return await Task.FromResult(_userMongoDbAccessor.GetItemByFilter(filter.ToJson()));
 		}
+
+		public async Task<ApplicationUser> FindByApiKeyAsync(string apiKey)
+        {
+			ApplicationUser result = null;
+
+			if(!_userCache.ContainsKey(apiKey))
+            {
+				BsonDocument filter = new BsonDocument()
+				{
+					{  "apiKey", apiKey }
+				};
+
+				result = await Task.FromResult(_userMongoDbAccessor.GetItemByFilter(filter.ToJson()));
+
+				if (result != null)
+				{
+					_userCache.Add(apiKey, result);
+				}
+			}
+			else
+            {
+				result = _userCache[apiKey];
+            }
+
+			return result;
+        }
 
         public async Task<List<ApplicationUser>> GetAllUsers()
         {
