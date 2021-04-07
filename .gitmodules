@@ -16,3 +16,6 @@
 [submodule "src/MDD4All.SpecIF.DataProvider.Contracts"]
 	path = src/MDD4All.SpecIF.DataProvider.Contracts
 	url = https://github.com/oalt/MDD4All.SpecIF.DataProvider.Contracts.git
+[submodule "src/MDD4All.SpecIF.DataModels.RightsManagement"]
+	path = src/MDD4All.SpecIF.DataModels.RightsManagement
+	url = https://github.com/oalt/MDD4All.SpecIF.DataModels.RightsManagement.git
