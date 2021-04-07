@@ -19,3 +19,6 @@
 [submodule "src/MDD4All.SpecIF.DataModels.RightsManagement"]
 	path = src/MDD4All.SpecIF.DataModels.RightsManagement
 	url = https://github.com/oalt/MDD4All.SpecIF.DataModels.RightsManagement.git
+[submodule "src/MDD4All.SpecIF.DataModels.DiagramInterchange"]
+	path = src/MDD4All.SpecIF.DataModels.DiagramInterchange
+	url = https://github.com/oalt/MDD4All.SpecIF.DataModels.DiagramInterchange.git
