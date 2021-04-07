@@ -187,7 +187,7 @@ namespace MDD4All.SpecIF.DataProvider.Jira
                     {
                         string projectResourceID = "_" + SpecIfGuidGenerator.CalculateSha1Hash(project.Key);
 
-                        Key resourceClass = new Key("RC-Hierarchy", "1");
+                        Key resourceClass = new Key("RC-Hierarchy", "1.1");
 
                         Resource projectHierarchyResource = SpecIfDataFactory.CreateResource(resourceClass, _metadataReader);
 

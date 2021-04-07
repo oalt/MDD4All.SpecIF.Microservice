@@ -1,6 +1,4 @@
-﻿//using MarkdownSharp;
-//using MDD4All.Jira.DataModels;
-using Jira3 = MDD4All.Jira.DataModels.V3;
+﻿using Jira3 = MDD4All.Jira.DataModels.V3;
 using MDD4All.SpecIF.DataModels;
 using MDD4All.SpecIF.DataProvider.Contracts;
 using MDD4All.SpecIF.DataModels.Manipulation;
@@ -12,8 +10,6 @@ namespace MDD4All.SpecIF.DataAccess.Jira
 {
     public class JiraToSpecIfConverter
     {
-        //private readonly Markdown _markdown = new Markdown();
-
         private string _user;
 
         private ISpecIfMetadataReader _metadataReader;
@@ -30,18 +26,18 @@ namespace MDD4All.SpecIF.DataAccess.Jira
         {
             Resource result = null;
 
-            Key classKey = new Key("RC-Requirement", "1");
+            Key classKey = new Key("RC-Requirement", "1.1");
 
             result = SpecIfDataFactory.CreateResource(classKey, _metadataReader);
 
             if (jiraIssue.Fields.IssueType.Name == "Requirement")
             {
-                classKey = new Key("RC-Requirement", "1");
+                classKey = new Key("RC-Requirement", "1.1");
                 result.SetPropertyValue("SpecIF:Perspective", "V-perspective-2", _metadataReader);
             }
             else if (jiraIssue.Fields.IssueType.Name == "Customer Requirement")
             {
-                classKey = new Key("RC-Requirement", "1");
+                classKey = new Key("RC-Requirement", "1.1");
                 result.SetPropertyValue("SpecIF:Perspective", "V-perspective-1", _metadataReader);
             }
 
@@ -97,9 +93,7 @@ namespace MDD4All.SpecIF.DataAccess.Jira
 
             string descriptionHtml = adfToXhtmlConverter.ConvertAdfToXhtml(jiraIssue.Fields.Description);
 
-            //string descriptionHtml = _markdown.Transform(jiraIssue.Fields.Description.ToString());
-
-            result.SetPropertyValue("dcterms:description", descriptionHtml, _metadataReader);
+            result.SetPropertyValue("dcterms:description", descriptionHtml, _metadataReader, TextFormat.XHTML);
 
             return result;
         }

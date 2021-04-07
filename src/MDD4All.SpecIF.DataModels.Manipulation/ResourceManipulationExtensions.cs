@@ -48,29 +48,65 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 		public static void SetPropertyValue(this Resource resource,
 											string propertyTitle,
 											string stringValue,
-											ISpecIfMetadataReader dataProvider)
+											ISpecIfMetadataReader metadataProvider,
+											string format = "plain")
         {
-			Value value = new Value(stringValue);
-			SetPropertyValue(resource, propertyTitle, value, dataProvider);
+			ResourceClass resourceClass = metadataProvider.GetResourceClassByKey(resource.Class);
+
+			Value value = new Value();
+
+			foreach(Key propertyClassKey in resourceClass.PropertyClasses)
+            {
+				PropertyClass propertyClass = metadataProvider.GetPropertyClassByKey(propertyClassKey);
+
+				if(propertyClass.Title == propertyTitle)
+                {
+					DataType dataType = metadataProvider.GetDataTypeByKey(propertyClass.DataType);
+
+					if(dataType.Type == "xs:string")
+                    {
+						MultilanguageText multilanguageText = new MultilanguageText
+						{
+							Text = stringValue,
+							Format = format
+						};
+
+						value = new Value(multilanguageText);
+                    }
+					else
+                    {
+						value = new Value(stringValue);
+                    }
+                }
+            }
+
+			SetPropertyValue(resource, propertyTitle, value, metadataProvider);
         }
 
 		public static void SetPropertyValue(this Resource resource, 
 											string propertyTitle, 
 											Value value, 
-											ISpecIfMetadataReader dataProvider)
+											ISpecIfMetadataReader metadataProvider)
 		{
 			bool propertyFound = false;
 
 			foreach (Property property in resource.Properties)
 			{
 
-				PropertyClass propertyClass = dataProvider.GetPropertyClassByKey(property.Class);
+				PropertyClass propertyClass = metadataProvider.GetPropertyClassByKey(property.Class);
 
 				if(propertyClass != null)
                 {
 					if(propertyClass.Title == propertyTitle)
                     {
-						property.Values[0] = value;
+						if (property.Values.Count == 0)
+						{
+							property.Values.Add(value);
+						}
+						else
+						{
+							property.Values[0] = value;
+						}
 						propertyFound = true;
 						break;
                     }
@@ -80,7 +116,7 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 
 			if (!propertyFound)
 			{
-				ResourceClass resourceType = dataProvider.GetResourceClassByKey(resource.Class);
+				ResourceClass resourceType = metadataProvider.GetResourceClassByKey(resource.Class);
 
 				if (resourceType != null)
 				{
@@ -90,24 +126,15 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 
 					foreach (Key propertyKey in resourceType.PropertyClasses)
 					{
-						PropertyClass propertyClass = dataProvider.GetPropertyClassByKey(propertyKey);
+						PropertyClass propertyClass = metadataProvider.GetPropertyClassByKey(propertyKey);
 
-						if (propertyClass != null)
+						if (propertyClass.Title == propertyTitle)
 						{
-							string title = "";
-
-							if (propertyClass.Title is string)
-							{
-								title = propertyClass.Title.ToString();
-							}
-
-							if (title == propertyTitle)
-							{
-								matchingPropertyClass = propertyClass;
-								matchingPropertyKey = propertyKey;
-								break;
-							}
+							matchingPropertyClass = propertyClass;
+							matchingPropertyKey = propertyKey;
+							break;
 						}
+
 					}
 
 					if (matchingPropertyClass != null)
