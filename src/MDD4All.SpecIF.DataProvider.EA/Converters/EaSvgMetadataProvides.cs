@@ -2,7 +2,6 @@
 using MDD4All.SpecIF.DataModels.DiagramInterchange;
 using MDD4All.SpecIF.DataModels.DiagramInterchange.BaseElements;
 using MDD4All.SpecIF.DataModels.DiagramInterchange.DiagramDefinition;
-using MDD4All.SVG.DataModels;
 using System.Collections.Generic;
 using System.Drawing;
 using EAAPI = EA;
@@ -11,9 +10,9 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 {
     public class EaSvgMetadataProvider : IMetaDataCreator
     {
-        public Shape CreateMetaDataForDiagram(EAAPI.Diagram diagram, int height, int width)
+        public SpecIfMetadata CreateMetaDataForDiagram(EAAPI.Diagram diagram, int height, int width)
         {
-            
+            SpecIfMetadata result = new SpecIfMetadata();
 
             Shape shape = new Shape
             {
@@ -31,15 +30,15 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
                 }
             };
 
-            //result.Contents.Add(shape);
+            result.Shape = shape;
 
-            return shape;
+            return result;
         }
 
-        public Shape CreateMetaDataForDiagramObject(EAAPI.DiagramObject diagramObject,
+        public SpecIfMetadata CreateMetaDataForDiagramObject(EAAPI.DiagramObject diagramObject,
                                                      EAAPI.Element element)
         {
-            //SpecIfSvgMetadata result = new SpecIfSvgMetadata();
+            SpecIfMetadata result = new SpecIfMetadata();
 
             Shape shape = new Shape
             {
@@ -59,12 +58,12 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
             shape.Bounds.Width = recatangleWidth;
             shape.Bounds.Height = rectangleHeight;
 
-            //result.Contents.Add(shape);
+            result.Shape = shape;
 
-            return shape;
+            return result;
         }
 
-        public Edge CreateMetaDataForDiagramLink(EAAPI.DiagramLink diagramLink,
+        public SpecIfMetadata CreateMetaDataForDiagramLink(EAAPI.DiagramLink diagramLink,
                                                    EAAPI.Connector connector,
                                                    EAAPI.DiagramObject sourceDiagramObject,
                                                    EAAPI.DiagramObject targetDiagramObject,
@@ -72,7 +71,7 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
                                                    EAAPI.Element targetElement)
 
         {
-            //SpecIfSvgMetadata result = new SpecIfSvgMetadata();
+            SpecIfMetadata result = new SpecIfMetadata();
 
             EAAPI.Element srcElement = sourceElement;
             EAAPI.Element trgtElement = targetElement;
@@ -114,9 +113,9 @@ namespace MDD4All.SpecIF.DataProvider.EA.Converters
 
             edge.Waypoints = CalculateWaypointsForDiagramLink(diagramLink, sourceDiagramObject, targetDiagramObject);
 
-            //result.Contents.Add(edge);
+            result.Edge = edge;
 
-            return edge;
+            return result;
         }
 
         private List<Waypoint> CalculateWaypointsForDiagramLink(EAAPI.DiagramLink diagramLink,

@@ -41,14 +41,9 @@ namespace MDD4All.SpecIF.DataProvider.Integration
                 {
                     if (serviceDescription.DataWrite == true)
                     {
-                        LoginData loginData = new LoginData
-                        {
-                            UserName = "integrationServiceUser",
-                            Password = integrationApiKey
-                        };
-
+                        
                         SpecIfWebApiDataWriter dataWriter = new SpecIfWebApiDataWriter(serviceDescription.ServiceAddress + ":" + serviceDescription.ServicePort,
-                                                                                       loginData,
+                                                                                       integrationApiKey,
                                                                                        _metadataReader,
                                                                                        _dataReader);
 

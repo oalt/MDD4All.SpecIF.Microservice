@@ -2,8 +2,6 @@
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
 using MDD4All.SpecIF.DataProvider.Contracts;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace MDD4All.SpecIF.DataModels.Manipulation
 {
@@ -97,23 +95,6 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
 							result = firstValue.ToString();
                         }
 
-
-						
-						//if (property.Value.LanguageValues?.FirstOrDefault() != null)
-						//{
-						//	string enumId = property.Value.LanguageValues[0].Text;
-						//	EnumValue value = enumDataType.Values.Find(val => val.ID == enumId);
-
-						//	if (value != null && value.Title != null)
-						//	{
-						//		result = value.Title.LanguageValues?.FirstOrDefault(val => val.Language == language)?.Text;
-
-						//		if(result == null && value.Title.LanguageValues.Count > 0)
-						//		{
-						//			result = value.Title.LanguageValues[0].Text;
-						//		}
-						//	}
-						//}
 
 					}
 				}

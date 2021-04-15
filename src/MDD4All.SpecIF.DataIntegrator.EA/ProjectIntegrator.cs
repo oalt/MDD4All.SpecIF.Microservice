@@ -57,7 +57,7 @@ namespace MDD4All.SpecIF.DataIntegrator.EA
                         }
                         else // create new package
                         {
-                            projectPackage = integrationRootPackage.AddChildPackage(projectDescriptor.Title.ToString());
+                            projectPackage = integrationRootPackage.AddChildPackage(projectDescriptor.GetTitleValue());
                         }
 
                         projectPackage.SetProjectDataFromSpecIF(projectDescriptor);

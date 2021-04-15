@@ -140,7 +140,7 @@ namespace MDD4All.SpecIF.DataProvider.Jira
 
                 if (jiraProject != null)
                 {
-                    if (resource.Class.ID == "RC-Requirement" && resource.Class.Revision == "1")
+                    if (resource.Class.ID == "RC-Requirement")
                     {
                         string perspecitve = resource.GetPropertyValue("SpecIF:Perspective", _metadataReader);
 

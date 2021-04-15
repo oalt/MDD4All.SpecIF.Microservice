@@ -20,16 +20,16 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 
         private HttpClient _httpClient = new HttpClient();
 
-        public SpecIfWebApiDataReader(string webApiConnectionURL, string authorizationHeaderValue = null)
+        public SpecIfWebApiDataReader(string webApiConnectionURL, string apiKey = null)
         {
             _connectionURL = webApiConnectionURL;
 
             _httpClient.DefaultRequestHeaders.Accept.Clear();
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            if (authorizationHeaderValue != null)
+            if (apiKey != null)
             {
-                _httpClient.DefaultRequestHeaders.Add("Authorization", authorizationHeaderValue);
+                _httpClient.DefaultRequestHeaders.Add("X-API-KEY", apiKey);
             }
         }
 
@@ -45,7 +45,7 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
         {
             List<Node> result = new List<Node>();
 
-            UriBuilder uriBuilder = new UriBuilder(_connectionURL + "/specif/v1.0/hierarchies");
+            UriBuilder uriBuilder = new UriBuilder(_connectionURL + "/specif/v1.1/hierarchies");
 
             Uri finalUrl = uriBuilder.Uri;
 
@@ -65,7 +65,7 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
         {
             Node result = null;
 
-            UriBuilder uriBuilder = new UriBuilder(_connectionURL + "/specif/v1.0/hierarchies/" + key.ID);
+            UriBuilder uriBuilder = new UriBuilder(_connectionURL + "/specif/v1.1/hierarchies/" + key.ID);
 
             System.Collections.Specialized.NameValueCollection parameters = HttpUtility.ParseQueryString(string.Empty);
             parameters["revision"] = key.Revision;
@@ -103,7 +103,7 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
         {
 			Resource result;
 
-            UriBuilder uriBuilder = new UriBuilder(_connectionURL + "/specif/v1.0/resources/" + key.ID);
+            UriBuilder uriBuilder = new UriBuilder(_connectionURL + "/specif/v1.1/resources/" + key.ID);
 
             System.Collections.Specialized.NameValueCollection parameters = HttpUtility.ParseQueryString(string.Empty);
             parameters["revision"] = key.Revision;
@@ -131,7 +131,7 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
         {
             Resource result = null;
 
-            UriBuilder uriBuilder = new UriBuilder(_connectionURL + "/specif/v1.0/resources/" + key.ID);
+            UriBuilder uriBuilder = new UriBuilder(_connectionURL + "/specif/v1.1/resources/" + key.ID);
 
             System.Collections.Specialized.NameValueCollection parameters = HttpUtility.ParseQueryString(string.Empty);
             parameters["revision"] = key.Revision;
@@ -151,7 +151,7 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 		{
             Statement result = null;
 
-            UriBuilder uriBuilder = new UriBuilder(_connectionURL + "/specif/v1.0/statements/" + key.ID);
+            UriBuilder uriBuilder = new UriBuilder(_connectionURL + "/specif/v1.1/statements/" + key.ID);
 
             System.Collections.Specialized.NameValueCollection parameters = HttpUtility.ParseQueryString(string.Empty);
             parameters["revision"] = key.Revision;
@@ -204,7 +204,7 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
 		{
             List<Statement> result = new List<Statement>();
 
-            UriBuilder uriBuilder = new UriBuilder(_connectionURL + "/specif/v1.0/statements");
+            UriBuilder uriBuilder = new UriBuilder(_connectionURL + "/specif/v1.1/statements");
 
             System.Collections.Specialized.NameValueCollection parameters = HttpUtility.ParseQueryString(string.Empty);
             parameters["subjectID"] = resourceKey.ID;
@@ -271,7 +271,7 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
         {
             List<ProjectDescriptor> result;
 
-            UriBuilder uriBuilder = new UriBuilder(_connectionURL + "/specif/v1.0/projects");
+            UriBuilder uriBuilder = new UriBuilder(_connectionURL + "/specif/v1.1/projects");
             
             Task<List<ProjectDescriptor>> task = GetDataFromServiceAsync<List<ProjectDescriptor>>(uriBuilder.Uri);
             task.Wait();
@@ -285,7 +285,7 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
         {
             List<Node> result;
 
-            UriBuilder uriBuilder = new UriBuilder(_connectionURL + "/specif/v1.0/hierarchies/");
+            UriBuilder uriBuilder = new UriBuilder(_connectionURL + "/specif/v1.1/hierarchies/");
 
             System.Collections.Specialized.NameValueCollection parameters = HttpUtility.ParseQueryString(string.Empty);
             parameters["rootNodesOnly"] = true.ToString();
@@ -314,7 +314,7 @@ namespace MDD4All.SpecIF.DataProvider.WebAPI
         {
             DataModels.SpecIF result;
 
-            UriBuilder uriBuilder = new UriBuilder(_connectionURL + "/specif/v1.0/projects/" + projectID);
+            UriBuilder uriBuilder = new UriBuilder(_connectionURL + "/specif/v1.1/projects/" + projectID);
 
             System.Collections.Specialized.NameValueCollection parameters = HttpUtility.ParseQueryString(string.Empty);
 
