@@ -38,6 +38,7 @@ namespace MDD4All.SpecIF.Apps.MongoDbInitializer
                 Id = "User-Admin",
                 NormalizedUserName = "ADMIN",
                 UserName = "admin",
+                ApiKey = "F109BE57-BB60-42B5-A6E8-30DBDA7BEE2F",
                 Roles = new List<string>
                 {
                     "Administrator"
@@ -54,6 +55,7 @@ namespace MDD4All.SpecIF.Apps.MongoDbInitializer
                 Id = "User-Olli",
                 NormalizedUserName = "OLLI",
                 UserName = "olli",
+                ApiKey = "5824E518-C2C6-455A-9447-8A8CA029E40C",
                 Roles = new List<string>
                 {
                     "Administrator",

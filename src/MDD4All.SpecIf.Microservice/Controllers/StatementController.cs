@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace MDD4All.SpecIf.Microservice.Controllers
 {
     [Produces("application/json")]
-    [ApiVersion("1.0")]
+    [ApiVersion("1.1")]
     [Route("specif/v{version:apiVersion}/statements")]
     [ApiController]
     public class StatementController : Controller

@@ -9,7 +9,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
 
         public Program()
         {
-            string[] classDefinitionRoots = { @"c:\Users\olli\Documents\work\github\GfSESpecIF\classDefinitions" };
+            string[] classDefinitionRoots = { @"d:\work\github\SpecIF\classDefinitions\1.1" };
 
             //VocabularyGenerator vocabularyGenerator = new VocabularyGenerator();
 
@@ -17,11 +17,19 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
 
             //SpecIfFileReaderWriter.SaveSpecIfToFile(vocabulary, @"c:\specif\GeneratedVocabulary.specif");
 
-            DocumentationGenerator documentationGenerator = new DocumentationGenerator();
 
-            string documentation = documentationGenerator.GenerateVocabularyDocumentation(classDefinitionRoots);
+            WordDocumentationGenerator wordDocumentationGenerator = new WordDocumentationGenerator();
 
-            File.WriteAllText(@"c:\specif\doc1.md", documentation);
+            string wordDocumentation = wordDocumentationGenerator.GenerateVocabularyDocumentation(classDefinitionRoots);
+
+            File.WriteAllText(@"D:\work\github\SpecIF\documentation\04_SpecIF_Domain_Classes_Word.md", wordDocumentation);
+
+
+            GithibDocumentationGenerator documentationGenerator = new GithibDocumentationGenerator();
+
+            string githubDocumentation = documentationGenerator.GenerateVocabularyDocumentation(classDefinitionRoots);
+
+            File.WriteAllText(@"D:\work\github\SpecIF\documentation\04_SpecIF_Domain_Classes_Github.md", githubDocumentation);
 
         }
 

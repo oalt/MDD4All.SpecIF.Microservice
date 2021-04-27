@@ -13,7 +13,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
     /// API controller for SpecIF statement classes.
     /// </summary>
     [Produces("application/json")]
-    [ApiVersion("1.0")]
+    [ApiVersion("1.1")]
     [Route("specif/v{version:apiVersion}/statementClasses")]
     [ApiController]
     public class StatementClassController : Controller

@@ -3,20 +3,19 @@ using MDD4All.SpecIF.DataProvider.File;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using MDD4All.SpecIF.DataModels.Manipulation;
 using MDD4All.SpecIF.DataProvider.Contracts;
 
 namespace MDD4All.SpecIF.Generators.Vocabulary
 {
-    public class DocumentationGenerator
+    public class GithibDocumentationGenerator
     {
 
-        private Dictionary<string, DataModels.SpecIF> _domainClasses = new Dictionary<string, DataModels.SpecIF>();
+        private Dictionary<string, SpecIF.DataModels.SpecIF> _domainClasses = new Dictionary<string, SpecIF.DataModels.SpecIF>();
 
         private const string CRLF = "\r\n";
 
-        private DataModels.SpecIF _metaDataSpecIF = new DataModels.SpecIF();
+        private SpecIF.DataModels.SpecIF _metaDataSpecIF = new SpecIF.DataModels.SpecIF();
 
         private ISpecIfMetadataReader _specIfMetadataReader;
 
@@ -44,7 +43,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
 
             _specIfMetadataReader = new SpecIfFileMetadataReader(_metaDataSpecIF);
 
-            foreach (KeyValuePair<string, DataModels.SpecIF> domain in _domainClasses)
+            foreach (KeyValuePair<string, SpecIF.DataModels.SpecIF> domain in _domainClasses)
             {
                 result += GenerateDomainDocumentation(domain.Key, domain.Value);
             }
@@ -52,7 +51,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
             return result;
         }
 
-        private string GenerateDomainDocumentation(string key, DataModels.SpecIF domainClasses)
+        private string GenerateDomainDocumentation(string key, SpecIF.DataModels.SpecIF domainClasses)
         {
             string result = "";
 
@@ -68,15 +67,17 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
 
                 result += "### Data types of domain " + domainName + Environment.NewLine;
 
+                result += Environment.NewLine;
+
                 result += "|title|id|revision|type|description|" + Environment.NewLine;
 
-                result += "|-|-|-|-|" + Environment.NewLine;
+                result += "|-|-|-|-|-|" + Environment.NewLine;
 
                 foreach (DataType dataType in domainClasses.DataTypes)
                 {
                     result += "|" + dataType.Title + "|" + dataType.ID + "|" + dataType.Revision;
                     result += "|" + dataType.Type;
-                    result += "|" + GetDataTypeDescription(dataType) + Environment.NewLine;
+                    result += "|" + GetDataTypeDescription(dataType) + "|" + Environment.NewLine;
                 }
             }
 
@@ -86,6 +87,8 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
 
                 result += "### Property classes of domain " + domainName + Environment.NewLine;
 
+                result += Environment.NewLine;
+
                 result += "|title|id|revision|dataType|description|" + Environment.NewLine;
 
                 result += "|-|-|-|-|-|" + Environment.NewLine;
@@ -94,8 +97,8 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
                 {
                     result += "|" + propertyClass.Title + "|" + propertyClass.ID + "|" + propertyClass.Revision;
                     result += "|" + propertyClass.GetDataTypeTitle(_specIfMetadataReader);
-                    
-                    result += "|" + propertyClass.Description + Environment.NewLine;
+
+                    result += "|" + propertyClass.Description[0].Text + "|" + Environment.NewLine;
                 }
             }
 
@@ -104,6 +107,8 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
             {
                 result += "### Resource classes of domain " + domainName + Environment.NewLine;
 
+                result += Environment.NewLine;
+
                 result += "|title|id|revision|description|" + Environment.NewLine;
 
                 result += "|-|-|-|-|" + Environment.NewLine;
@@ -111,7 +116,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
                 foreach (ResourceClass resourceClass in domainClasses.ResourceClasses)
                 {
                     result += "|" + resourceClass.Title + "|" + resourceClass.ID + "|" + resourceClass.Revision;
-                    result += "|" + GetResourceClassDescription(resourceClass) + Environment.NewLine;
+                    result += "|" + GetResourceClassDescription(resourceClass) + "|" + Environment.NewLine;
                 }
             }
 
@@ -120,6 +125,8 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
             {
                 result += "### Statement classes of domain " + domainName + Environment.NewLine;
 
+                result += Environment.NewLine;
+
                 result += "|title|id|revision|description|" + Environment.NewLine;
 
                 result += "|-|-|-|-|" + Environment.NewLine;
@@ -127,7 +134,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
                 foreach (StatementClass statementClass in domainClasses.StatementClasses)
                 {
                     result += "|" + statementClass.Title + "|" + statementClass.ID + "|" + statementClass.Revision;
-                    result += "|" + GetStatementClassDescription(statementClass) + Environment.NewLine;
+                    result += "|" + GetResourceClassDescription(statementClass) + "|" + Environment.NewLine;
                 }
             }
 
@@ -140,14 +147,14 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
 
             if (dataType.Type == "xs:enumeration")
             {
-                result = "<p>" + dataType.Description.ToString() + "</p>";
-                
+                result = "<p>" + dataType.Description[0].Text + "</p>";
+
                 if (dataType.Values != null)
                 {
                     result += "<ul>";
-                    foreach (EnumValue value in dataType.Values)
+                    foreach (EnumerationValue value in dataType.Values)
                     {
-                        result += "<li>" + value.Value.ToString() + " [" + value.ID + "]</li>";
+                        result += "<li>" + value.Value[0].Text + " [" + value.ID + "]</li>";
                     }
                     result += "</ul>";
                 }
@@ -160,7 +167,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
                 }
                 else
                 {
-                    result = dataType.Description.ToString();
+                    result = dataType.Description[0].Text;
                 }
             }
 
@@ -171,42 +178,23 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
         {
             string result = "";
 
-            result += "<p>" + resourceClass.Description.ToString() + "</p>";
+            result += "<p>" + resourceClass.Description[0].Text + "</p>";
 
-            if(resourceClass.PropertyClasses != null && resourceClass.PropertyClasses.Count != 0)
+            if (resourceClass.PropertyClasses != null && resourceClass.PropertyClasses.Count != 0)
             {
                 result += "<p>Property classes:<br/><ul>";
 
-                foreach(Key key in resourceClass.PropertyClasses)
+                foreach (Key key in resourceClass.PropertyClasses)
                 {
-                    result += "<li>" + key.GetPropertyClassTitle(_specIfMetadataReader) + "</li>";
+                    PropertyClass propertyClass = _specIfMetadataReader.GetPropertyClassByKey(key);
+
+                    result += "<li>" + key.GetPropertyClassTitle(_specIfMetadataReader) + " [" + propertyClass.ID + " " + propertyClass.Revision + "]</li>";
                 }
 
                 result += "</ul></p>";
             }
 
-            
 
-            return result;
-        }
-
-        private string GetStatementClassDescription(StatementClass statementClass)
-        {
-            string result = "";
-
-            result += "<p>" + statementClass.Description.ToString() + "</p>";
-
-            if (statementClass.PropertyClasses != null && statementClass.PropertyClasses.Count != 0)
-            {
-                result += "<p>Property classes:<br/><ul>";
-
-                foreach (Key key in statementClass.PropertyClasses)
-                {
-                    result += "<li>" + key.GetPropertyClassTitle(_specIfMetadataReader) + "</li>";
-                }
-
-                result += "</ul></p>";
-            }
 
             return result;
         }
@@ -217,7 +205,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
 
             FileInfo[] specIfFiles = domainDirectory.GetFiles("*.specif");
 
-            DataModels.SpecIF domainSpecIF = null;
+            SpecIF.DataModels.SpecIF domainSpecIF = new SpecIF.DataModels.SpecIF();
 
             int fileConuter = 0;
 
@@ -225,15 +213,8 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
             {
                 fileConuter++;
 
-                DataModels.SpecIF specIF = SpecIfFileReaderWriter.ReadDataFromSpecIfFile(fileInfo.FullName);
+                SpecIF.DataModels.SpecIF specIF = SpecIfFileReaderWriter.ReadDataFromSpecIfFile(fileInfo.FullName);
 
-                
-
-                if (fileConuter == 1)
-                {
-                    domainSpecIF = specIF;
-                }
-                
                 domainSpecIF.DataTypes.AddRange(specIF.DataTypes);
                 domainSpecIF.PropertyClasses.AddRange(specIF.PropertyClasses);
                 domainSpecIF.ResourceClasses.AddRange(specIF.ResourceClasses);
@@ -245,12 +226,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
                 _metaDataSpecIF.StatementClasses.AddRange(specIF.StatementClasses);
             }
 
-            if (domainSpecIF != null)
-            {
-                
-                _domainClasses.Add(domainName, domainSpecIF);
-            }
-
+            _domainClasses.Add(domainName, domainSpecIF);
 
         }
 

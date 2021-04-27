@@ -37,43 +37,43 @@ namespace MDD4All.SpecIf.Microservice.Startup
             if (!string.IsNullOrEmpty(dataSource) && !string.IsNullOrEmpty(dataConnection))
             {
 
-                // user and role management
-                services.AddScoped<IUserStore<ApplicationUser>>(userStore =>
-                {
-                    return new SpecIfApiUserStore(dataConnection);
+                //// user and role management
+                //services.AddScoped<IUserStore<ApplicationUser>>(userStore =>
+                //{
+                //    return new SpecIfApiUserStore(dataConnection);
 
-                });
+                //});
 
-                services.AddScoped<IUserRoleStore<ApplicationUser>>(userStore =>
-                {
-                    return new SpecIfApiUserStore(dataConnection);
+                //services.AddScoped<IUserRoleStore<ApplicationUser>>(userStore =>
+                //{
+                //    return new SpecIfApiUserStore(dataConnection);
 
-                });
+                //});
 
-                services.AddScoped<IRoleStore<ApplicationRole>>(roleStore =>
-                {
-                    return new SpecIfApiRoleStore(dataConnection);
-                });
+                //services.AddScoped<IRoleStore<ApplicationRole>>(roleStore =>
+                //{
+                //    return new SpecIfApiRoleStore(dataConnection);
+                //});
 
-                IJwtConfigurationReader jwtConfigurationReader = new MongoDbJwtConfigurationReader(dataConnection);
+                //IJwtConfigurationReader jwtConfigurationReader = new MongoDbJwtConfigurationReader(dataConnection);
 
-                services.AddSingleton<IJwtConfigurationReader>(jwtConfigurationReader);
+                //services.AddSingleton<IJwtConfigurationReader>(jwtConfigurationReader);
 
-                services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = jwtConfigurationReader.GetIssuer(),
-                        ValidAudience = jwtConfigurationReader.GetIssuer(),
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfigurationReader.GetSecret()))
-                    };
-                })
-                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options => Configuration.Bind("CookieSettings", options)); ;
+                //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                //.AddJwtBearer(options =>
+                //{
+                //    options.TokenValidationParameters = new TokenValidationParameters
+                //    {
+                //        ValidateIssuer = true,
+                //        ValidateAudience = true,
+                //        ValidateLifetime = true,
+                //        ValidateIssuerSigningKey = true,
+                //        ValidIssuer = jwtConfigurationReader.GetIssuer(),
+                //        ValidAudience = jwtConfigurationReader.GetIssuer(),
+                //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfigurationReader.GetSecret()))
+                //    };
+                //})
+                //.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options => Configuration.Bind("CookieSettings", options));
 
                 // SpecIF MongoDB connections
                 services.AddScoped<ISpecIfMetadataReader>(dataProvider => new SpecIfMongoDbMetadataReader(dataConnection));

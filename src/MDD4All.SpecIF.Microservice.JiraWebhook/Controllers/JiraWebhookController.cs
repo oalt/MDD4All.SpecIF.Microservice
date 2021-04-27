@@ -96,79 +96,45 @@ namespace MDD4All.SpecIF.Microservice.JiraWebhook.Controllers
         {
             Resource result = new Resource();
 
-            result.Title = "Event from Jira.";
-
             result.Class = new Key("RC-SpecIfEvent", "1");
 
-            Property eventSourceProperty = new Property("SpecIF:Origin",
-                                                        new Key("PC-Origin", "1"),
-                                                        eventOrigin,
-                                                        SpecIfGuidGenerator.CreateNewSpecIfGUID(),
-                                                        DateTime.Now,
-                                                        "Jira");
+            Property eventSourceProperty = new Property(new Key("PC-Origin", "1"),
+                                                        eventOrigin);
 
             result.Properties.Add(eventSourceProperty);
 
-            Property projectProperty = new Property("SpecIF:project",
-                                                        new Key("PC-SpecIfProject", "1"),
-                                                        project,
-                                                        SpecIfGuidGenerator.CreateNewSpecIfGUID(),
-                                                        DateTime.Now,
-                                                        "Jira");
+            Property projectProperty = new Property(new Key("PC-SpecIfProject", "1"),
+                                                        project);
 
             result.Properties.Add(projectProperty);
 
-            Property eventTypeProperty = new Property("SpecIF:specifEventType",
-                                                        new Key("PC-SpecIfEventType", "1"),
-                                                        eventType,
-                                                        SpecIfGuidGenerator.CreateNewSpecIfGUID(),
-                                                        DateTime.Now,
-                                                        "Jira");
+            Property eventTypeProperty = new Property(new Key("PC-SpecIfEventType", "1"),
+                                                        eventType);
 
             result.Properties.Add(eventTypeProperty);
 
-            Property apiServerProperty = new Property("SpecIF:apiURL",
-                                                        new Key("PC-ApiURL", "1"),
-                                                        apiURL,
-                                                        SpecIfGuidGenerator.CreateNewSpecIfGUID(),
-                                                        DateTime.Now,
-                                                        "Jira");
+            Property apiServerProperty = new Property(new Key("PC-ApiURL", "1"),
+                                                        apiURL);
 
             result.Properties.Add(apiServerProperty);
 
-            Property idProperty = new Property("SpecIF:id",
-                                                        new Key("PC-SpecIfId", "1"),
-                                                        elementKey.ID,
-                                                        SpecIfGuidGenerator.CreateNewSpecIfGUID(),
-                                                        DateTime.Now,
-                                                        "Jira");
+            Property idProperty = new Property(new Key("PC-SpecIfId", "1"),
+                                                        elementKey.ID);
 
             result.Properties.Add(idProperty);
 
-            Property revisionProperty = new Property("SpecIF:revision",
-                                                        new Key("PC-SpecIfRevision", "1"),
-                                                        elementKey.Revision,
-                                                        SpecIfGuidGenerator.CreateNewSpecIfGUID(),
-                                                        DateTime.Now,
-                                                        "Jira");
+            Property revisionProperty = new Property(new Key("PC-SpecIfRevision", "1"),
+                                                        elementKey.Revision);
 
             result.Properties.Add(revisionProperty);
 
-            Property classIdProperty = new Property("SpecIF:classId",
-                                                        new Key("PC-SpecIfClassId", "1"),
-                                                        classKey.ID,
-                                                        SpecIfGuidGenerator.CreateNewSpecIfGUID(),
-                                                        DateTime.Now,
-                                                        "Jira");
+            Property classIdProperty = new Property(new Key("PC-SpecIfClassId", "1"),
+                                                        classKey.ID);
 
             result.Properties.Add(classIdProperty);
 
-            Property classRevisionProperty = new Property("SpecIF:classRevision",
-                                                        new Key("PC-SpecIfClassRevision", "1"),
-                                                        classKey.Revision,
-                                                        SpecIfGuidGenerator.CreateNewSpecIfGUID(),
-                                                        DateTime.Now,
-                                                        "Jira");
+            Property classRevisionProperty = new Property(new Key("PC-SpecIfClassRevision", "1"),
+                                                        classKey.Revision);
 
             result.Properties.Add(classRevisionProperty);
 

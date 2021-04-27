@@ -10,7 +10,11 @@ namespace MDD4All.SpecIF.DataModels.Manipulation
         {
             string result = "";
 
-            result = dataProvider.GetPropertyClassByKey(propertyClassKey).Title.ToString();
+            PropertyClass propertyClass = dataProvider.GetPropertyClassByKey(propertyClassKey);
+
+            
+            result = propertyClass.Title;
+            
 
             return result;
         }

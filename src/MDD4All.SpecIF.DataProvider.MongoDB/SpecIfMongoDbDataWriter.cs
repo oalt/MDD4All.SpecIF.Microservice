@@ -484,9 +484,21 @@ namespace MDD4All.SpecIF.DataProvider.MongoDB
                     defaultProject = new ProjectDescriptor()
                     {
                         CreatedAt = DateTime.Now,
-                        Description = "SpecIF default project.",
+                        Description = new List<MultilanguageText>
+                        {
+                            new MultilanguageText
+                            {
+                                Text = "SpecIF default project."
+                            }
+                        },
                         ID = DEFAULT_PROJECT,
-                        Title = "Default Project"
+                        Title = new List<MultilanguageText>
+                        { 
+                            new MultilanguageText
+                            {
+                                Text = "Default Project"
+                             }
+                        }
 
                     };
 

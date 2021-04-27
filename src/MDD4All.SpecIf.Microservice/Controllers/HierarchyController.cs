@@ -15,7 +15,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
     /// Web API controller for Hierarchy elements. 
     /// </summary>
     [Produces("application/json")]
-    [ApiVersion("1.0")]
+    [ApiVersion("1.1")]
     [Route("specif/v{version:apiVersion}/hierarchies")]
     [ApiController]
     public class HierarchyController : Controller

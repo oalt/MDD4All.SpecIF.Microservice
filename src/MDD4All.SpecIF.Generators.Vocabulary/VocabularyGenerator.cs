@@ -12,17 +12,19 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
     public class VocabularyGenerator
     {
 
-        private Dictionary<string, DataModels.SpecIF> _domainClasses = new Dictionary<string, DataModels.SpecIF>();
+        private Dictionary<string, SpecIF.DataModels.SpecIF> _domainClasses = new Dictionary<string, SpecIF.DataModels.SpecIF>();
 
-        private DataModels.SpecIF _vocabulary;
+        private SpecIF.DataModels.SpecIF _vocabulary;
 
-        public DataModels.SpecIF GenerateVocabulary(string[] classDefinitionRoot)
+        public SpecIF.DataModels.SpecIF GenerateVocabulary(string[] classDefinitionRoot)
         {
-            _vocabulary = new DataModels.SpecIF()
+            _vocabulary = new SpecIF.DataModels.SpecIF()
             {
                 CreatedAt = DateTime.Now,
                 Generator = "SpecIFicator Vocabulary Generator",
-                Title = new DataModels.Value("SpecIF Vocabulary")
+                Title = new List<MultilanguageText> {
+                    new MultilanguageText("SpecIF Vocabulary")
+                }
             };
 
             // read all datatype and class definition
@@ -44,13 +46,15 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
             Node rootNode = new Node()
             {
                 ChangedAt = DateTime.Now,
-                Title = new Value("SpecIF Vocabulary"),
+                Title = new List<MultilanguageText> {
+                    new MultilanguageText("SpecIF Vocabulary")
+                },
                 ResourceReference = new Key(vocabularyHeading.ID, vocabularyHeading.Revision)
             };
 
             _vocabulary.Hierarchies.Add(rootNode);
 
-            foreach (KeyValuePair<string, DataModels.SpecIF> domain in _domainClasses)
+            foreach (KeyValuePair<string, SpecIF.DataModels.SpecIF> domain in _domainClasses)
             {
                 GenerateDomainDescription(domain.Key, domain.Value, rootNode);
             }
@@ -58,7 +62,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
             return _vocabulary;
         }
 
-        private void GenerateDomainDescription(string domainName, DataModels.SpecIF domainClasses, Node parentNode)
+        private void GenerateDomainDescription(string domainName, SpecIF.DataModels.SpecIF domainClasses, Node parentNode)
         {
             Resource domainHeading = GenerateHeading("Domain " + domainName);
 
@@ -67,7 +71,9 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
             Node domainHeadingNode = new Node()
             {
                 ChangedAt = DateTime.Now,
-                Title = new Value("Doamin " + domainName),
+                Title = new List<MultilanguageText> {
+                    new MultilanguageText("Doamin " + domainName)
+                },
                 ResourceReference = new Key(domainHeading.ID, domainHeading.Revision)
             };
 
@@ -83,7 +89,9 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
                 Node propertyHeadingNode = new Node()
                 {
                     ChangedAt = DateTime.Now,
-                    Title = new Value("Properties"),
+                    Title = new List<MultilanguageText> {
+                        new MultilanguageText("Properties")
+                    },
                     ResourceReference = new Key(propertyHeading.ID, propertyHeading.Revision)
                 };
 
@@ -117,7 +125,9 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
                 Node resourceHeadingNode = new Node()
                 {
                     ChangedAt = DateTime.Now,
-                    Title = new Value("Resources"),
+                    Title = new List<MultilanguageText> {
+                        new MultilanguageText("Resources")
+                    },
                     ResourceReference = new Key(resourceHeading.ID, resourceHeading.Revision)
                 };
 
@@ -151,7 +161,9 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
                 Node statementHeadingNode = new Node()
                 {
                     ChangedAt = DateTime.Now,
-                    Title = new Value("Statements"),
+                    Title = new List<MultilanguageText> {
+                        new MultilanguageText("Statements")
+                    },
                     ResourceReference = new Key(statementHeading.ID)
                 };
 
@@ -182,16 +194,10 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
                 ChangedAt = DateTime.Now,
                 Class = new Key("RC-Folder", "1"),
                 ID = SpecIfGuidGenerator.CreateNewSpecIfGUID(),
-                Title = new Value(title),
                 Properties = new List<Property>()
             };
 
-            Property nameProperty = new Property("dcterms:title",
-                                         new Key("PC-Name", "1"),
-                                         title,
-                                         SpecIfGuidGenerator.CreateNewSpecIfGUID(),
-                                         DateTime.Now,
-                                         "SpecIFicator");
+            Property nameProperty = new Property(new Key("PC-Name", "1.1"), title);
 
             result.Properties.Add(nameProperty);
 
@@ -206,16 +212,10 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
                 ChangedAt = DateTime.Now,
                 Class = new Key("RC-PropertyTerm", "1"),
                 ID = "RS-" + propertyClass.ID,
-                Title = propertyClass.Title,
                 Properties = new List<Property>()
             };
 
-            Property nameProperty = new Property("dcterms:title", 
-                                         new Key("PC-Name", "1"), 
-                                         Value.ToSimpleTextString(propertyClass.Title) + " [Property Class]", 
-                                         SpecIfGuidGenerator.CreateNewSpecIfGUID(), 
-                                         DateTime.Now, 
-                                         "SpecIFicator");
+            Property nameProperty = new Property(new Key("PC-Name", "1.1"), Value.ToSimpleTextString(propertyClass.Title) + " [Property Class]");
 
             result.Properties.Add(nameProperty);
 
@@ -227,12 +227,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
 
             description += "<dd>" + propertyClass.DataType + "</dd>";
 
-            Property descriptionProperty = new Property("dcterms:description",
-                                         new Key("PC-Description", "1"),
-                                         description,
-                                         SpecIfGuidGenerator.CreateNewSpecIfGUID(),
-                                         DateTime.Now,
-                                         "SpecIFicator");
+            Property descriptionProperty = new Property(new Key("PC-Description", "1"),description);
 
             result.Properties.Add(descriptionProperty);
 
@@ -246,16 +241,10 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
                 ChangedAt = DateTime.Now,
                 Class = new Key("RC-ResourceTerm", "1"),
                 ID = "RS-" + resourceClass.ID,
-                Title = resourceClass.Title,
                 Properties = new List<Property>()
             };
 
-            Property nameProperty = new Property("dcterms:title",
-                                         new Key("PC-Name", "1"),
-                                         Value.ToSimpleTextString(resourceClass.Title) + " [Resource Class]",
-                                         SpecIfGuidGenerator.CreateNewSpecIfGUID(),
-                                         DateTime.Now,
-                                         "SpecIFicator");
+            Property nameProperty = new Property(new Key("PC-Name", "1"), Value.ToSimpleTextString(resourceClass.Title) + " [Resource Class]");
 
             result.Properties.Add(nameProperty);
 
@@ -273,12 +262,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
                 }
             }
 
-            Property descriptionProperty = new Property("dcterms:description",
-                                         new Key("PC-Description", "1"),
-                                         resourceDescription,
-                                         SpecIfGuidGenerator.CreateNewSpecIfGUID(),
-                                         DateTime.Now,
-                                         "SpecIFicator");
+            Property descriptionProperty = new Property(new Key("PC-Description", "1"), resourceDescription);
 
             result.Properties.Add(descriptionProperty);
 
@@ -292,16 +276,10 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
                 ChangedAt = DateTime.Now,
                 Class = new Key("RC-ResourceTerm", "1"),
                 ID = "RS-" + statementClass.ID,
-                Title = statementClass.Title,
                 Properties = new List<Property>()
             };
 
-            Property nameProperty = new Property("dcterms:title",
-                                         new Key("PC-Name", "1"),
-                                         Value.ToSimpleTextString(statementClass.Title) + " [Statement Class]",
-                                         SpecIfGuidGenerator.CreateNewSpecIfGUID(),
-                                         DateTime.Now,
-                                         "SpecIFicator");
+            Property nameProperty = new Property(new Key("PC-Name", "1"), Value.ToSimpleTextString(statementClass.Title) + " [Statement Class]");
 
             result.Properties.Add(nameProperty);
 
@@ -319,12 +297,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
                 }
             }
 
-            Property descriptionProperty = new Property("dcterms:description",
-                                         new Key("PC-Description", "1"),
-                                         resourceDescription,
-                                         SpecIfGuidGenerator.CreateNewSpecIfGUID(),
-                                         DateTime.Now,
-                                         "SpecIFicator");
+            Property descriptionProperty = new Property(new Key("PC-Description", "1"), resourceDescription);
 
             result.Properties.Add(descriptionProperty);
 
@@ -350,7 +323,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
 
             FileInfo[] specIfFiles = domainDirectory.GetFiles("*.specif");
 
-            DataModels.SpecIF domainSpecIF = null;
+            SpecIF.DataModels.SpecIF domainSpecIF = null;
 
             int fileConuter = 0;
 
@@ -358,7 +331,7 @@ namespace MDD4All.SpecIF.Generators.Vocabulary
             {
                 fileConuter++;
 
-                DataModels.SpecIF specIF = SpecIfFileReaderWriter.ReadDataFromSpecIfFile(fileInfo.FullName);
+                SpecIF.DataModels.SpecIF specIF = SpecIfFileReaderWriter.ReadDataFromSpecIfFile(fileInfo.FullName);
 
                 if(fileConuter == 1)
                 {
