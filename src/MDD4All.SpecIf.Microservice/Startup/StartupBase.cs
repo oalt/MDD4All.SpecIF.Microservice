@@ -1,4 +1,7 @@
-﻿using Consul;
+﻿/*
+ * Copyright (c) MDD4All.de, Dr. Oliver Alt
+ */
+using Consul;
 using MDD4All.SpecIf.Microservice.DocumentFilters;
 using MDD4All.SpecIf.Microservice.Hubs;
 using MDD4All.SpecIf.Microservice.OperationFilters;

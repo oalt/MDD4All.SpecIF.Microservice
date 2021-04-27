@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) MDD4All.de, Dr. Oliver Alt
+ */
 using System;
 using MDD4All.SpecIf.Microservice.Startup;
 

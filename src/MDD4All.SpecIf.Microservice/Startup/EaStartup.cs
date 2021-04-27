@@ -1,4 +1,7 @@
-﻿using System;
+﻿/*
+ * Copyright (c) MDD4All.de, Dr. Oliver Alt
+ */
+using System;
 using System.Text;
 using MDD4All.SpecIf.Microservice.RightsManagement;
 using MDD4All.SpecIF.DataIntegrator.EA;

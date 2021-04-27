@@ -1,4 +1,7 @@
-﻿using MDD4All.SpecIf.Microservice.RightsManagement;
+﻿/*
+ * Copyright (c) MDD4All.de, Dr. Oliver Alt
+ */
+using MDD4All.SpecIf.Microservice.RightsManagement;
 using MDD4All.SpecIF.DataIntegrator.Contracts;
 using MDD4All.SpecIF.DataIntegrator.KafkaListener;
 using MDD4All.SpecIF.DataModels.RightsManagement;

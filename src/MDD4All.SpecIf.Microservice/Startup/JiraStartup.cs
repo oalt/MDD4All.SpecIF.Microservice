@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿/*
+ * Copyright (c) MDD4All.de, Dr. Oliver Alt
+ */
+using System.Text;
 using MDD4All.SpecIf.Microservice.RightsManagement;
 using MDD4All.SpecIF.DataModels.RightsManagement;
 using MDD4All.SpecIF.DataProvider.Contracts;

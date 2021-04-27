@@ -1,10 +1,6 @@
-﻿///*
-// * Copyright (c) MDD4All.de, Dr. Oliver Alt
-// */
-//using System.Collections.Generic;
-//using MDD4All.SpecIF.DataProvider.Contracts;
-//using Microsoft.AspNetCore.Mvc;
-//using Swashbuckle.AspNetCore.Annotations;
+﻿/*
+ * Copyright (c) MDD4All.de, Dr. Oliver Alt
+ */
 
 //namespace MDD4All.SpecIf.Microservice.Controllers
 //{

@@ -1,4 +1,7 @@
-﻿using MDD4All.MongoDB.DataAccess.Generic;
+﻿/*
+ * Copyright (c) MDD4All.de, Dr. Oliver Alt
+ */
+using MDD4All.MongoDB.DataAccess.Generic;
 using MDD4All.SpecIF.DataModels.RightsManagement;
 using MDD4All.SpecIF.DataProvider.Contracts.DataModels;
 using System;

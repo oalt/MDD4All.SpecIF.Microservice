@@ -1,4 +1,7 @@
-﻿using Consul;
+﻿/*
+ * Copyright (c) MDD4All.de, Dr. Oliver Alt
+ */
+using Consul;
 using MDD4All.SpecIF.DataModels.Service;
 using Microsoft.Extensions.Logging;
 using System;

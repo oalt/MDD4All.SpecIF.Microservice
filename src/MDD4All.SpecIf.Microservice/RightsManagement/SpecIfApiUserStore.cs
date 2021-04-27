@@ -1,4 +1,7 @@
-﻿using MDD4All.MongoDB.DataAccess.Generic;
+﻿/*
+ * Copyright (c) MDD4All.de, Dr. Oliver Alt
+ */
+using MDD4All.MongoDB.DataAccess.Generic;
 using Microsoft.AspNetCore.Identity;
 using MongoDB.Bson;
 using System.Collections.Generic;
