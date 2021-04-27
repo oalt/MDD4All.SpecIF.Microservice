@@ -2,7 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <Company>MDD4All.de</Company>
+    <Copyright>© MDD4All.de</Copyright>
+    <Description>SpecIF data provider for Atlassian Jira Cloud</Description>
   </PropertyGroup>
 
   <ItemGroup>
