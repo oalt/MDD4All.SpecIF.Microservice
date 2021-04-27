@@ -94,9 +94,11 @@ steps:
 
 - task: CopyFiles@2
   inputs:
-    sourceFolder: 'src/MDD4All.SpecIF.Apps.EaPlugin/bin/Release' # Optional
-    contents: '*.dll;*.config*' 
-    targetFolder: 'Output/SpecIfPlugin' 
+    #sourceFolder: 'src/MDD4All.SpecIF.Apps.EaPlugin/bin/Release' # Optional
+    contents: |
+      src\MDD4All.SpecIF.Apps.EaPlugin\bin\Release\*.dll
+      src\MDD4All.SpecIF.Apps.EaPlugin\bin\Release\*.config 
+    targetFolder: 'Output\SpecIfPlugin\' 
     #cleanTargetFolder: false # Optional
     #overWrite: false # Optional
     #flattenFolders: false # Optional
@@ -104,11 +106,11 @@ steps:
 
 - task: ArchiveFiles@2
   inputs:
-    rootFolderOrFile: 'Output/SpecIfPlugin' 
+    rootFolderOrFile: 'Output\SpecIfPlugin' 
     includeRootFolder: true 
     archiveType: 'zip' # Options: zip, 7z, tar, wim
     #tarCompression: 'gz' # Optional. Options: gz, bz2, xz, none
-    archiveFile: '$(Build.ArtifactStagingDirectory)/SpecIfPlugin_$(Version).zip' 
+    archiveFile: '$(Build.ArtifactStagingDirectory)\SpecIfPlugin_$(versionToBuild).$(build.buildnumber).zip' 
     replaceExistingArchive: true 
     #verbose: # Optional
     #quiet: # Optional
