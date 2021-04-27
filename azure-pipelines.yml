@@ -101,16 +101,16 @@ steps:
     targetFolder: 'Output\SpecIfPlugin\' 
     #cleanTargetFolder: false # Optional
     #overWrite: false # Optional
-    #flattenFolders: false # Optional
+    flattenFolders: true # Optional
     #preserveTimestamp: false # Optional
 
 - task: ArchiveFiles@2
   inputs:
-    rootFolderOrFile: 'Output\SpecIfPlugin' 
+    rootFolderOrFile: 'Output\SpecIfPlugin\' 
     includeRootFolder: true 
     archiveType: 'zip' # Options: zip, 7z, tar, wim
     #tarCompression: 'gz' # Optional. Options: gz, bz2, xz, none
-    archiveFile: '$(Build.ArtifactStagingDirectory)\SpecIfPlugin_$(versionToBuild).$(build.buildnumber).zip' 
+    archiveFile: '$(Build.ArtifactStagingDirectory)\SpecIfPlugin_$(build.buildnumber).zip' 
     replaceExistingArchive: true 
     #verbose: # Optional
     #quiet: # Optional
