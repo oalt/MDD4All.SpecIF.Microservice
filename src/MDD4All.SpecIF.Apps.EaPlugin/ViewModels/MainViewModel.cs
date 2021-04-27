@@ -52,12 +52,14 @@ namespace MDD4All.SpecIF.Apps.EaPlugin.ViewModels
             EditSettingsCommand = new RelayCommand(ExecuteEditSettings);
             OpenJiraViewCommand = new RelayCommand<string>(ExecuteOpenJiraView);
             SynchonizeSingleElementCommand = new RelayCommand(ExecuteSynchronizeSingleElement);
-
+            DisplayVersionCommand = new RelayCommand(ExecuteDisplayVersion);
 
             _configurationReaderWriter = SimpleIoc.Default.GetInstance<IConfigurationReaderWriter<SpecIfPluginConfiguration>>();
 
             InitializeDataProviders();
         }
+
+        
 
         private void InitializeDataProviders()
         {
@@ -81,6 +83,18 @@ namespace MDD4All.SpecIF.Apps.EaPlugin.ViewModels
                                                        _specIfDataReader);
         }
 
+        public string Version
+        {
+            get
+            {
+                System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+                System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
+                string version = fvi.FileVersion;
+
+                return version;
+            }
+        }
+
         public ICommand ExportToSpecIfCommand { get; private set; }
         public ICommand SynchronizeProjectRootsCommand { get; private set; }
         public ICommand SynchronizeProjectHierarchyRootsCommand { get; private set; }
@@ -91,7 +105,13 @@ namespace MDD4All.SpecIF.Apps.EaPlugin.ViewModels
         public ICommand EditSettingsCommand { get; private set; }
         public ICommand OpenJiraViewCommand { get; private set; }
         public ICommand SynchonizeSingleElementCommand { get; private set; }
+        public ICommand DisplayVersionCommand { get; private set; }
 
+        private void ExecuteDisplayVersion()
+        {
+            MessageBox.Show("SpecIF Plugin\r\n© MDD4All.de\r\nVersion: " + Version, "About...", 
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
 
         private void ExecuteExportToSpecIfCommand()
         {

@@ -38,6 +38,8 @@ namespace MDD4All.SpecIF.Apps.EaPlugin
 
         private const string EDIT_SETTINGS_MENU = "&Edit Plugin Settings";
 
+        private const string ABOUT_MENU = "&About...";
+
         private MainViewModel _mainViewModel;
 
         private SpecIfPluginConfiguration _configuration;
@@ -151,6 +153,8 @@ namespace MDD4All.SpecIF.Apps.EaPlugin
                     else if(location == "MainMenu")
                     {
                         menuEntries.Add(EDIT_SETTINGS_MENU);
+                        menuEntries.Add("-");
+                        menuEntries.Add(ABOUT_MENU);
                     }
                     result = menuEntries.ToArray();
                 break;
@@ -233,6 +237,10 @@ namespace MDD4All.SpecIF.Apps.EaPlugin
                 {
                     case EDIT_SETTINGS_MENU:
                         _mainViewModel.EditSettingsCommand.Execute(null);
+                        break;
+
+                    case ABOUT_MENU:
+                        _mainViewModel.DisplayVersionCommand.Execute(null);
                         break;
                 }
             }
