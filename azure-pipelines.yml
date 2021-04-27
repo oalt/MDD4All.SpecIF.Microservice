@@ -81,6 +81,7 @@ steps:
     projects: 'src\MDD4All.SpecIF.Microservice\MDD4All.SpecIF.Microservice.csproj'
     versioningScheme: byBuildNumber
     workingDirectory: 'src\MDD4All.SpecIF.Microservice'
+    modifyOutputPath: true
     
 
 - task: NuGetCommand@2
