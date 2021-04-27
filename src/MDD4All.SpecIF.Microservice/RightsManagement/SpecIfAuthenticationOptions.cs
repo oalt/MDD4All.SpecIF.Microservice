@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿/*
+ * Copyright (c) MDD4All.de, Dr. Oliver Alt
+ */
+using Microsoft.AspNetCore.Authentication;
 
 namespace MDD4All.SpecIF.Microservice.RightsManagement
 {
