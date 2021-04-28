@@ -100,8 +100,14 @@
     <Reference Include="Microsoft.Web.WebView2.Wpf, Version=1.0.705.50, Culture=neutral, PublicKeyToken=2a8ab48044d2601e, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Web.WebView2.1.0.705.50\lib\net45\Microsoft.Web.WebView2.Wpf.dll</HintPath>
     </Reference>
-    <Reference Include="MongoDB.Bson">
+    <Reference Include="MongoDB.Bson, Version=2.12.2.0, Culture=neutral, PublicKeyToken=15b1115599983c50, processorArchitecture=MSIL">
       <HintPath>..\packages\MongoDB.Bson.signed.2.12.2\lib\net452\MongoDB.Bson.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Driver, Version=2.12.2.0, Culture=neutral, PublicKeyToken=15b1115599983c50, processorArchitecture=MSIL">
+      <HintPath>..\packages\MongoDB.Driver.signed.2.12.2\lib\net452\MongoDB.Driver.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Driver.Core, Version=2.12.2.0, Culture=neutral, PublicKeyToken=15b1115599983c50, processorArchitecture=MSIL">
+      <HintPath>..\packages\MongoDB.Driver.Core.signed.2.12.2\lib\net452\MongoDB.Driver.Core.dll</HintPath>
     </Reference>
     <Reference Include="MongoDB.Libmongocrypt, Version=1.2.1.0, Culture=neutral, PublicKeyToken=15b1115599983c50, processorArchitecture=MSIL">
       <HintPath>..\packages\MongoDB.Libmongocrypt.signed.1.2.1.1\lib\net452\MongoDB.Libmongocrypt.dll</HintPath>
@@ -274,6 +280,9 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Core\Compression\Snappy\lib\win\snappy32.dll" />
+    <Content Include="Core\Compression\Snappy\lib\win\snappy64.dll" />
+    <Content Include="Core\Compression\Zstandard\lib\win\libzstd.dll" />
     <Content Include="mongocrypt.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
