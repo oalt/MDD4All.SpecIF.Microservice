@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>MDD4All_Github.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -11,7 +13,8 @@
     </PropertyGroup>
     
   <ItemGroup>
-    <PackageReference Include="MDD4All.EnterpriseArchitect.Manipulations" Version="3.0.0.185" />
+    <PackageReference Include="MDD4All.EnterpriseArchitect.Logging" Version="2.0.1.3" />
+    <PackageReference Include="MDD4All.EnterpriseArchitect.Manipulations" Version="3.0.1.258" />
     <PackageReference Include="NLog" Version="4.5.11" />
   </ItemGroup>
 

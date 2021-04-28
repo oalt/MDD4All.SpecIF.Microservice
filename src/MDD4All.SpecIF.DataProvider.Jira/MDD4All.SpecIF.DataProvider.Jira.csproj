@@ -6,6 +6,8 @@
     <Company>MDD4All.de</Company>
     <Copyright>© MDD4All.de</Copyright>
     <Description>SpecIF data provider for Atlassian Jira Cloud</Description>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>MDD4All_Github.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>

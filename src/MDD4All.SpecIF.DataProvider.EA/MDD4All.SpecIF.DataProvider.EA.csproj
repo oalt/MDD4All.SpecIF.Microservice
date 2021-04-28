@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>MDD4All_Github.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -22,8 +24,8 @@
     </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MDD4All.EAFacade.DataAccess.Cached" Version="2.2.0.214" />
-    <PackageReference Include="MDD4All.EnterpriseArchitect.Manipulations" Version="3.0.0.185" />
+    <PackageReference Include="MDD4All.EAFacade.DataAccess.Cached" Version="2.2.1.260" />
+    <PackageReference Include="MDD4All.EnterpriseArchitect.Manipulations" Version="3.0.1.258" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
   </ItemGroup>
 

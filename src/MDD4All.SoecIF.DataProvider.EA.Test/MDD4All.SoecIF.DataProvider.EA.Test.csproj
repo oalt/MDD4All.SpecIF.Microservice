@@ -72,19 +72,19 @@
     <Reference Include="Interop.EA">
       <HintPath>..\libs\Interop.EA.dll</HintPath>
     </Reference>
-    <Reference Include="MDD4All.EAFacade.DataAccess.Cached, Version=2.2.0.214, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MDD4All.EAFacade.DataAccess.Cached.2.2.0.214\lib\netstandard2.0\MDD4All.EAFacade.DataAccess.Cached.dll</HintPath>
+    <Reference Include="MDD4All.EAFacade.DataAccess.Cached, Version=2.2.1.260, Culture=neutral, PublicKeyToken=dfd4bdb117292732, processorArchitecture=MSIL">
+      <HintPath>..\packages\MDD4All.EAFacade.DataAccess.Cached.2.2.1.260\lib\netstandard2.0\MDD4All.EAFacade.DataAccess.Cached.dll</HintPath>
     </Reference>
-    <Reference Include="MDD4All.EAFacade.DataModels.Contracts, Version=2.1.0.183, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MDD4All.EAFacade.DataModels.Contracts.2.1.0.183\lib\netstandard2.0\MDD4All.EAFacade.DataModels.Contracts.dll</HintPath>
+    <Reference Include="MDD4All.EAFacade.DataModels.Contracts, Version=2.1.1.257, Culture=neutral, PublicKeyToken=dfd4bdb117292732, processorArchitecture=MSIL">
+      <HintPath>..\packages\MDD4All.EAFacade.DataModels.Contracts.2.1.1.257\lib\netstandard2.0\MDD4All.EAFacade.DataModels.Contracts.dll</HintPath>
     </Reference>
-    <Reference Include="MDD4All.EnterpriseArchitect.Manipulations, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MDD4All.EnterpriseArchitect.Manipulations.3.0.0.185\lib\netstandard2.0\MDD4All.EnterpriseArchitect.Manipulations.dll</HintPath>
+    <Reference Include="MDD4All.EnterpriseArchitect.Logging, Version=2.0.1.3, Culture=neutral, PublicKeyToken=dfd4bdb117292732, processorArchitecture=MSIL">
+      <HintPath>..\packages\MDD4All.EnterpriseArchitect.Logging.2.0.1.3\lib\netstandard2.0\MDD4All.EnterpriseArchitect.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="MDD4All.EnterpriseArchitect.Manipulations, Version=1.0.0.0, Culture=neutral, PublicKeyToken=dfd4bdb117292732, processorArchitecture=MSIL">
+      <HintPath>..\packages\MDD4All.EnterpriseArchitect.Manipulations.3.0.1.258\lib\netstandard2.0\MDD4All.EnterpriseArchitect.Manipulations.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="MongoDB.Bson, Version=2.11.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MongoDB.Bson.2.11.4\lib\net452\MongoDB.Bson.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
