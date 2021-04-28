@@ -22,3 +22,6 @@
 [submodule "src/MDD4All.SpecIF.DataModels.DiagramInterchange"]
 	path = src/MDD4All.SpecIF.DataModels.DiagramInterchange
 	url = https://github.com/oalt/MDD4All.SpecIF.DataModels.DiagramInterchange.git
+[submodule "src/MDD4All.SVG.DataModels"]
+	path = src/MDD4All.SVG.DataModels
+	url = https://github.com/oalt/MDD4All.SVG.DataModels.git
