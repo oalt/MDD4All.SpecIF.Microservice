@@ -148,6 +148,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// Delete a resource class with the given ID.
         /// </summary>
         /// <param name="id">The resource class ID.</param>
+        /// <param name="revision">The revision ID.</param>
         [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]
         public ActionResult DeleteResourceClass(string id, [FromQuery]string revision)

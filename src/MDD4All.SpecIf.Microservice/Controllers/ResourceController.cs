@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace MDD4All.SpecIf.Microservice.Controllers
 {
+    /// <summary>
+    /// Controller to manage Resource data.
+    /// </summary>
     [Produces("application/json")]
     [ApiVersion("1.1")]
     [Route("specif/v{version:apiVersion}/resources")]
@@ -18,6 +21,11 @@ namespace MDD4All.SpecIf.Microservice.Controllers
 		private ISpecIfDataReader _specIfDataReader;
 		private ISpecIfDataWriter _specIfDataWriter;
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="specIfDataReader">The SpecIF data reader.</param>
+        /// <param name="specIfDataWriter">The SpecIF data writer.</param>
 		public ResourceController(ISpecIfDataReader specIfDataReader,
 								  ISpecIfDataWriter specIfDataWriter)
 		{

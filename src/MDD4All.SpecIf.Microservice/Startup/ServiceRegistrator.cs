@@ -38,7 +38,7 @@ namespace MDD4All.SpecIf.Microservice.Startup
                 //    consulClient.Agent.ServiceDeregister(registration.ID).Wait();
                 //});
             }
-            catch (Exception exception)
+            catch 
             {
                 logger.LogWarning("Unable to register in consul.");
             }

@@ -19,6 +19,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace MDD4All.SpecIf.Microservice.Controllers
 {
+    /// <summary>
+    /// Unofficial administration endpoint for the SpecIF Microsoervice.
+    /// </summary>
     [ApiVersion("1.1")]
     [Produces("application/json")]
     [Route("specif/v{version:apiVersion}")]
@@ -31,7 +34,12 @@ namespace MDD4All.SpecIf.Microservice.Controllers
 
         private readonly IJwtConfigurationReader _jwtConfigurationReader;
         
-
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="userStore"></param>
+        /// <param name="roleStore"></param>
+        /// <param name="jwtConfigurationReader"></param>
         public AdministrationController(IUserStore<ApplicationUser> userStore,
                                IUserRoleStore<ApplicationUser> roleStore,
                                IJwtConfigurationReader jwtConfigurationReader)

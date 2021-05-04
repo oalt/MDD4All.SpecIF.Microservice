@@ -148,6 +148,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// Delete a statement class with the given ID.
         /// </summary>
         /// <param name="id">The statement class ID.</param>
+        /// <param name="revision">The statement revision ID.</param>
         [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]
         public ActionResult DeleteStatementClass(string id, [FromQuery]string revision)

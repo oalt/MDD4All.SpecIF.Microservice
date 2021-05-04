@@ -126,7 +126,6 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         /// <summary>
         /// Update a project with the given ID by including the data into an existing project. The project with the supplied ID must exist.
         /// </summary>
-        /// <param name="id">The project ID.</param>
         /// <param name="value">The SpecIF data to include.</param>
         /// <returns></returns>
         [Authorize(Roles = "Editor")]

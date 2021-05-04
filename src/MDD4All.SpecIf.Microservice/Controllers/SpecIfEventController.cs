@@ -22,7 +22,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
 
         
 
-        private static int callCount = 0;
+        //private static int callCount = 0;
 
         private ISpecIfMetadataReader _metadataReader;
 

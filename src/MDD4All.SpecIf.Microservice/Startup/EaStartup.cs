@@ -108,7 +108,7 @@ namespace MDD4All.SpecIf.Microservice.Startup
                     }
 
                 }
-                catch (Exception exception)
+                catch 
                 {
 
                 }

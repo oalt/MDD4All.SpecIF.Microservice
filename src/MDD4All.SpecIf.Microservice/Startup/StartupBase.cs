@@ -25,6 +25,9 @@ using System.Linq;
 
 namespace MDD4All.SpecIf.Microservice.Startup
 {
+    /// <summary>
+    /// Common abstract base class to start the SpecIF Microservice.
+    /// </summary>
     public abstract class StartupBase
     {
         protected readonly ILogger _logger;
@@ -48,7 +51,9 @@ namespace MDD4All.SpecIf.Microservice.Startup
 
 
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        ///
+        /// This method gets called by the runtime. Use this method to add services to the container.
+        ///
         public void ConfigureServices(IServiceCollection services)
         {
             // MVC
@@ -215,11 +220,14 @@ namespace MDD4All.SpecIf.Microservice.Startup
             
         }
 
-        
 
 
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// </summary>
+        [Obsolete]
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime)
         {
             app.UseHttpsRedirection();
@@ -279,7 +287,7 @@ namespace MDD4All.SpecIf.Microservice.Startup
                     endpoints.MapHub<SpecIfEventHub>("/specifEventHub");
                     
                 }
-                catch (Exception exception)
+                catch 
                 {
                     _logger.LogWarning("Unable to start signalR.");
                 }
@@ -298,7 +306,7 @@ namespace MDD4All.SpecIf.Microservice.Startup
                     consulClient.Agent.ServiceDeregister(_serviceDescription.ID).Wait();
                 });
             }
-            catch (Exception exception)
+            catch 
             {
                 _logger.LogWarning("Unable to register in consul.");
             }
@@ -307,6 +315,10 @@ namespace MDD4All.SpecIf.Microservice.Startup
 
         }
 
+        /// <summary>
+        /// Configure security.
+        /// </summary>
+        /// <param name="services"></param>
         protected void ConfigureSecurityServices(IServiceCollection services)
         {
             string dataSource = Configuration.GetValue<string>("dataSource");
@@ -339,7 +351,10 @@ namespace MDD4All.SpecIf.Microservice.Startup
             .AddApiKeySupport(options => { });
         }
 
-
+        /// <summary>
+        /// Call this method to configure the data services (DataReader/Writer) for SpecIF data access.
+        /// </summary>
+        /// <param name="services"></param>
         public abstract void ConfigureSpecIfDataServices(IServiceCollection services);
         
     }

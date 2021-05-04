@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MDD4All.SpecIf.Microservice.Controllers
 {
+    /// <summary>
+    /// The controller to manage Data Types.
+    /// </summary>
     [ApiVersion("1.1")]
     [Produces("application/json")]
     [Route("specif/v{version:apiVersion}/dataTypes")]
@@ -17,6 +20,10 @@ namespace MDD4All.SpecIf.Microservice.Controllers
     {
 		private ISpecIfMetadataReader _metadataReader;
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="metadataReader">The metadata reader.</param>
 		public DataTypeController(ISpecIfMetadataReader metadataReader)
 		{
 			_metadataReader = metadataReader;
