@@ -25,3 +25,30 @@
 [submodule "src/MDD4All.SVG.DataModels"]
 	path = src/MDD4All.SVG.DataModels
 	url = https://github.com/oalt/MDD4All.SVG.DataModels.git
+[submodule "src/MDD4All.SpecIF.DataModels.Manipulation"]
+	path = src/MDD4All.SpecIF.DataModels.Manipulation
+	url = https://github.com/oalt/MDD4All.SpecIF.DataModels.Manipulation.git
+[submodule "src/MDD4All.SpecIF.DataProvider.File"]
+	path = src/MDD4All.SpecIF.DataProvider.File
+	url = https://github.com/oalt/MDD4All.SpecIF.DataProvider.File.git
+[submodule "src/MDD4All.SpecIF.Generators.Vocabulary"]
+	path = src/MDD4All.SpecIF.Generators.Vocabulary
+	url = https://github.com/oalt/MDD4All.SpecIF.Generators.Vocabulary.git
+[submodule "src/MDD4All.SpecIF.DataProvider.MongoDB"]
+	path = src/MDD4All.SpecIF.DataProvider.MongoDB
+	url = https://github.com/oalt/MDD4All.SpecIF.DataProvider.MongoDB.git
+[submodule "src/MDD4All.SpecIF.DataProvider.EA"]
+	path = src/MDD4All.SpecIF.DataProvider.EA
+	url = https://github.com/oalt/MDD4All.SpecIF.DataProvider.EA.git
+[submodule "src/MDD4All.SpecIF.DataProvider.Jira"]
+	path = src/MDD4All.SpecIF.DataProvider.Jira
+	url = https://github.com/oalt/MDD4All.SpecIF.DataProvider.Jira.git
+[submodule "src/MDD4All.SpecIF.DataAccess.Jira"]
+	path = src/MDD4All.SpecIF.DataAccess.Jira
+	url = https://github.com/oalt/MDD4All.SpecIF.DataAccess.Jira.git
+[submodule "src/MDD4All.SpecIF.DataIntegrator.EA"]
+	path = src/MDD4All.SpecIF.DataIntegrator.EA
+	url = https://github.com/oalt/MDD4All.SpecIF.DataIntegrator.EA.git
+[submodule "src/MDD4All.SpecIF.DataIntegrator.Contracts"]
+	path = src/MDD4All.SpecIF.DataIntegrator.Contracts
+	url = https://github.com/oalt/MDD4All.SpecIF.DataIntegrator.Contracts.git
