@@ -58,3 +58,6 @@
 [submodule "src/MDD4All.SpecIF.DataProvider.Integration"]
 	path = src/MDD4All.SpecIF.DataProvider.Integration
 	url = https://github.com/oalt/MDD4All.SpecIF.DataProvider.Integration.git
+[submodule "src/MDD4All.SpecIF.ServiceDataProvider"]
+	path = src/MDD4All.SpecIF.ServiceDataProvider
+	url = https://github.com/oalt/MDD4All.SpecIF.ServiceDataProvider.git
