@@ -55,3 +55,6 @@
 [submodule "src/MDD4All.SpecIF.DataProvider.WebAPI"]
 	path = src/MDD4All.SpecIF.DataProvider.WebAPI
 	url = https://github.com/oalt/MDD4All.SpecIF.DataProvider.WebAPI.git
+[submodule "src/MDD4All.SpecIF.DataProvider.Integration"]
+	path = src/MDD4All.SpecIF.DataProvider.Integration
+	url = https://github.com/oalt/MDD4All.SpecIF.DataProvider.Integration.git
