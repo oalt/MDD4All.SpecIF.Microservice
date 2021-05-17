@@ -61,3 +61,18 @@
 [submodule "src/MDD4All.SpecIF.ServiceDataProvider"]
 	path = src/MDD4All.SpecIF.ServiceDataProvider
 	url = https://github.com/oalt/MDD4All.SpecIF.ServiceDataProvider.git
+[submodule "src/MDD4All.Kafka.DataAccess"]
+	path = src/MDD4All.Kafka.DataAccess
+	url = https://github.com/oalt/MDD4All.Kafka.DataAccess.git
+[submodule "src/MDD4All.SpecIF.DataIntegrator.KafkaListener"]
+	path = src/MDD4All.SpecIF.DataIntegrator.KafkaListener
+	url = https://github.com/oalt/MDD4All.SpecIF.DataIntegrator.KafkaListener.git
+[submodule "src/MDD4All.SpecIF.ViewModels.SpecIfEvent"]
+	path = src/MDD4All.SpecIF.ViewModels.SpecIfEvent
+	url = https://github.com/oalt/MDD4All.SpecIF.ViewModels.SpecIfEvent.git
+[submodule "src/MDD4All.SpecIF.ViewModels.IntegrationService"]
+	path = src/MDD4All.SpecIF.ViewModels.IntegrationService
+	url = https://github.com/oalt/MDD4All.SpecIF.ViewModels.IntegrationService.git
+[submodule "src/MDD4All.SpecIF.Apps.EaPlugin"]
+	path = src/MDD4All.SpecIF.Apps.EaPlugin
+	url = https://github.com/oalt/MDD4All.SpecIF.Apps.EaPlugin.git

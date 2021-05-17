@@ -55,17 +55,17 @@
       <Project>{c33e488b-dafe-4ff6-a62c-e090425d84f2}</Project>
       <Name>MDD4All.SpecIF.DataModels</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.Contracts\src\MDD4All.SpecIF.DataProvider.Contracts\MDD4All.SpecIF.DataProvider.Contracts.csproj">
-      <Project>{5c8480d4-651e-4bba-a827-3b4733611382}</Project>
-      <Name>MDD4All.SpecIF.DataProvider.Contracts</Name>
+    <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.Contracts\src\MDD4All.SpecIF.DataProvider.Contracts\MDD4All.SpecIF.DataProvider.Contracts-dev.csproj">
+      <Project>{95d8feb4-5455-4104-b2a8-0b9487a489cd}</Project>
+      <Name>MDD4All.SpecIF.DataProvider.Contracts-dev</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.EA\MDD4All.SpecIF.DataProvider.EA.csproj">
-      <Project>{b2723cf2-cfc2-494f-b221-b1af42575342}</Project>
-      <Name>MDD4All.SpecIF.DataProvider.EA</Name>
+    <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.EA\src\MDD4All.SpecIF.DataProvider.EA\MDD4All.SpecIF.DataProvider.EA-dev.csproj">
+      <Project>{73d5d8d9-3fcc-462a-982f-be44f5499044}</Project>
+      <Name>MDD4All.SpecIF.DataProvider.EA-dev</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.File\MDD4All.SpecIF.DataProvider.File.csproj">
-      <Project>{e7729686-625a-4802-84b7-de8964df0a3e}</Project>
-      <Name>MDD4All.SpecIF.DataProvider.File</Name>
+    <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.File\src\MDD4All.SpecIF.DataProvider.File\MDD4All.SpecIF.DataProvider.File-dev.csproj">
+      <Project>{6e28a28c-d8d3-4870-98cf-4a3a03f6973c}</Project>
+      <Name>MDD4All.SpecIF.DataProvider.File-dev</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

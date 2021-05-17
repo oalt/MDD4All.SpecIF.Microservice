@@ -13,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MDD4All.Kafka.DataAccess\MDD4All.Kafka.DataAccess.csproj" />
-    <ProjectReference Include="..\MDD4All.SpecIF.DataAccess.Jira\MDD4All.SpecIF.DataAccess.Jira.csproj" />
+    <ProjectReference Include="..\MDD4All.Kafka.DataAccess\src\MDD4All.Kafka.DataAccess\MDD4All.Kafka.DataAccess-dev.csproj" />
+    <ProjectReference Include="..\MDD4All.SpecIF.DataAccess.Jira\src\MDD4All.SpecIF.DataAccess.Jira\MDD4All.SpecIF.DataAccess.Jira-dev.csproj" />
   </ItemGroup>
 
 </Project>
