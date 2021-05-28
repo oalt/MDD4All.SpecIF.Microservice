@@ -76,3 +76,12 @@
 [submodule "src/MDD4All.SpecIF.Apps.EaPlugin"]
 	path = src/MDD4All.SpecIF.Apps.EaPlugin
 	url = https://github.com/oalt/MDD4All.SpecIF.Apps.EaPlugin.git
+[submodule "src/MDD4All.SpecIF.Converters"]
+	path = src/MDD4All.SpecIF.Converters
+	url = https://github.com/oalt/MDD4All.SpecIF.Converters.git
+[submodule "src/MDD4All.SpecIF.Apps.MongoDbInitializer"]
+	path = src/MDD4All.SpecIF.Apps.MongoDbInitializer
+	url = https://github.com/oalt/MDD4All.SpecIF.Apps.MongoDbInitializer.git
+[submodule "src/MDD4All.SpecIF.Apps.ServiceStarter"]
+	path = src/MDD4All.SpecIF.Apps.ServiceStarter
+	url = https://github.com/oalt/MDD4All.SpecIF.Apps.ServiceStarter.git
