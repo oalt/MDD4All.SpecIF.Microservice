@@ -11,7 +11,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      SOLUTION_NAME: SpecIF_Backend-dev.sln
+      SOLUTION_NAME: SpecIF_Backend-dev.sln 
 
     steps:
     - name: Checkout repository and submodules
