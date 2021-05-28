@@ -99,7 +99,9 @@ namespace MDD4All.SpecIf.Microservice.Startup
 
                         _logger.LogInformation("Model open.");
 
-                        EaDataIntegrator eaDataIntegrator = new EaDataIntegrator(repository, metadataReader);
+
+                        // TODO: Fix this:
+                        //EaDataIntegrator eaDataIntegrator = new EaDataIntegrator(repository, metadataReader);
 
                         
 

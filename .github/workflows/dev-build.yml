@@ -27,8 +27,11 @@ jobs:
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.0.2
 
+    - name: Setup NuGet
+      uses: nuget/setup-nuget@v1
+
     - name: Restore dependencies
-      run: dotnet restore ./src/${{env.SOLUTION_NAME}}
+      run: nuget restore ./src/${{env.SOLUTION_NAME}}
 
     - name: Build
       run: msbuild ./src/${{env.SOLUTION_NAME}} /p:Configuration=Release 
