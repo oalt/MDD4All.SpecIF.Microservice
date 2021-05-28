@@ -85,3 +85,6 @@
 [submodule "src/MDD4All.SpecIF.Apps.ServiceStarter"]
 	path = src/MDD4All.SpecIF.Apps.ServiceStarter
 	url = https://github.com/oalt/MDD4All.SpecIF.Apps.ServiceStarter.git
+[submodule "src/MDD4All.SpecIF.Microservice.JiraWebhook"]
+	path = src/MDD4All.SpecIF.Microservice.JiraWebhook
+	url = https://github.com/oalt/MDD4All.SpecIF.Microservice.JiraWebhook.git

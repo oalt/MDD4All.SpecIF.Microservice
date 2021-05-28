@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>366940ba-2f28-4561-8553-157154e15d8e</UserSecretsId>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>D:\work\github\SpecIF-Backend\src\MDD4All.SpecIF.Microservice\MDD4All.SpecIF.Microservice.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>D:\work\github\SpecIF-Backend\src\MDD4All.SpecIF.Microservice\MDD4All.SpecIF.Microservice.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommonServiceLocator" Version="2.0.2" />
+    <PackageReference Include="Consul" Version="1.6.1.1" />
+    <PackageReference Include="MDD4All.EAFacade.DataModels.Contracts" Version="2.1.1.257" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="4.2.0" />
+    <PackageReference Include="MongoDB.Driver.signed" Version="2.12.2" />
+    <PackageReference Include="MvvmLightLibsStd10" Version="5.4.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="5.6.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="5.6.3" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.8.0" />
+  </ItemGroup>
+
+
+    <ItemGroup>
+        <ProjectReference Include="..\MDD4All.SpecIF.DataIntegrator.EA\src\MDD4All.SpecIF.DataIntegrator.EA\MDD4All.SpecIF.DataIntegrator.EA-dev.csproj" />
+        <ProjectReference Include="..\MDD4All.SpecIF.DataIntegrator.KafkaListener\src\MDD4All.SpecIF.DataIntegrator.KafkaListener\MDD4All.SpecIF.DataIntegrator.KafkaListener-dev.csproj" />
+        <ProjectReference Include="..\MDD4All.SpecIF.DataModels.RightsManagement\src\MDD4All.SpecIF.DataModels.RightsManagement\MDD4All.SpecIF.DataModels.RightsManagement.csproj" />
+        <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.EA\src\MDD4All.SpecIF.DataProvider.EA\MDD4All.SpecIF.DataProvider.EA-dev.csproj" />
+        <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.File\src\MDD4All.SpecIF.DataProvider.File\MDD4All.SpecIF.DataProvider.File-dev.csproj" />
+        <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.Integration\src\MDD4All.SpecIF.DataProvvider.Integration\MDD4All.SpecIF.DataProvider.Integration-dev.csproj" />
+        <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.Jira\src\MDD4All.SpecIF.DataProvider.Jira\MDD4All.SpecIF.DataProvider.Jira-dev.csproj" />
+        <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.MongoDB\src\MDD4All.SpecIF.DataProvider.MongoDB\MDD4All.SpecIF.DataProvider.MongoDB-dev.csproj" />
+        <ProjectReference Include="..\MDD4All.SpecIF.DataProvider.WebAPI\src\MDD4All.SpecIF.DataProvvider.WebAPI\MDD4All.SpecIF.DataProvider.WebAPI-dev.csproj" />
+        <ProjectReference Include="..\MDD4All.SpecIF.ViewModels.IntegrationService\src\MDD4All.SpecIF.ViewModels.IntegrationService\MDD4All.SpecIF.ViewModels.IntegrationService-dev.csproj" />
+        <ProjectReference Include="..\MDD4All.SpecIF.ViewModels.SpecIfEvent\src\MDD4All.SpecIF.ViewModels.SpecIfEvent\MDD4All.SpecIF.ViewModels.SpecIfEvent-dev.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="Interop.EA">
+            <HintPath>..\libs\Interop.EA.dll</HintPath>
+            <EmbedInteropTypes>false</EmbedInteropTypes>
+        </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="wwwroot\*" />
+    </ItemGroup>
+    
+</Project>
