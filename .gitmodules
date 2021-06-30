@@ -88,3 +88,6 @@
 [submodule "src/MDD4All.SpecIF.Microservice.JiraWebhook"]
 	path = src/MDD4All.SpecIF.Microservice.JiraWebhook
 	url = https://github.com/oalt/MDD4All.SpecIF.Microservice.JiraWebhook.git
+[submodule "src/MDD4All.Jira.DataAccess"]
+	path = src/MDD4All.Jira.DataAccess
+	url = https://github.com/oalt/MDD4All.Jira.DataAccess.git
