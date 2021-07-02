@@ -114,6 +114,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SpecIF.Converters.T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SpecIF.Microservice.JiraWebhook-dev", "MDD4All.SpecIF.Microservice.JiraWebhook\src\MDD4All.SpecIF.Microservice.JiraWebhook\MDD4All.SpecIF.Microservice.JiraWebhook-dev.csproj", "{7CA103B3-8E9C-4702-B8DE-748889F3EF7F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.Jira.DataAccess-dev", "MDD4All.Jira.DataAccess\src\MDD4All.Jira.DataAccess\MDD4All.Jira.DataAccess-dev.csproj", "{8ABFF3FE-1E10-4B05-91D8-33768C5E525B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -402,6 +404,14 @@ Global
 		{7CA103B3-8E9C-4702-B8DE-748889F3EF7F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7CA103B3-8E9C-4702-B8DE-748889F3EF7F}.Release|x86.ActiveCfg = Release|Any CPU
 		{7CA103B3-8E9C-4702-B8DE-748889F3EF7F}.Release|x86.Build.0 = Release|Any CPU
+		{8ABFF3FE-1E10-4B05-91D8-33768C5E525B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8ABFF3FE-1E10-4B05-91D8-33768C5E525B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8ABFF3FE-1E10-4B05-91D8-33768C5E525B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8ABFF3FE-1E10-4B05-91D8-33768C5E525B}.Debug|x86.Build.0 = Debug|Any CPU
+		{8ABFF3FE-1E10-4B05-91D8-33768C5E525B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8ABFF3FE-1E10-4B05-91D8-33768C5E525B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8ABFF3FE-1E10-4B05-91D8-33768C5E525B}.Release|x86.ActiveCfg = Release|Any CPU
+		{8ABFF3FE-1E10-4B05-91D8-33768C5E525B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -448,6 +458,7 @@ Global
 		{C8C1DC9D-389A-4FCF-A932-E2E355A0AD04} = {09BFA16E-6238-44C4-88D6-E0C2F182AF4F}
 		{4C93F4CB-B65E-42AD-967A-74685C24C20D} = {EAB5FEEC-9DF7-48C7-9F0D-6C920E716F88}
 		{7CA103B3-8E9C-4702-B8DE-748889F3EF7F} = {A925129B-2A55-4DBA-8B2A-44BEB40F89EF}
+		{8ABFF3FE-1E10-4B05-91D8-33768C5E525B} = {510CDA2A-99A0-4003-9F18-D255DAC52333}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C8F9327E-C222-4E00-A62F-20527B230190}
