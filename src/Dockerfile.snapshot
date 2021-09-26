@@ -1,0 +1,22 @@
+#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
+WORKDIR /app
+EXPOSE 887
+EXPOSE 888
+
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
+WORKDIR /src
+COPY . .
+RUN dotnet restore "SpecIF_Backend-docker.sln"
+
+RUN dotnet build "SpecIF_Backend-docker.sln" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "SpecIF_Backend-docker.sln" -c Release
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /src/MDD4All.SpecIF.Microservice/bin/Release/netcoreapp3.1/publish/ .
+ENTRYPOINT ["dotnet", "MDD4All.SpecIf.Microservice.dll"]
+#ENTRYPOINT ["bash"]
