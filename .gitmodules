@@ -91,3 +91,7 @@
 [submodule "src/MDD4All.Jira.DataAccess"]
 	path = src/MDD4All.Jira.DataAccess
 	url = https://github.com/oalt/MDD4All.Jira.DataAccess.git
+[submodule "src/MDD4All.Excel.DataAccess"]
+	path = src/MDD4All.Excel.DataAccess
+	url = https://github.com/oalt/MDD4All.Excel.DataAccess.git
+	branch = main
