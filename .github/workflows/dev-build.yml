@@ -25,7 +25,7 @@ jobs:
         dotnet-version: 5.0.x
 
     - name: Set integration version from current date
-      run: echo "DATE_VERSION::$(date +'%Y.%j')" >> $GITHUB_ENV
+      run: echo "DATE_VERSION=$(date +'%Y.%j')" >> $GITHUB_ENV
 
     - name: Create version number
       run: echo "VERSION=$(echo $DATE_VERSION.$GITHUB_RUN_NUMBER)" >> $GITHUB_ENV
