@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MDD4All.SpecIf.Microservice.Controllers
+namespace MDD4All.SpecIF.Microservice.Controllers
 {
     [Produces("application/json")]
     [ApiVersion("1.1")]

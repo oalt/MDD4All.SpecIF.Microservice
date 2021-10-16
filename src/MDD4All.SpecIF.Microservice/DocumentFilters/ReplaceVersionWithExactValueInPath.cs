@@ -6,7 +6,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Linq;
 
-namespace MDD4All.SpecIf.Microservice.DocumentFilters
+namespace MDD4All.SpecIF.Microservice.DocumentFilters
 {
     public class ReplaceVersionWithExactValueInPath : IDocumentFilter
     {

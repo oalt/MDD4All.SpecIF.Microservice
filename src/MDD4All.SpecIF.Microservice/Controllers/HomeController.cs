@@ -3,7 +3,7 @@
  */
 using Microsoft.AspNetCore.Mvc;
 
-namespace MDD4All.SpecIf.Microservice.Controllers
+namespace MDD4All.SpecIF.Microservice.Controllers
 {
     public class HomeController : Controller
     {

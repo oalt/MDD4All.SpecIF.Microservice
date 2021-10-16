@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using MDD4All.SpecIF.DataModels.RightsManagement;
-using MDD4All.SpecIf.Microservice.RightsManagement;
+using MDD4All.SpecIF.Microservice.RightsManagement;
 
 namespace MDD4All.SpecIF.Microservice.RightsManagement
 {

@@ -6,7 +6,7 @@ using MDD4All.SpecIF.DataModels.RightsManagement;
 using MDD4All.SpecIF.DataProvider.Contracts.DataModels;
 using System;
 
-namespace MDD4All.SpecIf.Microservice.Helpers
+namespace MDD4All.SpecIF.Microservice.Helpers
 {
     public class JwtConfigurationCreator
     {

@@ -5,7 +5,7 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Linq;
 
-namespace MDD4All.SpecIf.Microservice.OperationFilters
+namespace MDD4All.SpecIF.Microservice.OperationFilters
 {
     public class RemoveVersionFromParameter : IOperationFilter
     {

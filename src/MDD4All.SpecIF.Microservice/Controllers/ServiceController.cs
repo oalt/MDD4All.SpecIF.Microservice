@@ -1,16 +1,11 @@
 ﻿/*
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MDD4All.SpecIF.ServiceDataProvider;
 using MDD4All.SpecIF.ViewModels.IntegrationService;
 
-namespace MDD4All.SpecIf.Microservice.Controllers
+namespace MDD4All.SpecIF.Microservice.Controllers
 {
    
     //[Route("services")]

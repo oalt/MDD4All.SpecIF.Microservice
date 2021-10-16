@@ -8,7 +8,7 @@ using MongoDB.Bson;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MDD4All.SpecIf.Microservice.RightsManagement
+namespace MDD4All.SpecIF.Microservice.RightsManagement
 {
 	public class SpecIfApiRoleStore : IRoleStore<ApplicationRole>
 	{

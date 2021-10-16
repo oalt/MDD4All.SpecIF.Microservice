@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "MDD4All.SpecIf.Microservice.Integration": {
+    "MDD4All.SpecIF.Microservice.Integration": {
       "commandName": "Project",
       "commandLineArgs": "integration",
       "launchBrowser": true,

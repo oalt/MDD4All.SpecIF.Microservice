@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MDD4All.SpecIf.Microservice.Startup
+namespace MDD4All.SpecIF.Microservice.Startup
 {
     public class ServiceStarter
     {

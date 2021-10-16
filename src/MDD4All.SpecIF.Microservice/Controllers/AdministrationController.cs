@@ -9,15 +9,15 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using MDD4All.SpecIf.Microservice.RightsManagement;
 using MDD4All.SpecIF.DataModels.RightsManagement;
 using MDD4All.SpecIF.DataProvider.Contracts.Authorization;
+using MDD4All.SpecIF.Microservice.RightsManagement;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
-namespace MDD4All.SpecIf.Microservice.Controllers
+namespace MDD4All.SpecIF.Microservice.Controllers
 {
     /// <summary>
     /// Unofficial administration endpoint for the SpecIF Microsoervice.

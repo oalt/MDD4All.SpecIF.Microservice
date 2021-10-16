@@ -7,7 +7,7 @@ using MDD4All.SpecIF.DataModels;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 
-namespace MDD4All.SpecIf.Microservice.Controllers
+namespace MDD4All.SpecIF.Microservice.Controllers
 {
     /// <summary>
     /// Controller to manage Resource data.

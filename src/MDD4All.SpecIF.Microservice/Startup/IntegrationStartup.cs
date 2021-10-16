@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
-using MDD4All.SpecIf.Microservice.RightsManagement;
+using MDD4All.SpecIF.Microservice.RightsManagement;
 using MDD4All.SpecIF.DataIntegrator.Contracts;
 using MDD4All.SpecIF.DataIntegrator.KafkaListener;
 using MDD4All.SpecIF.DataModels.RightsManagement;
@@ -20,7 +20,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-namespace MDD4All.SpecIf.Microservice.Startup
+namespace MDD4All.SpecIF.Microservice.Startup
 {
     public class IntegrationStartup : StartupBase
     {

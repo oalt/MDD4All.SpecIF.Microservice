@@ -9,7 +9,7 @@ using MDD4All.SpecIF.DataProvider.Contracts.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MDD4All.SpecIf.Microservice.Controllers
+namespace MDD4All.SpecIF.Microservice.Controllers
 {
     [ApiVersion("1.1")]
     [Produces("application/json")]

@@ -3,7 +3,7 @@
  */
 using System;
 
-namespace MDD4All.SpecIf.Microservice.Models
+namespace MDD4All.SpecIF.Microservice.Models
 {
     public class ErrorViewModel
     {

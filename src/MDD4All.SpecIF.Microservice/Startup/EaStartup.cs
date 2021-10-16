@@ -3,7 +3,7 @@
  */
 using System;
 using System.Text;
-using MDD4All.SpecIf.Microservice.RightsManagement;
+using MDD4All.SpecIF.Microservice.RightsManagement;
 using MDD4All.SpecIF.DataIntegrator.EA;
 using MDD4All.SpecIF.DataModels.RightsManagement;
 using MDD4All.SpecIF.DataProvider.Contracts;
@@ -21,7 +21,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using EAAPI = EA;
 
-namespace MDD4All.SpecIf.Microservice.Startup
+namespace MDD4All.SpecIF.Microservice.Startup
 {
     public class EaStartup : StartupBase
     {

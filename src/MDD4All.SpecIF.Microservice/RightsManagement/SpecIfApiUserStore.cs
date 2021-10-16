@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using MDD4All.SpecIF.DataModels.RightsManagement;
 
-namespace MDD4All.SpecIf.Microservice.RightsManagement
+namespace MDD4All.SpecIF.Microservice.RightsManagement
 {
 	public class SpecIfApiUserStore : IUserStore<ApplicationUser>, IUserPasswordStore<ApplicationUser>, IUserRoleStore<ApplicationUser>
 	{

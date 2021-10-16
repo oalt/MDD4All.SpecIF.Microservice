@@ -2,13 +2,12 @@
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
 using Consul;
-using MDD4All.SpecIf.Microservice.DocumentFilters;
-using MDD4All.SpecIf.Microservice.Hubs;
-using MDD4All.SpecIf.Microservice.OperationFilters;
-using MDD4All.SpecIf.Microservice.RightsManagement;
+using MDD4All.SpecIF.Microservice.DocumentFilters;
+using MDD4All.SpecIF.Microservice.Hubs;
+using MDD4All.SpecIF.Microservice.OperationFilters;
+using MDD4All.SpecIF.Microservice.RightsManagement;
 using MDD4All.SpecIF.DataModels.RightsManagement;
 using MDD4All.SpecIF.DataModels.Service;
-using MDD4All.SpecIF.Microservice.RightsManagement;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -23,7 +22,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace MDD4All.SpecIf.Microservice.Startup
+namespace MDD4All.SpecIF.Microservice.Startup
 {
     /// <summary>
     /// Common abstract base class to start the SpecIF Microservice.
@@ -164,7 +163,7 @@ namespace MDD4All.SpecIf.Microservice.Startup
 
                 options.EnableAnnotations();
 
-                string filePath = Path.Combine(System.AppContext.BaseDirectory, "MDD4All.SpecIf.Microservice.xml");
+                string filePath = Path.Combine(System.AppContext.BaseDirectory, "MDD4All.SpecIF.Microservice.xml");
                 options.IncludeXmlComments(filePath);
 
                 //options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme

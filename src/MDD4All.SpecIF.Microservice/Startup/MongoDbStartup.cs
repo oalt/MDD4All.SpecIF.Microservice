@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
-using MDD4All.SpecIf.Microservice.RightsManagement;
+using MDD4All.SpecIF.Microservice.RightsManagement;
 using MDD4All.SpecIF.DataModels.RightsManagement;
 using MDD4All.SpecIF.DataModels.Service;
 using MDD4All.SpecIF.DataProvider.Contracts;
@@ -20,7 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MDD4All.SpecIf.Microservice.Startup
+namespace MDD4All.SpecIF.Microservice.Startup
 {
     public class MongoDbStartup : StartupBase
 	{

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MDD4All.SpecIf.Microservice.Hubs
+namespace MDD4All.SpecIF.Microservice.Hubs
 {
     public class SpecIfEventHub : Hub
     {

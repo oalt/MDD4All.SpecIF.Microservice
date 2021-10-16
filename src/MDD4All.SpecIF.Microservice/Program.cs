@@ -2,7 +2,7 @@
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
 using System;
-using MDD4All.SpecIf.Microservice.Startup;
+using MDD4All.SpecIF.Microservice.Startup;
 
 namespace MDD4All.SpecIF.Microservice
 {

@@ -4,9 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using MDD4All.SpecIf.Microservice.Hubs;
+using MDD4All.SpecIF.Microservice.Hubs;
 using MDD4All.SpecIF.DataIntegrator.Contracts;
 using MDD4All.SpecIF.DataIntegrator.KafkaListener;
 using MDD4All.SpecIF.DataModels;
@@ -15,7 +13,7 @@ using MDD4All.SpecIF.ViewModels.SpecIfEvent;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 
-namespace MDD4All.SpecIf.Microservice.Controllers
+namespace MDD4All.SpecIF.Microservice.Controllers
 {
     public class SpecIfEventController : Controller
     {

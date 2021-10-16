@@ -2,7 +2,7 @@
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
 
-//namespace MDD4All.SpecIf.Microservice.Controllers
+//namespace MDD4All.SpecIF.Microservice.Controllers
 //{
 //    [Produces("application/json")]
 //    [ApiVersion("1.0")]
