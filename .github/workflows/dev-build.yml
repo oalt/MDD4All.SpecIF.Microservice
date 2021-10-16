@@ -11,7 +11,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      PROJECT_NAME: MDD4All.SpecIF.Microservice 
+      SOLUTION_NAME: SpecIF_Backend-docker.sln 
     
     steps:
     - name: Checkout repository and submodules
@@ -37,5 +37,5 @@ jobs:
       run: dotnet restore ./src/${PROJECT_NAME}/${PROJECT_NAME}-dev.csproj
 
     - name: Build
-      run: dotnet build --no-restore -c Release /p:Version=${VERSION} ./src/${PROJECT_NAME}/${PROJECT_NAME}-dev.csproj
+      run: dotnet build --no-restore -c Release /p:Version=${VERSION} ./src/${SOLUTION_NAME}
       
