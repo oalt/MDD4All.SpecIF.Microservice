@@ -24,7 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		..\azure-pipelines.yml.deactivated = ..\azure-pipelines.yml.deactivated
 		..\.github\workflows\dev-build.yml = ..\.github\workflows\dev-build.yml
-		..\..\..\..\test\ResourceOutput.cs = ..\..\..\..\test\ResourceOutput.cs
+		..\..\..\test\ResourceOutput.cs = ..\..\..\test\ResourceOutput.cs
 		SpecIF_Backend.sln.licenseheader = SpecIF_Backend.sln.licenseheader
 		StartInfrastructure.bat = StartInfrastructure.bat
 		version.txt = version.txt
@@ -76,7 +76,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SpecIF.DataIntegrat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SpecIF.DataIntegrator.Contracts-dev", "MDD4All.SpecIF.DataIntegrator.Contracts\src\MDD4All.SpecIF.DataIntegrator.Contracts\MDD4All.SpecIF.DataIntegrator.Contracts-dev.csproj", "{9F65EDFE-840A-4FB1-BAED-1205CD6BC4BB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SpecIf.Microservice-dev", "MDD4All.SpecIF.Microservice\MDD4All.SpecIf.Microservice-dev.csproj", "{B735769E-0E8D-4403-8AAC-C2C17330AC2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SpecIF.Microservice-dev", "MDD4All.SpecIF.Microservice\MDD4All.SpecIF.Microservice-dev.csproj", "{B735769E-0E8D-4403-8AAC-C2C17330AC2B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SpecIF.DataProvider.WebAPI-dev", "MDD4All.SpecIF.DataProvider.WebAPI\src\MDD4All.SpecIF.DataProvvider.WebAPI\MDD4All.SpecIF.DataProvider.WebAPI-dev.csproj", "{2CC3FA8A-174E-4041-9B0B-35F92BA4E05C}"
 EndProject
