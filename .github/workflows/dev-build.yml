@@ -9,10 +9,10 @@ on:
 jobs:
   build:
 
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     env:
-      SOLUTION_NAME: SpecIF_Backend-dev.sln 
-
+      PROJECT_NAME: MDD4All.SpecIF.Microservice 
+    
     steps:
     - name: Checkout repository and submodules
       uses: actions/checkout@v2
@@ -24,17 +24,18 @@ jobs:
       with:
         dotnet-version: 5.0.x
 
-    - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@v1.0.2
+    - name: Set integration version from current date
+      run: echo "DATE_VERSION::$(date +'%Y.%j')" >> $GITHUB_ENV
 
-    - name: Setup NuGet
-      uses: nuget/setup-nuget@v1
+    - name: Create version number
+      run: echo "VERSION=$(echo $DATE_VERSION.$GITHUB_RUN_NUMBER)" >> $GITHUB_ENV
+
+    - name: Echo version number
+      run: echo $VERSION
 
     - name: Restore dependencies
-      run: nuget restore ./src/${{env.SOLUTION_NAME}}
+      run: dotnet restore ./src/${PROJECT_NAME}/${PROJECT_NAME}-dev.csproj
 
     - name: Build
-      run: msbuild ./src/${{env.SOLUTION_NAME}} /p:Configuration=Release 
-
-
+      run: dotnet build --no-restore -c Release /p:Version=${VERSION} ./src/${PROJECT_NAME}/${PROJECT_NAME}-dev.csproj
       
