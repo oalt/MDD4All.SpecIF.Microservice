@@ -17,7 +17,7 @@ namespace MDD4All.SpecIF.Microservice.Startup
             ISpecIfServiceDescription result = null;
 
             int port = 888;
-            string serviceAddress = "https://localhost";
+            string serviceAddress = "https://127.0.0.1";
 
             if (serverUrl != null)
             {

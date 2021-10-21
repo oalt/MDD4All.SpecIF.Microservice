@@ -67,7 +67,7 @@ namespace MDD4All.SpecIF.Microservice.Startup
 
             if (type == "mongodb" || type == null)
             {
-                Startup.StartupBase.Urls = new List<string> { "https://localhost:888", "http://localhost:887" };
+                Startup.StartupBase.Urls = new List<string> { "https://127.0.0.1:888", "http://127.0.0.1:887" };
 
                 result = WebHost.CreateDefaultBuilder(args)
                                                     .UseStartup<MongoDbStartup>()
@@ -77,7 +77,7 @@ namespace MDD4All.SpecIF.Microservice.Startup
             }
             else if (type == "jira")
             {
-                Startup.StartupBase.Urls = new List<string> { "https://localhost:999", "http://localhost:998" };
+                Startup.StartupBase.Urls = new List<string> { "https://127.0.0.1:999", "http://127.0.0.1:998" };
 
                 result = WebHost.CreateDefaultBuilder(args)
                                                     .UseStartup<JiraStartup>()
@@ -89,7 +89,7 @@ namespace MDD4All.SpecIF.Microservice.Startup
             }
             else if(type == "integration")
             {
-                Startup.StartupBase.Urls = new List<string> { "https://localhost:555", "http://localhost:554" };
+                Startup.StartupBase.Urls = new List<string> { "https://127.0.0.1:555", "http://127.0.0.1:554" };
 
                 result = WebHost.CreateDefaultBuilder(args)
                                                     .UseStartup<IntegrationStartup>()
@@ -99,7 +99,7 @@ namespace MDD4All.SpecIF.Microservice.Startup
             }
             else if (type == "ea")
             {
-                Startup.StartupBase.Urls = new List<string> { "https://localhost:444", "http://localhost:443" };
+                Startup.StartupBase.Urls = new List<string> { "https://127.0.0.1:444", "http://127.0.0.1:443" };
 
                 result = WebHost.CreateDefaultBuilder(args)
                                                     .UseStartup<EaStartup>()
@@ -112,7 +112,7 @@ namespace MDD4All.SpecIF.Microservice.Startup
             }
             else if(type == "file")
             {
-                Startup.StartupBase.Urls = new List<string> { "https://localhost:666", "http://localhost:665" };
+                Startup.StartupBase.Urls = new List<string> { "https://127.0.0.1:666", "http://127.0.0.1:665" };
 
                 result = WebHost.CreateDefaultBuilder(args)
                                                     .UseStartup<FileStartup>()

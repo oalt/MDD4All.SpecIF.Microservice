@@ -35,7 +35,7 @@ namespace MDD4All.SpecIF.Microservice.Startup
 
         private ISpecIfServiceDescription _serviceDescription;
 
-        public static List<string> Urls = new List<string> { "https://localhost:888", "http://localhost:887" };
+        public static List<string> Urls = new List<string> { "https://127.0.0.1:888", "http://127.0.0.1:887" };
 
         public StartupBase(IConfiguration configuration, ILogger<StartupBase> logger)
         {
