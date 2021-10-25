@@ -18,6 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Text;
 
 namespace MDD4All.SpecIF.Microservice.Startup
@@ -32,7 +33,13 @@ namespace MDD4All.SpecIF.Microservice.Startup
         {
             string dataSource = Configuration.GetValue<string>("dataSource");
 
-            string dataConnection = Configuration.GetValue<string>("dataConnection");
+            string dataConnection = "";
+            dataConnection = Environment.GetEnvironmentVariable("dataConnection");
+            if (dataConnection == "" || dataConnection == null)
+            {
+                 dataConnection = Configuration.GetValue<string>("dataConnection");
+            }
+           
 
             if (!string.IsNullOrEmpty(dataSource) && !string.IsNullOrEmpty(dataConnection))
             {
@@ -103,7 +110,7 @@ namespace MDD4All.SpecIF.Microservice.Startup
 
                 services.AddSignalR();
 
-                KafkaSpecIfEventService kafkaSpecIfEventService = new KafkaSpecIfEventService("localhost:9092", "event-listener-group");
+                KafkaSpecIfEventService kafkaSpecIfEventService = new KafkaSpecIfEventService("127.0.0.1:9092", "event-listener-group");
 
                 services.AddSingleton<ISpecIfEventService>(kafkaSpecIfEventService);
 
