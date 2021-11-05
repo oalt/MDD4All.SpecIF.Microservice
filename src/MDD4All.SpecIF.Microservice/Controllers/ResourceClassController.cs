@@ -87,7 +87,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Returns all resource class revisions for the given id.
+        /// Returns all resource class revisions for the given ID.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -114,7 +114,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
 
 
         /// <summary>
-        /// Create a new resource class.
+        /// Creates a new resource class.
         /// </summary>
         /// <param name="resourceClass">The resource class data.</param>
         /// <returns></returns>
@@ -129,7 +129,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Update a resource class.
+        /// Updates a resource class.
         /// The subjected ID must exist.
         /// </summary>
         /// <param name="resourceClass">The statement class data.</param>
@@ -145,7 +145,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Delete a resource class with the given ID.
+        /// Deletes a resource class with the given ID.
         /// </summary>
         /// <param name="id">The resource class ID.</param>
         /// <param name="revision">The revision ID.</param>

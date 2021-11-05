@@ -16,9 +16,9 @@ namespace MDD4All.SpecIF.Microservice.Controllers
     public class FileController : Controller
     {
         /// <summary>
-        /// Return all file descriptions for all available files in all revisions.
+        /// Returns all file descriptions for all available files in all revisions.
         /// </summary>
-        /// <param name="projectID">An optional projectID as filter.</param>
+        /// <param name="projectID">An optional project ID as filter.</param>
         /// <returns>All file descriptions.</returns>
         [HttpGet]
         [ProducesResponseType(typeof(List<File>), 200)]
@@ -47,7 +47,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         /// <summary>
         /// Returns all available file revisions as SpecIF file descriptions.
         /// </summary>
-        /// <param name="id">The file id.</param>
+        /// <param name="id">The file ID.</param>
         /// <returns>All available file descriptions for all revisions with this file ID.</returns>
         [HttpGet("{id}/revisions")]
         [ProducesResponseType(typeof(List<File>), 200)]
@@ -60,7 +60,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Create a file; the supplied ID must be unique.
+        /// Creates a file; the supplied ID must be unique.
         /// </summary>
         /// <param name="file"></param>
         [Authorize(Roles = "Editor")]
@@ -70,7 +70,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Update the file; the supplied ID must exist.
+        /// Updates the file; the supplied ID must exist.
         /// </summary>
         /// <param name="file"></param>
         [Authorize(Roles = "Editor")]
@@ -80,7 +80,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Delete the file; the supplied ID must exist. 
+        /// Deletes the file; the supplied ID must exist. 
         /// </summary>
         /// <param name="id"></param>
         /// <param name="revision"></param>

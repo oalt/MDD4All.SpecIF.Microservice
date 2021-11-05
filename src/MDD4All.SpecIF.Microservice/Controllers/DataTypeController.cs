@@ -33,7 +33,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         /// Returns all data types with all available revisions.
         /// </summary>
         /// <returns>A list of all available data types.</returns>
-        /// <response code="200">List of data types suceessfull returned.</response>
+        /// <response code="200">List of data types successfully returned.</response>
         [HttpGet]
         [ProducesResponseType(typeof(List<DataType>), 200)]
         public ActionResult<List<DataType>> GetAllDataTypes()
@@ -56,7 +56,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         /// Returns a data type with the given ID. 
         /// </summary>
         /// <param name="id">The data type ID.</param>
-        /// <param name="revision">The data type revision id.</param>
+        /// <param name="revision">The data type revision ID.</param>
         /// <returns>The data type or a not found code.</returns>
 		[HttpGet("{id}")]
         [ProducesResponseType(400)]
@@ -92,7 +92,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
 		}
 
         /// <summary>
-        /// Returns all data type revisions for the given id.
+        /// Returns all data type revisions for the given ID.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -115,7 +115,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Create a data type.
+        /// Creates a data type.
         /// </summary>
         /// <param name="dataType">The data type to create.</param>
         /// <returns>The updated data type element.</returns>
@@ -129,7 +129,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Update the data type; the supplied ID must exist.
+        /// Updates the data type; the supplied ID must exist.
         /// </summary>
         /// <param name="dataType">The data type data.</param>
         /// <returns>The updated data type element.</returns>
@@ -144,12 +144,12 @@ namespace MDD4All.SpecIF.Microservice.Controllers
 
 
         /// <summary>
-        /// Delete the data type; the supplied ID must exist. 
-        /// Return an error if there are depending model elements. 
+        /// Deletes the data type; the supplied ID must exist. 
+        /// Returns an error if there are dependant model elements. 
         /// </summary>
         /// <param name="id"></param>
         /// <param name="revision"></param>
-        /// <param name="mode">Delete mode. ?mode=forced results in deleting all directly and indirectly depending model elements.</param>
+        /// <param name="mode">Delete mode. ?mode=forced results in deleting all directly and indirectly dependant model elements.</param>
         /// <returns></returns>
         [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]

@@ -91,7 +91,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Returns all statement class revisions for the given id.
+        /// Returns all statement class revisions for the given ID.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -114,7 +114,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Create a new statement class.
+        /// Creates a new statement class.
         /// </summary>
         /// <param name="statementClass">The statement class data.</param>
         /// <returns></returns>
@@ -129,8 +129,8 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Update a statement class.
-        /// The subjected ID must exist.
+        /// Updates a statement class.
+        /// The supplied ID must exist.
         /// </summary>
         /// <param name="statementClass">The statement class data.</param>
         /// <returns></returns>
@@ -145,7 +145,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Delete a statement class with the given ID.
+        /// Deletes a statement class with the given ID.
         /// </summary>
         /// <param name="id">The statement class ID.</param>
         /// <param name="revision">The statement revision ID.</param>

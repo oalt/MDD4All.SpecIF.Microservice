@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace MDD4All.SpecIF.Microservice.Controllers
 {
     /// <summary>
-    /// Controller to manage Resource data.
+    /// Controller to manage resource data.
     /// </summary>
     [Produces("application/json")]
     [ApiVersion("1.1")]
@@ -133,7 +133,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Update a resource. The ID included in the resource data must exist.
+        /// Updates a resource. The ID included in the resource data must exist.
         /// </summary>
         /// <param name="resource"></param>
         /// <returns></returns>
@@ -153,11 +153,11 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Delete the resource.
+        /// Deletes the resource.
         /// </summary>
         /// <param name="id">The resource ID.</param>
         /// <param name="revision">The resource revision.</param>
-        /// <param name="mode">?mode=forced results in deleting all directly and indirectly depending model elements.</param>
+        /// <param name="mode">?mode=forced results in deleting all directly and indirectly dependant model elements.</param>
         /// <returns></returns>
         [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]

@@ -20,7 +20,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace MDD4All.SpecIF.Microservice.Controllers
 {
     /// <summary>
-    /// Unofficial administration endpoint for the SpecIF Microsoervice.
+    /// Unofficial administration endpoint for the SpecIF Microservice.
     /// </summary>
     [ApiVersion("1.1")]
     [Produces("application/json")]
@@ -74,7 +74,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
     
         /// <summary>
-        /// Returns the list of registred users.
+        /// Returns the list of registered users.
         /// </summary>
         /// <returns></returns>
         [Authorize(Roles = "Administrator")]
@@ -97,7 +97,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Add a new user.
+        /// Adds a new user.
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
@@ -135,7 +135,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Delete an existing user.
+        /// Deletes an existing user.
         /// </summary>
         /// <param name="userID"></param>
         /// <returns></returns>
@@ -164,7 +164,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Update the roles of a user.
+        /// Updates the roles of a user.
         /// </summary>
         /// <param name="id"></param>
         /// <param name="roles"></param>
@@ -204,7 +204,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         
 
         /// <summary>
-        /// Change password. This endpoint is usable by all authenticated users.
+        /// Changes password. This endpoint is usable by all authenticated users.
         /// </summary>
         /// <param name="userLogin"></param>
         /// <returns></returns>

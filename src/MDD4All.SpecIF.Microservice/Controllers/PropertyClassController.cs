@@ -30,7 +30,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
 		}
 
         /// <summary>
-        /// Returns all property classes with alll available revisions.
+        /// Returns all property classes with all available revisions.
         /// </summary>
         /// <returns>All property classes as a list.</returns>
 		[HttpGet]
@@ -92,7 +92,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Returns all property class revisions for the given id.
+        /// Returns all property class revisions for the given ID.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -115,7 +115,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Create a new property class.
+        /// Creates a new property class.
         /// </summary>
         [Authorize(Roles = "Administrator")]
         [HttpPost]
@@ -128,7 +128,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Update the property class; the supplied ID must exist.
+        /// Updates the property class; the supplied ID must exist.
         /// </summary>
         /// <param name="propertyClass">The property class data to update.</param>
         /// <returns>The updated property class element.</returns>
@@ -143,12 +143,12 @@ namespace MDD4All.SpecIF.Microservice.Controllers
 
 
         /// <summary>
-        /// Delete the property class; the supplied ID must exist. 
-        /// Return an error if there are depending model elements. 
+        /// Deletes the property class; the supplied ID must exist. 
+        /// Returns an error if there are dependant model elements. 
         /// </summary>
         /// <param name="id">The property class ID.</param>
         /// <param name="revision">The property class revision.</param>
-        /// <param name="mode">Delete mode. ?mode=forced results in deleting all directly and indirectly depending model elements.</param>
+        /// <param name="mode">Delete mode. ?mode=forced results in deleting all directly and indirectly dependant model elements.</param>
         /// <returns></returns>
         [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]

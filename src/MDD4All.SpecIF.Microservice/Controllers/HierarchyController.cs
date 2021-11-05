@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace MDD4All.SpecIF.Microservice.Controllers
 {
     /// <summary>
-    /// Web API controller for Hierarchy elements. 
+    /// Web API controller for hierarchy elements. 
     /// </summary>
     [Produces("application/json")]
     [ApiVersion("1.1")]
@@ -36,7 +36,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
 		}
 
 		/// <summary>
-        /// Get all hierarchies.
+        /// Gets all hierarchies.
         /// </summary>
         /// <returns></returns>
 		[HttpGet]
@@ -67,7 +67,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Get hierarchy with a specific ID.
+        /// Gets a hierarchy with a specific ID.
         /// </summary>
         /// <param name="id">The hierarchy ID.</param>
         /// <param name="revision">The hierarchy revision.</param>
@@ -102,7 +102,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
 		}
 
         /// <summary>
-        /// Get all revisions from a hierarchy with a specific ID.
+        /// Gets all revisions from a hierarchy with a specific ID.
         /// </summary>
         /// <param name="id">The hierarchy ID.</param>
         /// <param name="depth">The maximum depth of child nodes to return. If not set the complete hierarchy depth is returned.</param>
@@ -117,18 +117,18 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Create a hierarchy (sub-tree) with supplied nodes; the supplied ID must be unique. 
-        /// If no ID is supplied, it is generated before insertion. 
+        /// Creates a hierarchy (sub-tree) with supplied nodes; the supplied ID must be unique. 
+        /// If no ID is supplied, it is created before insertion. 
         /// Query ?parent=nodeId - the sub-tree will be inserted as first child; 
         /// query ?predecessor=nodeId - the sub-tree will be inserted after the specified node; 
         /// no query - the sub-tree will be inserted as first element at root level. 
         /// Without query string, the node (sub-tree) is inserted as first element at root level.
         /// </summary>
         /// <param name="node">The hierarchy data to add.</param>
-        /// <param name="parent">An optional parent node id. The sub-tree will be inserted as first child.</param>
-        /// <param name="predecessor">An optional prdecessor node id. The sub-tree will be inserted after the specified node.</param>
-        /// <param name="projectId">The projectId. If the id is given, the new hierarchy will be added to the specific project. 
-        /// Only usefull for new hierarchies - no parent or predecessor given.
+        /// <param name="parent">An optional parent node ID. The sub-tree will be inserted as first child.</param>
+        /// <param name="predecessor">An optional predecessor node ID. The sub-tree will be inserted after the specified node.</param>
+        /// <param name="projectId">The project ID. If the ID is given, the new hierarchy will be added to the specific project. 
+        /// Only useful for new hierarchies - no parent or predecessor given.
         /// </param>
         [Authorize(Roles = "Editor")]
         [HttpPost]
@@ -157,15 +157,15 @@ namespace MDD4All.SpecIF.Microservice.Controllers
 
 
         /// <summary>
-        /// Update an existing hierarchy node.
-        /// the supplied ID must exist somewhere in any hierarchy. 
+        /// Updates an existing hierarchy node.
+        /// The supplied ID must exist somewhere in any hierarchy. 
         /// Query ?parent=nodeId - the sub-tree will be moved and inserted as first child; 
         /// query ?predecessor=nodeId - the sub-tree will be moved and inserted after the specified node. 
         /// Without query string, the node (sub-tree) is not moved.
         /// </summary>
         /// <param name="node"></param>
-        /// <param name="parent">An optional parent node id. The sub-tree will be inserted as first child.</param>
-        /// <param name="predecessor">An optional prdecessor node id. The sub-tree will be inserted after the specified node.</param>
+        /// <param name="parent">An optional parent node ID. The sub-tree will be inserted as first child.</param>
+        /// <param name="predecessor">An optional predecessor node ID. The sub-tree will be inserted after the specified node.</param>
         [Authorize(Roles = "Editor")]
         [HttpPut]
         public void UpdateHierarchy([FromBody]Node node,
@@ -176,7 +176,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Delete a hierarchy.
+        /// Deletes a hierarchy.
         /// </summary>
         /// <param name="id"></param>
         /// <param name="revision"></param>
@@ -195,9 +195,9 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         ///// <summary>
         ///// Moves an existing node and all child nodes to a new parent.
         ///// </summary>
-        ///// <param name="nodeId">The id of the node to move.</param>
-        ///// <param name="newParentId">The id of the new parent.</param>
-        ///// <param name="newSiblingId">The id of the new sibling. 
+        ///// <param name="nodeId">The ID of the node to move.</param>
+        ///// <param name="newParentId">The ID of the new parent.</param>
+        ///// <param name="newSiblingId">The ID of the new sibling. 
         ///// If nothing is set the node will be the first element in the new location list.
         ///// </param>
         //[Authorize(Roles = "Editor")]

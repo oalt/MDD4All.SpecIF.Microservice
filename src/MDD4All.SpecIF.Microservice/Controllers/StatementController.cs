@@ -31,13 +31,13 @@ namespace MDD4All.SpecIF.Microservice.Controllers
 
         /// <summary>
         /// Returns all statements with all available revisions.
-        /// With the optional project ID only the satatements for the project are returned.
+        /// With the optional project ID only the statements for the project are returned.
         /// </summary>
         /// <param name="projectID">The optional project ID to filter statements by project.</param>
-        /// <param name="objectID">The optional objectID to filter statements only targeting the element with the given id.</param>
-        /// <param name="objectRevision">An optional object revision. Only usefull toghther with objectId.</param>
-        /// <param name="subjectID">The optional subjectID to filter statements only sourcing the element with the given id.</param>
-        /// <param name="subjectRevision">An optional subject revision. Only usefull toghther with subjectID.</param>
+        /// <param name="objectID">The optional object ID to filter statements only targeting the element with the given ID.</param>
+        /// <param name="objectRevision">An optional object revision. Only useful together with object ID.</param>
+        /// <param name="subjectID">The optional subject ID to filter statements only sourcing the element with the given ID.</param>
+        /// <param name="subjectRevision">An optional subject revision. Only useful together with subject ID.</param>
         /// <returns></returns>
         [HttpGet()]
         [ProducesResponseType(typeof(List<Statement>), 200)]
@@ -123,9 +123,9 @@ namespace MDD4All.SpecIF.Microservice.Controllers
 
 
         /// <summary>
-        /// Returns all available revisions for the statement wit the given ID.
+        /// Returns all available revisions for the statement with the given ID.
         /// </summary>
-        /// <param name="id">The statement id.</param>
+        /// <param name="id">The statement ID.</param>
         /// <returns>A list of statement revsions.</returns>
         [HttpGet("{id}/revisions")]
         [ProducesResponseType(typeof(List<Resource>), 200)]
@@ -151,7 +151,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Create a statement; the supplied ID must be unique in the project scope.
+        /// Creates a statement; the supplied ID must be unique in the project scope.
         /// </summary>
         /// <param name="statement">The statement to create.</param>
         /// <returns>The created statement data.</returns>
@@ -173,7 +173,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Update a new statement. If a statement with the given ID is still existant, a new revision is created automatically.
+        /// Updates a new statement. If a statement with the given ID is existant, a new revision is created automatically.
         /// </summary>
         /// <param name="statemenet">The statement to update.</param>
         /// <returns>The created statement data (perhaps with modified revision data).</returns>
@@ -195,11 +195,11 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Delete the statement; the supplied ID must exist. Return an error if there are depending model elements.
+        /// Deletes the statement; the supplied ID must exist. Returns an error if there are dependant model elements.
         /// </summary>
         /// <param name="id"></param>
         /// <param name="revision"></param>
-        /// <param name="mode">?mode=forced results in deleting all directly and indirectly depending model elements.</param>
+        /// <param name="mode">?mode=forced results in deleting all directly and indirectly dependant model elements.</param>
         /// <returns></returns>
         [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]

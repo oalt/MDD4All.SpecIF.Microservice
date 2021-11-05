@@ -34,7 +34,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Return all projects; to limit the size only root properties are delivered.
+        /// Returns all projects; to limit the size only root properties are delivered.
         /// </summary>
         /// <returns>A list of project descriptions.</returns>
         [HttpGet]
@@ -49,11 +49,11 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Return the project with the given ID.
+        /// Returns the project with the given ID.
         /// </summary>
-        /// <param name="id">The project id.</param>
+        /// <param name="id">The project ID.</param>
         /// <param name="hierarchyFilter">An optional comma seperated list of hierarchy root node IDs to limit the output of selected hierarchies.</param>
-        /// <param name="includeMetedata">Set to true if the metadata should be included (e.g. Resource Classes etc.)</param>
+        /// <param name="includeMetedata">Set to true if the metadata should be included (e.g. resource classes etc.)</param>
         /// <returns>The project as SpecIF JSON.</returns>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(SpecIF.DataModels.SpecIF), 201)]
@@ -101,8 +101,8 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Create a project with supplied elements; the supplied ID must be unique in the project scope. 
-        /// If no ID is supplied, it is generated before insertion.
+        /// Creates a project with supplied elements; the supplied ID must be unique in the project scope. 
+        /// If no ID is supplied, it is created before insertion.
         /// </summary>
         /// <param name="specIF">The SpecIF data defining the project.</param>
         /// <returns></returns>
@@ -124,7 +124,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Update a project with the given ID by including the data into an existing project. The project with the supplied ID must exist.
+        /// Updates a project with the given ID by including the data into an existing project. The project with the supplied ID must exist.
         /// </summary>
         /// <param name="value">The SpecIF data to include.</param>
         /// <returns></returns>
@@ -155,9 +155,9 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         }
 
         /// <summary>
-        /// Delete a project with the given ID.
+        /// Deletes a project with the given ID.
         /// </summary>
-        /// <param name="id">Th ID of the project to delete.</param>
+        /// <param name="id">The ID of the project to delete.</param>
         /// <returns></returns>
         [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]
