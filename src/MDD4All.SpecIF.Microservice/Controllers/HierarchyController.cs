@@ -109,7 +109,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         /// <returns></returns>
 		[HttpGet("{id}/revisions")]
         [ProducesResponseType(typeof(List<Node>), 200)]
-        public ActionResult<List<Node>> GetAllHierarchyRevisions(string id, [FromBody]int depth)
+        public ActionResult<List<Node>> GetAllHierarchyRevisions(string id, [FromQuery] int depth)
         {
             ActionResult<List<Node>> result = NotFound();
 
