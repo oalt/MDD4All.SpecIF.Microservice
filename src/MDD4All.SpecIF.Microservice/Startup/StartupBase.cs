@@ -21,6 +21,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 namespace MDD4All.SpecIF.Microservice.Startup
 {
@@ -108,6 +110,13 @@ namespace MDD4All.SpecIF.Microservice.Startup
                        .AllowAnyMethod()
                        .AllowAnyHeader();
             }));
+            //services.AddAuthorization(options =>
+            //{
+            //    options.AddPolicy("RequireAdministratorRole",
+            //         policy => policy.RequireRole("Administrator"));
+            //    options.AddPolicy("unregisteredReader", policy => policy.RequireRole("anonReader","Reader","Editor","Administrator"));
+            //    options.AddPolicy("registeredReader", policy => policy.RequireRole("Reader", "Editor", "Administrator"));
+            //});
 
             // API versioning
             services.AddApiVersioning(

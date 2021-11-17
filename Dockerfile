@@ -5,7 +5,7 @@ WORKDIR /app
 ENV ASPNETCORE_URLS https://localhost:888
 ENV ASPNETCORE_URLS http://localhost:887
 
- 
+
 
 ENV ASPNETCORE_Kestrel__Certificates__Default__Password=YourSecurePassword
 ENV ASPNETCORE_Kestrel__Certificates__Default__Path=/https/localhost.pfx

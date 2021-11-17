@@ -15,11 +15,12 @@ namespace MDD4All.SpecIF.Microservice.Controllers
     [ApiVersion("1.1")]
     [Produces("application/json")]
     [Route("specif/v{version:apiVersion}/dataTypes")]
+    
     [ApiController]
     public class DataTypeController : Controller
     {
 		private ISpecIfMetadataReader _metadataReader;
-
+     
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -27,6 +28,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
 		public DataTypeController(ISpecIfMetadataReader metadataReader)
 		{
 			_metadataReader = metadataReader;
+           
 		}
 
         /// <summary>
@@ -36,6 +38,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         /// <response code="200">List of data types successfully returned.</response>
         [HttpGet]
         [ProducesResponseType(typeof(List<DataType>), 200)]
+        [Authorize(Policy = "unregisteredReader")]
         public ActionResult<List<DataType>> GetAllDataTypes()
 		{
 
