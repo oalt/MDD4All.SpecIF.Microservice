@@ -1,6 +1,7 @@
 ﻿/*
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
+using System;
 using System.Collections.Generic;
 using MDD4All.SpecIF.DataModels;
 using MDD4All.SpecIF.DataProvider.Contracts;
@@ -20,14 +21,17 @@ namespace MDD4All.SpecIF.Microservice.Controllers
     public class ResourceClassController : Controller
     {
         private ISpecIfMetadataReader _metadataReader;
+        private ISpecIfMetadataWriter _metadataWriter;
 
         /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="metadataReader"></param>
-		public ResourceClassController(ISpecIfMetadataReader metadataReader)
+		public ResourceClassController(ISpecIfMetadataReader metadataReader,
+                                       ISpecIfMetadataWriter metadataWriter)
         {
             _metadataReader = metadataReader;
+            _metadataWriter = metadataWriter;
         }
 
         /// <summary>
@@ -123,7 +127,16 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         [ProducesResponseType(typeof(ResourceClass), 200)]
         public ActionResult<ResourceClass> CreateResourceClass([FromBody]ResourceClass resourceClass)
         {
-            ActionResult<ResourceClass> result = NotFound();
+            ActionResult<ResourceClass> result = null;
+
+            _metadataWriter.AddResourceClass(resourceClass);
+
+            result = resourceClass;
+
+            if (result == null)
+            {
+                result = new BadRequestResult();
+            }
 
             return result;
         }
@@ -137,9 +150,26 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         [Authorize(Roles = "Administrator")]
         [HttpPut]
         [ProducesResponseType(typeof(ResourceClass), 200)]
-        public ActionResult<ResourceClass> UpdateResourceClass([FromBody]Resource resourceClass)
+        public ActionResult<ResourceClass> UpdateResourceClass([FromBody]ResourceClass resourceClass)
         {
             ActionResult<ResourceClass> result = NotFound();
+
+            if (resourceClass != null)
+            {
+                try
+                {
+                    _metadataWriter.UpdateResourceClass(resourceClass);
+                    result = new OkObjectResult(resourceClass);
+                }
+                catch (Exception exception)
+                {
+
+                }
+            }
+            else
+            {
+                result = new BadRequestResult();
+            }
 
             return result;
         }
