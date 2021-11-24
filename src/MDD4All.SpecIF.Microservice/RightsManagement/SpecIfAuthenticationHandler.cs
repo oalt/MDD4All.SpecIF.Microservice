@@ -42,7 +42,7 @@ namespace MDD4All.SpecIF.Microservice.RightsManagement
 
                 if (apiKeyHeaderValues.Count == 0 || string.IsNullOrWhiteSpace(providedApiKey))
                 {
-                    Environment.SetEnvironmentVariable("accessRead", "true");
+                    Environment.SetEnvironmentVariable("accessRead", "false");
                     if (Environment.GetEnvironmentVariable("accessRead").Equals("true"))
                     {
                         ApplicationUser user = new ApplicationUser();

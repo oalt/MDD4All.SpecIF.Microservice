@@ -1,9 +1,12 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
+
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
+
+ENV ASPNETCORE_URLS https://localhost:888
+ENV ASPNETCORE_URLS http://localhost:887
+
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
@@ -29,6 +32,7 @@ COPY ["MDD4All.SpecIF.DataModels.Manipulation/src/MDD4All.SpecIF.DataModels.Mani
 COPY ["MDD4All.SpecIF.ViewModels.SpecIfEvent/src/MDD4All.SpecIF.ViewModels.SpecIfEvent/MDD4All.SpecIF.ViewModels.SpecIfEvent-dev.csproj", "MDD4All.SpecIF.ViewModels.SpecIfEvent/src/MDD4All.SpecIF.ViewModels.SpecIfEvent/"]
 COPY ["MDD4All.SpecIF.DataIntegrator.EA/src/MDD4All.SpecIF.DataIntegrator.EA/MDD4All.SpecIF.DataIntegrator.EA-dev.csproj", "MDD4All.SpecIF.DataIntegrator.EA/src/MDD4All.SpecIF.DataIntegrator.EA/"]
 COPY ["MDD4All.SpecIF.DataProvider.File/src/MDD4All.SpecIF.DataProvider.File/MDD4All.SpecIF.DataProvider.File-dev.csproj", "MDD4All.SpecIF.DataProvider.File/src/MDD4All.SpecIF.DataProvider.File/"]
+
 RUN dotnet restore "MDD4All.SpecIF.Microservice/MDD4All.SpecIf.Microservice-dev.csproj"
 COPY . .
 WORKDIR "/src/MDD4All.SpecIF.Microservice"

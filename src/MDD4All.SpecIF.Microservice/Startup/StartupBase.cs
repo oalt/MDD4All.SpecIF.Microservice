@@ -110,13 +110,13 @@ namespace MDD4All.SpecIF.Microservice.Startup
                        .AllowAnyMethod()
                        .AllowAnyHeader();
             }));
-            //services.AddAuthorization(options =>
-            //{
-            //    options.AddPolicy("RequireAdministratorRole",
-            //         policy => policy.RequireRole("Administrator"));
-            //    options.AddPolicy("unregisteredReader", policy => policy.RequireRole("anonReader","Reader","Editor","Administrator"));
-            //    options.AddPolicy("registeredReader", policy => policy.RequireRole("Reader", "Editor", "Administrator"));
-            //});
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("RequireAdministratorRole",
+                     policy => policy.RequireRole("Administrator"));
+                options.AddPolicy("unregisteredReader", policy => policy.RequireRole("anonReader", "Reader", "Editor", "Administrator"));
+                options.AddPolicy("registeredReader", policy => policy.RequireRole("Reader", "Editor", "Administrator"));
+            });
 
             // API versioning
             services.AddApiVersioning(
@@ -238,7 +238,7 @@ namespace MDD4All.SpecIF.Microservice.Startup
         [Obsolete]
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime)
         {
-            app.UseHttpsRedirection();
+           // app.UseHttpsRedirection();
 
             app.UseAuthentication();
             
