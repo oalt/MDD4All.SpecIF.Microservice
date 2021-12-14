@@ -64,6 +64,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
 		[HttpGet("{id}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
+        [Authorize(Policy = "unregisteredReader")]
         public ActionResult<DataType> GetDataTypeById(string id, [FromQuery]string revision)
 		{
             ActionResult<DataType> result = NotFound();
@@ -101,6 +102,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         /// <returns></returns>
         [HttpGet("{id}/revisions")]
         [ProducesResponseType(typeof(List<DataType>), 200)]
+        [Authorize(Policy = "unregisteredReader")]
         public ActionResult<List<DataType>> GetAllDatatypeRevisions(string id)
         {
             ActionResult<List<DataType>> result = NotFound();

@@ -64,6 +64,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         [ProducesResponseType(typeof(ResourceClass), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
+        [Authorize(Policy = "unregisteredReader")]
         public ActionResult<ResourceClass> GetResourceClassById(string id, [FromQuery]string revision)
         {
             ActionResult<ResourceClass> result = NotFound();
@@ -95,6 +96,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         [ProducesResponseType(typeof(List<ResourceClass>), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
+        [Authorize(Policy = "unregisteredReader")]
         public ActionResult<List<ResourceClass>> GetAllResourceClassRevisions(string id)
         {
             ActionResult<List<ResourceClass>> result = NotFound();

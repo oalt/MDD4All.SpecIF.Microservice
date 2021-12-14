@@ -41,6 +41,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         /// <returns></returns>
 		[HttpGet]
         [ProducesResponseType(typeof(List<Node>), 200)]
+        [Authorize(Policy = "unregisteredReader")]
         public ActionResult<List<Node>> GetAllHierarchies([FromQuery]string project, [FromQuery]bool rootNodesOnly)
         {
             ActionResult<List<Node>> result = NotFound();
@@ -75,6 +76,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         /// <returns></returns>
 		[HttpGet("{id}")]
         [ProducesResponseType(typeof(Node), 200)]
+        [Authorize(Policy = "unregisteredReader")]
         public ActionResult<Node> GetHierarchyById(string id, [FromQuery]string revision, [FromQuery]int depth)
 		{
 			ActionResult<Node> result = BadRequest();
@@ -109,6 +111,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         /// <returns></returns>
 		[HttpGet("{id}/revisions")]
         [ProducesResponseType(typeof(List<Node>), 200)]
+        [Authorize(Policy = "unregisteredReader")]
         public ActionResult<List<Node>> GetAllHierarchyRevisions(string id, [FromQuery] int depth)
         {
             ActionResult<List<Node>> result = NotFound();

@@ -40,6 +40,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         /// <returns>The resource data.</returns>
         [HttpGet()]
         [ProducesResponseType(typeof(List<Resource>), 200)]
+        [Authorize(Policy = "unregisteredReader")]
         public ActionResult<List<Resource>> GetAllResources([FromQuery]string projectID)
         {
             return new List<Resource>();
@@ -53,6 +54,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         /// <returns>The resource data.</returns>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Resource), 200)]
+        [Authorize(Policy = "unregisteredReader")]
         public ActionResult<Resource> GetResourceById(string id, [FromQuery]string revision)
 		{
             ActionResult result = NotFound();
@@ -89,6 +91,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         /// <returns>All available revisions for this resource.</returns>
         [HttpGet("{id}/revisions")]
         [ProducesResponseType(typeof(List<Resource>), 200)]
+        [Authorize(Policy = "unregisteredReader")]
         public ActionResult<List<Resource>> GetAllResourceRevisions(string id)
         {
             ActionResult<List<Resource>> result = NotFound();

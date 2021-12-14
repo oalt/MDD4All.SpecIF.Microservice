@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>366940ba-2f28-4561-8553-157154e15d8e</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-	  <DockerfileRunArguments>-p 888:888</DockerfileRunArguments>
+	 
 	  <AssemblyName>MDD4All.SpecIf.Microservice</AssemblyName>
     <RootNamespace>MDD4All.SpecIf.Microservice</RootNamespace>
     <OutputType>Exe</OutputType>
@@ -53,7 +53,6 @@
         <Reference Include="Interop.EA">
           <HintPath>..\libs\Interop.EA.dll</HintPath>
           <EmbedInteropTypes>false</EmbedInteropTypes>
-          <Private>true</Private>
         </Reference>
     </ItemGroup>
 
@@ -65,8 +64,8 @@
       <None Update="Dockerfile.yml">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
-      <None Update="localhost.pfx">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <None Update="MDD4All.SpecIf.Microservice.pfx">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
       <None Update="MDD4All.SpecIF.Microservice.xml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

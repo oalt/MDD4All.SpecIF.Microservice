@@ -37,6 +37,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         [ProducesResponseType(typeof(List<Resource>), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
+        [Authorize(Policy = "unregisteredReader")]
         public ActionResult<List<StatementClass>> GetAllStatementClasses()
         {
             ActionResult<List<StatementClass>> result = NotFound();
@@ -63,6 +64,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         [ProducesResponseType(typeof(StatementClass), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
+        [Authorize(Policy = "unregisteredReader")]
         public ActionResult<StatementClass> GetStatementClassById(string id, [FromQuery]string revision)
         {
             ActionResult<StatementClass> result = NotFound();
@@ -97,6 +99,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         /// <returns></returns>
         [HttpGet("{id}/revisions")]
         [ProducesResponseType(typeof(List<StatementClass>), 200)]
+        [Authorize(Policy = "unregisteredReader")]
         public ActionResult<List<StatementClass>> GetAllStatementClassRevisions(string id)
         {
             ActionResult<List<StatementClass>> result = NotFound();

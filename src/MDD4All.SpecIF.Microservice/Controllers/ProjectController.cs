@@ -39,6 +39,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         /// <returns>A list of project descriptions.</returns>
         [HttpGet]
         [ProducesResponseType(typeof(List<ProjectDescriptor>), 200)]
+        [Authorize(Policy = "unregisteredReader")]
         public ActionResult<List<ProjectDescriptor>> GetAllProjects()
         {
             List<ProjectDescriptor> result = new List<ProjectDescriptor>();
@@ -57,6 +58,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         /// <returns>The project as SpecIF JSON.</returns>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(SpecIF.DataModels.SpecIF), 201)]
+        [Authorize(Policy = "unregisteredReader")]
         public ActionResult<SpecIF.DataModels.SpecIF> GetProjectByID(string id, 
                                                                     [FromQuery] string hierarchyFilter,
                                                                     [FromQuery] bool includeMetedata = true)

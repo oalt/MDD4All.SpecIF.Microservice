@@ -19,7 +19,7 @@
     },
     "MDD4All.SpecIF.Microservice.Integration": {
       "commandName": "Project",
-      "commandLineArgs": "integration",
+      "commandLineArgs": "integration false",
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {

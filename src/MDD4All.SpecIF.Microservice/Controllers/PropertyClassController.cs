@@ -36,6 +36,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
 		[HttpGet]
         [ProducesResponseType(typeof(List<PropertyClass>), 200)]
         [ProducesResponseType(400)]
+        [Authorize(Policy = "unregisteredReader")]
         public ActionResult<List<PropertyClass>> GetAllPropertyClasses()
 		{
             ActionResult<List<PropertyClass>> result = NotFound();
@@ -62,6 +63,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         [ProducesResponseType(typeof(PropertyClass), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
+        [Authorize(Policy = "unregisteredReader")]
         public ActionResult<PropertyClass> GetPropertyClassById(string id, [FromQuery]string revision)
         {
             ActionResult<PropertyClass> result = NotFound();
@@ -98,6 +100,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         /// <returns></returns>
         [HttpGet("{id}/revisions")]
         [ProducesResponseType(typeof(List<PropertyClass>), 200)]
+        [Authorize(Policy = "unregisteredReader")]
         public ActionResult<List<PropertyClass>> GetAllPropertyClassRevisions(string id)
         {
             ActionResult<List<PropertyClass>> result = NotFound();

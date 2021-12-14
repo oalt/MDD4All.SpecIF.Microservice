@@ -22,6 +22,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         /// <returns>All file descriptions.</returns>
         [HttpGet]
         [ProducesResponseType(typeof(List<File>), 200)]
+        [Authorize(Policy = "unregisteredReader")]
         public ActionResult<List<File>> GetAllFiles([FromQuery]string projectID)
         {
             ActionResult<List<File>> result = NotFound();
@@ -37,6 +38,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         /// <param name="revision"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
+        [Authorize(Policy = "unregisteredReader")]
         public FileContentResult GetFileById(string id, [FromQuery]string revision)
         {
             FileContentResult result = null;
@@ -51,6 +53,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         /// <returns>All available file descriptions for all revisions with this file ID.</returns>
         [HttpGet("{id}/revisions")]
         [ProducesResponseType(typeof(List<File>), 200)]
+        [Authorize(Policy = "unregisteredReader")]
         public ActionResult<List<File>> GetAllFileRevisions(string id)
         {
             ActionResult<List<File>> result = NotFound();
