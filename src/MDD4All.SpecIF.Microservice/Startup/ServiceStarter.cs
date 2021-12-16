@@ -73,22 +73,14 @@ namespace MDD4All.SpecIF.Microservice.Startup
 
             if (type == "mongodb" || type == null )
             {
-                Startup.StartupBase.Urls = new List<string> { "https://127.0.0.1:888", "http://127.0.0.1:887" };
+                Startup.StartupBase.Urls = new List<string> { "https://*:888", "http://+:887" };
 
                 result = WebHost.CreateDefaultBuilder(args)
 
                                                     .UseStartup<MongoDbStartup>()
                                                    .UseUrls(Startup.StartupBase.Urls.ToArray())
                                                    .UseKestrel()
-                                                   //.UseKestrel(options =>
-                                                   //{
-                                                   //    options.Listen(IPAddress.Loopback, 887);
-                                                   //    options.Listen(IPAddress.Loopback, 888, listenOptions =>
-                                                   //    {
-                                                   //        listenOptions.UseHttps("MDD4All.SpecIf.Microservice.pfx", "YourSecurePassword");
-                                                   //    });
-                                                   //}
-                                                   //    )
+                                               
                                                     .ConfigureLogging(ConfigureLoggingAction)
                                                     .Build();
             }

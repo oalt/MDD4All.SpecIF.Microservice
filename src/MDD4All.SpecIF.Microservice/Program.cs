@@ -21,10 +21,8 @@ namespace MDD4All.SpecIF.Microservice
             }
             if (args.Length <= 1)
             {
-                Environment.SetEnvironmentVariable("accessRead", "false");
+                Environment.SetEnvironmentVariable("accessRead", "true");
             }
-        
-            //2nd argument for allow anonymous
             serviceStarter.Start(args);
         }
 
