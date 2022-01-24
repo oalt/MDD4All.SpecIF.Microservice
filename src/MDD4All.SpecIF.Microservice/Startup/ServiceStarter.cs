@@ -10,6 +10,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Security.Cryptography.X509Certificates;
 
 namespace MDD4All.SpecIF.Microservice.Startup
 {
@@ -35,7 +37,11 @@ namespace MDD4All.SpecIF.Microservice.Startup
             }
 
             if (webHost != null)
-            {
+            {   
+                
+                
+                
+                
                 webHost.Start();
 
                 ILogger<ServiceStarter> logger = webHost.Services.GetRequiredService<ILogger<ServiceStarter>>();
@@ -65,13 +71,16 @@ namespace MDD4All.SpecIF.Microservice.Startup
 
 
 
-            if (type == "mongodb" || type == null)
+            if (type == "mongodb" || type == null )
             {
-                Startup.StartupBase.Urls = new List<string> { "https://127.0.0.1:888", "http://127.0.0.1:887" };
+                Startup.StartupBase.Urls = new List<string> { "https://*:888", "http://+:887" };
 
                 result = WebHost.CreateDefaultBuilder(args)
+
                                                     .UseStartup<MongoDbStartup>()
-                                                    .UseUrls(Startup.StartupBase.Urls.ToArray())
+                                                   .UseUrls(Startup.StartupBase.Urls.ToArray())
+                                                   .UseKestrel()
+                                               
                                                     .ConfigureLogging(ConfigureLoggingAction)
                                                     .Build();
             }
@@ -91,7 +100,7 @@ namespace MDD4All.SpecIF.Microservice.Startup
             {
                 Startup.StartupBase.Urls = new List<string> { "https://127.0.0.1:555", "http://127.0.0.1:554" };
 
-                result = WebHost.CreateDefaultBuilder(args)
+                result = WebHost.CreateDefaultBuilder(args)                                                       
                                                     .UseStartup<IntegrationStartup>()
                                                     .UseUrls(Startup.StartupBase.Urls.ToArray())
                                                     .ConfigureLogging(ConfigureLoggingAction)

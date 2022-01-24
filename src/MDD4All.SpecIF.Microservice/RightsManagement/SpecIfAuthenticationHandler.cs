@@ -32,20 +32,34 @@ namespace MDD4All.SpecIF.Microservice.RightsManagement
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-
+            
             AuthenticateResult result = AuthenticateResult.NoResult();
 
-            if (!Request.Headers.TryGetValue(ApiKeyConstants.HeaderName, out var apiKeyHeaderValues))
-            {
-                result = AuthenticateResult.NoResult();
-            }
-            else
+            Request.Headers.TryGetValue(ApiKeyConstants.HeaderName, out var apiKeyHeaderValues);
+            
             {
                 string providedApiKey = apiKeyHeaderValues.FirstOrDefault();
 
                 if (apiKeyHeaderValues.Count == 0 || string.IsNullOrWhiteSpace(providedApiKey))
                 {
-                    result = AuthenticateResult.NoResult();
+                    //Environment.SetEnvironmentVariable("accessRead", "true");
+                    if (Environment.GetEnvironmentVariable("accessRead").Equals("true"))
+                    {
+                        ApplicationUser user = new ApplicationUser();
+                        var claims = new List<Claim>
+                        {
+                            new Claim(ClaimTypes.Name, "anonymousReader")
+                        };
+                        claims.Add(new Claim(ClaimTypes.Role, "anonReader"));
+                       // claims.AddRange(user.Roles.Select(role => new Claim(ClaimTypes.Role, "anonReader")));
+                        ClaimsIdentity identity = new ClaimsIdentity(claims, Options.AuthenticationType);
+                        List<ClaimsIdentity> identities = new List<ClaimsIdentity> { identity };
+                        ClaimsPrincipal principal = new ClaimsPrincipal(identities);
+                        AuthenticationTicket ticket = new AuthenticationTicket(principal, Options.Scheme);
+
+                        result = AuthenticateResult.Success(ticket);
+                    }
+                  
                 }
                 else
                 {

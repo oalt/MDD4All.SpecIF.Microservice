@@ -15,11 +15,12 @@ namespace MDD4All.SpecIF.Microservice.Controllers
     [ApiVersion("1.1")]
     [Produces("application/json")]
     [Route("specif/v{version:apiVersion}/dataTypes")]
+    
     [ApiController]
     public class DataTypeController : Controller
     {
 		private ISpecIfMetadataReader _metadataReader;
-
+     
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -27,6 +28,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
 		public DataTypeController(ISpecIfMetadataReader metadataReader)
 		{
 			_metadataReader = metadataReader;
+           
 		}
 
         /// <summary>
@@ -36,6 +38,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         /// <response code="200">List of data types successfully returned.</response>
         [HttpGet]
         [ProducesResponseType(typeof(List<DataType>), 200)]
+        [Authorize(Policy = "unregisteredReader")]
         public ActionResult<List<DataType>> GetAllDataTypes()
 		{
 
@@ -61,6 +64,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
 		[HttpGet("{id}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
+        [Authorize(Policy = "unregisteredReader")]
         public ActionResult<DataType> GetDataTypeById(string id, [FromQuery]string revision)
 		{
             ActionResult<DataType> result = NotFound();
@@ -98,6 +102,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         /// <returns></returns>
         [HttpGet("{id}/revisions")]
         [ProducesResponseType(typeof(List<DataType>), 200)]
+        [Authorize(Policy = "unregisteredReader")]
         public ActionResult<List<DataType>> GetAllDatatypeRevisions(string id)
         {
             ActionResult<List<DataType>> result = NotFound();
