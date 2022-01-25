@@ -73,9 +73,6 @@
 [submodule "src/MDD4All.SpecIF.ViewModels.IntegrationService"]
 	path = src/MDD4All.SpecIF.ViewModels.IntegrationService
 	url = https://github.com/oalt/MDD4All.SpecIF.ViewModels.IntegrationService.git
-[submodule "src/MDD4All.SpecIF.Apps.EaPlugin"]
-	path = src/MDD4All.SpecIF.Apps.EaPlugin
-	url = https://github.com/oalt/MDD4All.SpecIF.Apps.EaPlugin.git
 [submodule "src/MDD4All.SpecIF.Converters"]
 	path = src/MDD4All.SpecIF.Converters
 	url = https://github.com/oalt/MDD4All.SpecIF.Converters.git
