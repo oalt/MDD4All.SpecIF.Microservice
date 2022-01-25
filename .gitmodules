@@ -1,9 +1,6 @@
 [submodule "src/MDD4All.SpecIF.DataModels"]
 	path = src/MDD4All.SpecIF.DataModels
 	url = https://github.com/oalt/MDD4All.SpecIF.DataModels.git
-[submodule "src/MDD4All.Configuration"]
-	path = src/MDD4All.Configuration
-	url = https://github.com/oalt/MDD4All.Configuration.git
 [submodule "src/MDD4All.Jira.DataModels"]
 	path = src/MDD4All.Jira.DataModels
 	url = https://github.com/oalt/MDD4All.Jira.DataModels.git
@@ -76,12 +73,6 @@
 [submodule "src/MDD4All.SpecIF.Converters"]
 	path = src/MDD4All.SpecIF.Converters
 	url = https://github.com/oalt/MDD4All.SpecIF.Converters.git
-[submodule "src/MDD4All.SpecIF.Apps.MongoDbInitializer"]
-	path = src/MDD4All.SpecIF.Apps.MongoDbInitializer
-	url = https://github.com/oalt/MDD4All.SpecIF.Apps.MongoDbInitializer.git
-[submodule "src/MDD4All.SpecIF.Apps.ServiceStarter"]
-	path = src/MDD4All.SpecIF.Apps.ServiceStarter
-	url = https://github.com/oalt/MDD4All.SpecIF.Apps.ServiceStarter.git
 [submodule "src/MDD4All.SpecIF.Microservice.JiraWebhook"]
 	path = src/MDD4All.SpecIF.Microservice.JiraWebhook
 	url = https://github.com/oalt/MDD4All.SpecIF.Microservice.JiraWebhook.git
