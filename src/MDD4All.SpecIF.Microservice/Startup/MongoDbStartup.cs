@@ -19,6 +19,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using MDD4All.SpecIf.Microservice.Startup.MongoDB;
 
 namespace MDD4All.SpecIF.Microservice.Startup
 {
@@ -39,6 +40,11 @@ namespace MDD4All.SpecIF.Microservice.Startup
 
             if (!string.IsNullOrEmpty(dataSource) && !string.IsNullOrEmpty(dataConnection))
             {
+
+                AdminDbInitializer adminDbInitializer = new AdminDbInitializer(Configuration, _logger);
+
+                adminDbInitializer.InitalizeAdminData();
+
 
                 //    // user and role management
                 //    services.AddScoped<IUserStore<ApplicationUser>>(userStore =>

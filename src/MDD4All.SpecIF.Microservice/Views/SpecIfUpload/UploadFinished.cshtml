@@ -1,0 +1,16 @@
+﻿@model MDD4All.SpecIF.ViewModels.IntegrationService.SpecIfUploadViewModel
+
+
+<div class="framedDocument">
+	<h2>File upload</h2>
+	@if (Model.Success)
+	{
+		<p>The upload of <strong>@Model.FileName</strong> was successfull.</p>
+	}
+	else
+	{
+		<h3>Error</h3>
+		<p>The upload of <strong>@Model.FileName</strong> failed.</p>
+		<p>@Model.ErrorMessage</p>
+	}
+</div>

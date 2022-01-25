@@ -62,6 +62,14 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Content Remove="Scripts\tsconfig.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="Scripts\tsconfig.json" />
+    </ItemGroup>
+
+    <ItemGroup>
       <None Update="Dockerfile.yml">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>

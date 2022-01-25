@@ -1,0 +1,52 @@
+﻿<div class="framedDocument">
+    <h2><span class="glyphicon glyphicon-open" aria-hidden="true"></span> Upload SpecIF file</h2>
+
+    <div>
+        <form method="post" enctype="multipart/form-data" asp-controller="SpecIfUpload" asp-action="UploadFile">
+            <table>
+                <tr>
+                    <td>
+                        <div class="form-group">
+
+                            <h4>Select a SpecIF file for upload:</h4>
+                            <input type="file" name="files">
+
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="checkbox" id="overrideExistingData" name="overrideData" />
+                        <label class="form-check-label" for="overrideExistingData">Override existing data with same ID and Revision</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <p></p>
+                            <input type="submit" value="Upload" id="startUpload" class="btn btn-primary">
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <p></p>
+
+        </form>
+    </div>
+
+    <p>
+        <div id="loading" hidden>
+            <img src="~/images/ajax-loader.gif" alt="" /> Processing file...
+        </div>
+    </p>
+</div>
+
+@section Scripts {
+
+    <script type="text/javascript" src="~/js/FileUploadProgressDisplay.js"></script>
+
+    <script type="text/javascript">
+        let progressDisplay = new FileUploadProgressDisplay();
+    </script>
+}
