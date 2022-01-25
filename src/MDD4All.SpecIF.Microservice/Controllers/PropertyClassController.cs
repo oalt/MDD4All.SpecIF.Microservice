@@ -137,7 +137,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         /// <returns>The updated property class element.</returns>
         [Authorize(Roles = "Administrator")]
         [HttpPut]
-        public ActionResult UpdatePropertyClass([FromQuery]PropertyClass propertyClass)
+        public ActionResult UpdatePropertyClass([FromBody]PropertyClass propertyClass)
         {
             ActionResult result = NotFound();
 
