@@ -1,5 +1,6 @@
 ﻿using MDD4All.SpecIF.DataProvider.Contracts;
 using MDD4All.SpecIF.ViewModels.IntegrationService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -61,6 +62,7 @@ namespace MDD4All.SpecIf.Microservice.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "unregisteredReader")]
         public async Task<IActionResult> UploadFile(IFormCollection collection)
         {
             IActionResult result = null;

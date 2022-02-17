@@ -83,6 +83,12 @@ namespace MDD4All.SpecIf.Microservice.Startup.MongoDB
                 Name = "Editor",
                 NormalizedName = "EDITOR"
             });
+            _roleMongoDbAccessor.Add(new ApplicationRole
+            {
+                Id = "ROLE-Reader",
+                Name = "READER",
+                NormalizedName = "READER"
+            });
 
             PasswordHasher<ApplicationUser> passwordHasher = new PasswordHasher<ApplicationUser>();
 
@@ -104,24 +110,43 @@ namespace MDD4All.SpecIf.Microservice.Startup.MongoDB
 
             _userMongoDbAccessor.Add(adminUser);
 
-            ApplicationUser olliUser = new ApplicationUser
+            ApplicationUser editorUser = new ApplicationUser
             {
-                Id = "User-Olli",
-                NormalizedUserName = "OLLI",
-                UserName = "olli",
+                Id = "User-Editor",
+                NormalizedUserName = "Editor",
+                UserName = "editor",
                 ApiKey = "5824E518-C2C6-455A-9447-8A8CA029E40C",
                 Roles = new List<string>
                 {
-                    "Administrator",
+                    
                     "Editor"
                 }
             };
 
-            string hashOlli = passwordHasher.HashPassword(adminUser, "password");
+            string hashEditor = passwordHasher.HashPassword(editorUser, "password");
 
-            olliUser.PasswordHash = hashOlli;
+            editorUser.PasswordHash = hashEditor;
 
-            _userMongoDbAccessor.Add(olliUser);
+            _userMongoDbAccessor.Add(editorUser);
+
+            ApplicationUser readerUser = new ApplicationUser
+            {
+                Id = "User-Reader",
+                NormalizedUserName = "Reader",
+                UserName = "reader",
+                ApiKey = "5824E518-A1D5-455A-9447-8A8CA029AB37",
+                Roles = new List<string>
+                {
+
+                    "Reader"
+                }
+            };
+
+            string hashReader = passwordHasher.HashPassword(readerUser, "password");
+
+            readerUser.PasswordHash = hashReader;
+
+            _userMongoDbAccessor.Add(readerUser);
         }
 
         public void CreateJwtConfiguration(string connectionString)

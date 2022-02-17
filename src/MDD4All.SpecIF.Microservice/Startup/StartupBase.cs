@@ -238,7 +238,7 @@ namespace MDD4All.SpecIF.Microservice.Startup
         [Obsolete]
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime)
         {
-           // app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
             app.UseAuthentication();
             

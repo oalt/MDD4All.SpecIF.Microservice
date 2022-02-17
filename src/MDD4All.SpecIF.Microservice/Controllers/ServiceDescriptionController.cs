@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MDD4All.SpecIF.DataModels.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,6 +27,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
 		}
 
 		[HttpGet]
+		[Authorize(Policy = "unregisteredReader")]
 		public SpecIfServiceDescription Get()
 		{
 			return _serviceDescription as SpecIfServiceDescription;
