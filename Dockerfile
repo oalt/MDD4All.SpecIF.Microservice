@@ -13,4 +13,11 @@ COPY ["src/MDD4All.SpecIF.Microservice/bin/Release/netcoreapp3.1/MDD4All.SpecIF.
 
 WORKDIR /app
 ENTRYPOINT ["./MDD4All.SpecIf.Microservice"]
-#funktioniert mit docker -t name build .
+
+
+#Specif aus VS publishen in den standardordner
+#passwort und pfx file kann man oben reinschreiben oder per environment variable beim start des containers
+#funktioniert mit docker build -t <name>:<tag> .
+#docker run -p 888:888 <name>:<tag>
+#docker run befehl varianten siehe SpecIF_Backend_Docker_Image_Readme 
+# für access von mongodb&specif docker network create und dann network=<networkname> in beiden run befehlen
