@@ -57,6 +57,11 @@ namespace MDD4All.SpecIF.Microservice.Startup
         ///
         public void ConfigureServices(IServiceCollection services)
         {
+
+            //HealthStatus
+            services.AddHealthChecks();
+               
+
             // MVC
             services.AddMvc()
                 .AddNewtonsoftJson(options => 
