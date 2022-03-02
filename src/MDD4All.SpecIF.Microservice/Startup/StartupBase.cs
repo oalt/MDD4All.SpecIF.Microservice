@@ -23,6 +23,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Prometheus;
 
 namespace MDD4All.SpecIF.Microservice.Startup
 {
@@ -243,7 +244,12 @@ namespace MDD4All.SpecIF.Microservice.Startup
         [Obsolete]
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime)
         {
-            app.UseHttpsRedirection();
+            string redirectionStatus = Configuration.GetValue<string>("httpsRedirectionActive");
+            if (redirectionStatus == "Yes")
+            {
+                app.UseHttpsRedirection();
+            }
+           
 
             app.UseAuthentication();
             
@@ -273,6 +279,9 @@ namespace MDD4All.SpecIF.Microservice.Startup
             app.UseRouting();
             
             app.UseAuthorization();
+
+            app.UseMetricServer();
+            app.UseHttpMetrics();
 
             app.UseEndpoints(endpoints =>
             {
