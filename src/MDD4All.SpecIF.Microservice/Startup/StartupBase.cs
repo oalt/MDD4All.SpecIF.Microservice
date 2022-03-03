@@ -244,10 +244,16 @@ namespace MDD4All.SpecIF.Microservice.Startup
         [Obsolete]
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime)
         {
-            string redirectionStatus = Configuration.GetValue<string>("httpsRedirectionActive");
-            if (redirectionStatus == "Yes")
+            string redirectionStatus = Configuration.GetValue<string>("httpRedirection");
+            if (redirectionStatus != "noRedirection")
             {
                 app.UseHttpsRedirection();
+                _logger.LogInformation("HTTP redirection to HTTPS active");
+                
+            }
+            if (redirectionStatus == "noRedirection")
+            {
+                _logger.LogInformation("HTTP redirection to HTTPS disabled");
             }
            
 

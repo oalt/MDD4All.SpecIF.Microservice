@@ -8,7 +8,10 @@ using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NLog;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
@@ -19,6 +22,8 @@ namespace MDD4All.SpecIF.Microservice.Startup
     {
 
         public static string Type { get; private set; }
+        private static Logger _logger = LogManager.GetCurrentClassLogger();
+
 
         public void Start(string[] args)
         {
@@ -59,7 +64,7 @@ namespace MDD4All.SpecIF.Microservice.Startup
                     }
                 }
 
-
+                
 
                 webHost.WaitForShutdown();
             }
@@ -69,11 +74,28 @@ namespace MDD4All.SpecIF.Microservice.Startup
         {
             IWebHost result = null;
 
-
+            string certificate = (Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Path"));
+            if (File.Exists(certificate) != true)
+            {
+                Environment.SetEnvironmentVariable("httpOnly", "httpOnly");
+                _logger.Warn("SSL certificate not found. Check path and password. HTTPS deactivated. Environment variables:" +
+                    "ASPNETCORE_Kestrel__Certificates__Default__Path  ASPNETCORE_Kestrel__Certificates__Default__Password ");
+            }
 
             if (type == "mongodb" || type == null )
-            {
-                Startup.StartupBase.Urls = new List<string> { "https://*:888", "http://+:887" };
+            {   
+                if (Environment.GetEnvironmentVariable("httpOnly") == "httpOnly")
+                {
+                    Startup.StartupBase.Urls = new List<string> { "http://+:887" };
+                    _logger.Warn("Warning: HTTPS connection deactivated. Not secure! Consider switching to https");
+
+
+    }
+                else
+                {
+                    Startup.StartupBase.Urls = new List<string> { "https://*:888", "http://+:887" };
+                }
+               
 
                 result = WebHost.CreateDefaultBuilder(args)
 

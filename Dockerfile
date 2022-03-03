@@ -6,6 +6,8 @@ ENV ASPNETCORE_URLS https://localhost:888
 ENV ASPNETCORE_URLS http://localhost:887
 ENV ASPNETCORE_Kestrel__Certificates__Default__Password=
 ENV ASPNETCORE_Kestrel__Certificates__Default__Path=
+ENV httpOnly=no
+
 
 ADD ["src/MDD4All.SpecIF.Microservice/bin/Release/netcoreapp3.1/publish", "/app"]
 COPY ["localhost.pfx", "/https/localhost.pfx"]
