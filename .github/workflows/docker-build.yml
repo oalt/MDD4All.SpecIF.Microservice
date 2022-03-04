@@ -10,8 +10,8 @@ jobs:
     env:
       SOLUTION_NAME: SpecIF_Backend-dev.sln 
       DOCKER_IMAGE_NAME: specif_backend 
-    
       
+    steps:      
     - name: Checkout repository and submodules
       uses: actions/checkout@v2
       with:
