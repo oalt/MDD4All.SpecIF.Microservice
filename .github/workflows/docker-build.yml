@@ -37,7 +37,7 @@ jobs:
       run: dotnet build --no-restore -c Release /p:Version=${VERSION} ./src/${SOLUTION_NAME}
       
     - name: Publish
-      run: dotnet publish -c Release /p:Version=$(VERSION) --runtime linux-x64 ./src/${SOLUTION_NAME}
+      run: dotnet publish -c Release /p:Version=${VERSION} --runtime linux-x64 ./src/${SOLUTION_NAME}
       
     - name: build Docker
       run: docker build -t ghcr.io/nicholas-mc/${SOLUTION_NAME}:$VERSION .
