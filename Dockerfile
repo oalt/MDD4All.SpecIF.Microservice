@@ -9,9 +9,8 @@ ENV ASPNETCORE_Kestrel__Certificates__Default__Path=
 ENV httpOnly=no
 
 
-ADD ["src/MDD4All.SpecIF.Microservice/bin/Release/netcoreapp3.1/publish", "/app"]
-COPY ["localhost.pfx", "/https/localhost.pfx"]
-COPY ["src/MDD4All.SpecIF.Microservice/bin/Release/netcoreapp3.1/MDD4All.SpecIF.Microservice.xml", "/app/MDD4All.SpecIF.Microservice.xml"]
+ADD ["src/MDD4All.SpecIF.Microservice/bin/Release/netcoreapp3.1/linux-x64", "/app"]
+
 
 WORKDIR /app
 ENTRYPOINT ["./MDD4All.SpecIf.Microservice"]
@@ -23,3 +22,4 @@ ENTRYPOINT ["./MDD4All.SpecIf.Microservice"]
 #docker run -p 888:888 <name>:<tag>
 #docker run befehl varianten siehe SpecIF_Backend_Docker_Image_Readme 
 # für access von mongodb&specif docker network create und dann network=<networkname> in beiden run befehlen
+
