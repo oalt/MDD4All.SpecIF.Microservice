@@ -9,12 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SOLUTION_NAME: SpecIF_Backend-dev.sln 
+      DOCKER_IMAGE_NAME: specif_backend 
     
-    steps:
-    - id: string
-      uses: ASzc/change-string-case-action@v2
-      with:
-        string: ${SOLUTION_NAME}
       
     - name: Checkout repository and submodules
       uses: actions/checkout@v2
@@ -45,7 +41,7 @@ jobs:
       run: dotnet publish -c Release /p:Version=${VERSION} --runtime linux-x64 ./src/${SOLUTION_NAME}
       
     - name: build Docker
-      run: docker build -t ghcr.io/nicholas-mc/${{steps.string.outputs.lowercase}}:$VERSION .
+      run: docker build -t ghcr.io/nicholas-mc/${DOCKER_IMAGE_NAME:$VERSION .
       
     - name: login Docker
       uses: docker/login-action@v1
@@ -55,7 +51,7 @@ jobs:
      
     
     - name: push Docker
-      run: docker push ghcr.io/nicholas-mc/${{steps.string.outputs.lowercase}}:$VERSION    
+      run: docker push ghcr.io/nicholas-mc/${DOCKER_IMAGE_NAME}:$VERSION    
      
     
       
