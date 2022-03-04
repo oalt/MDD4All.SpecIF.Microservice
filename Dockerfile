@@ -9,7 +9,7 @@ ENV ASPNETCORE_Kestrel__Certificates__Default__Path=
 ENV httpOnly=no
 
 
-ADD ["src/MDD4All.SpecIF.Microservice/bin/Release/netcoreapp3.1/linux-x64", "/app"]
+ADD ["src/MDD4All.SpecIF.Microservice/bin/Release/netcoreapp3.1/linux-x64/publish", "/app"]
 
 
 WORKDIR /app
