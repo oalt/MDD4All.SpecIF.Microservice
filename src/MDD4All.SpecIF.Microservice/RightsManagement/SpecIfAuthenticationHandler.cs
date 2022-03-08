@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using MDD4All.SpecIF.DataModels.RightsManagement;
-using MDD4All.SpecIF.Microservice.RightsManagement;
+using Microsoft.Extensions.Primitives;
 
 namespace MDD4All.SpecIF.Microservice.RightsManagement
 {
@@ -32,78 +32,61 @@ namespace MDD4All.SpecIF.Microservice.RightsManagement
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            
+
             AuthenticateResult result = AuthenticateResult.NoResult();
 
-            Request.Headers.TryGetValue(ApiKeyConstants.HeaderName, out var apiKeyHeaderValues);
-            
-            {
-                string providedApiKey = apiKeyHeaderValues.FirstOrDefault();
+            Request.Headers.TryGetValue(ApiKeyConstants.HeaderName, out StringValues apiKeyHeaderValues);
 
-                if (apiKeyHeaderValues.Count == 0 || string.IsNullOrWhiteSpace(providedApiKey))
+
+            string providedApiKey = apiKeyHeaderValues.FirstOrDefault();
+
+            if (apiKeyHeaderValues.Count == 0 || string.IsNullOrWhiteSpace(providedApiKey))
+            {
+                string metadataReadAuthRequired = Environment.GetEnvironmentVariable("metadataReadAuthRequired");
+                if (metadataReadAuthRequired.ToLower().Equals("false"))
                 {
-                    //Environment.SetEnvironmentVariable("accessRead", "true");
-                    if (Environment.GetEnvironmentVariable("accessRead").Equals("true"))
-                    {
-                        ApplicationUser user = new ApplicationUser();
-                        var claims = new List<Claim>
+                    ApplicationUser user = new ApplicationUser();
+                    List<Claim> claims = new List<Claim>
                         {
                             new Claim(ClaimTypes.Name, "anonymousReader")
                         };
-                        claims.Add(new Claim(ClaimTypes.Role, "anonReader"));
-                       // claims.AddRange(user.Roles.Select(role => new Claim(ClaimTypes.Role, "anonReader")));
-                        ClaimsIdentity identity = new ClaimsIdentity(claims, Options.AuthenticationType);
-                        List<ClaimsIdentity> identities = new List<ClaimsIdentity> { identity };
-                        ClaimsPrincipal principal = new ClaimsPrincipal(identities);
-                        AuthenticationTicket ticket = new AuthenticationTicket(principal, Options.Scheme);
+                    claims.Add(new Claim(ClaimTypes.Role, "anonReader"));
+                    // claims.AddRange(user.Roles.Select(role => new Claim(ClaimTypes.Role, "anonReader")));
+                    ClaimsIdentity identity = new ClaimsIdentity(claims, Options.AuthenticationType);
+                    List<ClaimsIdentity> identities = new List<ClaimsIdentity> { identity };
+                    ClaimsPrincipal principal = new ClaimsPrincipal(identities);
+                    AuthenticationTicket ticket = new AuthenticationTicket(principal, Options.Scheme);
 
-                        result = AuthenticateResult.Success(ticket);
-                    }
-                  
+                    result = AuthenticateResult.Success(ticket);
                 }
-                else
-                {
-                    ApplicationUser user = await ((SpecIfApiUserStore)_userStore).FindByApiKeyAsync(providedApiKey);
 
-                    if (user != null)
-                    {
-                        var claims = new List<Claim>
+            }
+            else
+            {
+                ApplicationUser user = await ((SpecIfApiUserStore)_userStore).FindByApiKeyAsync(providedApiKey);
+
+                if (user != null)
+                {
+                    List<Claim> claims = new List<Claim>
                             {
                                 new Claim(ClaimTypes.Name, user.NormalizedUserName)
                             };
 
-                        claims.AddRange(user.Roles.Select(role => new Claim(ClaimTypes.Role, role)));
+                    claims.AddRange(user.Roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-                        ClaimsIdentity identity = new ClaimsIdentity(claims, Options.AuthenticationType);
-                        List<ClaimsIdentity> identities = new List<ClaimsIdentity> { identity };
-                        ClaimsPrincipal principal = new ClaimsPrincipal(identities);
-                        AuthenticationTicket ticket = new AuthenticationTicket(principal, Options.Scheme);
+                    ClaimsIdentity identity = new ClaimsIdentity(claims, Options.AuthenticationType);
+                    List<ClaimsIdentity> identities = new List<ClaimsIdentity> { identity };
+                    ClaimsPrincipal principal = new ClaimsPrincipal(identities);
+                    AuthenticationTicket ticket = new AuthenticationTicket(principal, Options.Scheme);
 
-                        result = AuthenticateResult.Success(ticket);
+                    result = AuthenticateResult.Success(ticket);
 
-                    }
                 }
             }
+
 
             return result;
         }
 
-        //protected override async Task HandleChallengeAsync(AuthenticationProperties properties)
-        //{
-        //    Response.StatusCode = 401;
-        //    Response.ContentType = ProblemDetailsContentType;
-        //    var problemDetails = new UnauthorizedProblemDetails();
-
-        //    await Response.WriteAsync(JsonSerializer.Serialize(problemDetails, DefaultJsonSerializerOptions.Options));
-        //}
-
-        //protected override async Task HandleForbiddenAsync(AuthenticationProperties properties)
-        //{
-        //    Response.StatusCode = 403;
-        //    Response.ContentType = ProblemDetailsContentType;
-        //    var problemDetails = new ForbiddenProblemDetails();
-
-        //    await Response.WriteAsync(JsonSerializer.Serialize(problemDetails, DefaultJsonSerializerOptions.Options));
-        //}
     }
 }

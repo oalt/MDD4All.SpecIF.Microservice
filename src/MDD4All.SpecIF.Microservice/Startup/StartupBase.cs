@@ -21,8 +21,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Prometheus;
 
 namespace MDD4All.SpecIF.Microservice.Startup
@@ -39,6 +37,8 @@ namespace MDD4All.SpecIF.Microservice.Startup
         private ISpecIfServiceDescription _serviceDescription;
 
         public static List<string> Urls = new List<string> { "https://127.0.0.1:888", "http://127.0.0.1:887" };
+
+        public static CommandLineOptions CommandLineOptions;
 
         public StartupBase(IConfiguration configuration, ILogger<StartupBase> logger)
         {
@@ -116,6 +116,8 @@ namespace MDD4All.SpecIF.Microservice.Startup
                        .AllowAnyMethod()
                        .AllowAnyHeader();
             }));
+
+            // Authorization
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("RequireAdministratorRole",
@@ -181,16 +183,6 @@ namespace MDD4All.SpecIF.Microservice.Startup
                 string filePath = Path.Combine(System.AppContext.BaseDirectory, "MDD4All.SpecIF.Microservice.xml");
                 options.IncludeXmlComments(filePath);
 
-                //options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                //{
-                //    Name = "Authorization",
-                //    Type = SecuritySchemeType.ApiKey,
-                //    Scheme = "Bearer",
-                //    BearerFormat = "JWT",
-                //    In = ParameterLocation.Header,
-                //    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\""
-                //});
-
                 options.AddSecurityDefinition(ApiKeyConstants.HeaderName, new OpenApiSecurityScheme()
                 {
                     Description = "API key needed to access the endpoints. X-API-KEY: My_API_Key",
@@ -234,26 +226,22 @@ namespace MDD4All.SpecIF.Microservice.Startup
             
         }
 
-
-
-
-
         /// <summary>
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         /// </summary>
         [Obsolete]
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime)
         {
-            string redirectionStatus = Configuration.GetValue<string>("httpRedirection");
-            if (redirectionStatus != "noRedirection")
+            
+            if (!CommandLineOptions.HttpsRedirectionActive)
+            {
+                _logger.LogInformation("HTTP redirection to HTTPS disabled");
+            }
+            else
             {
                 app.UseHttpsRedirection();
                 _logger.LogInformation("HTTP redirection to HTTPS active");
                 
-            }
-            if (redirectionStatus == "noRedirection")
-            {
-                _logger.LogInformation("HTTP redirection to HTTPS disabled");
             }
            
 

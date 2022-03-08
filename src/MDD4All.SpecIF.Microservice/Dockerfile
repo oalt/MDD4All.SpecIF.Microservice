@@ -50,4 +50,4 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-ENTRYPOINT ["dotnet", "MDD4All.SpecIf.Microservice.dll"]
+ENTRYPOINT ["dotnet", "MDD4All.SpecIF.Microservice.dll"]

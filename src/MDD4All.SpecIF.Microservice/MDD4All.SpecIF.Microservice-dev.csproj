@@ -5,8 +5,8 @@
     <UserSecretsId>366940ba-2f28-4561-8553-157154e15d8e</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 	  <DockerfileRunArguments>-p 888:888</DockerfileRunArguments>
-	  <AssemblyName>MDD4All.SpecIf.Microservice</AssemblyName>
-    <RootNamespace>MDD4All.SpecIf.Microservice</RootNamespace>
+	  <AssemblyName>MDD4All.SpecIF.Microservice</AssemblyName>
+    <RootNamespace>MDD4All.SpecIF.Microservice</RootNamespace>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
 
@@ -19,6 +19,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.8.0" />
     <PackageReference Include="CommonServiceLocator" Version="2.0.2" />
     <PackageReference Include="Consul" Version="1.6.1.1" />
     <PackageReference Include="MDD4All.EAFacade.DataModels.Contracts" Version="2.1.1.257" />
@@ -79,5 +80,7 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>
+
+    <ProjectExtensions><VisualStudio><UserProperties wwwroot_4js_4specifeventreveiver_1js_1map__JsonSchema="" /></VisualStudio></ProjectExtensions>
     
 </Project>

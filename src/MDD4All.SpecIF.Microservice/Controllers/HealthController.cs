@@ -5,10 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 
 
-namespace MDD4All.SpecIf.Microservice.Controllers
-
-
-
+namespace MDD4All.SpecIF.Microservice.Controllers
 {   
 
     /// <summary>
@@ -16,7 +13,8 @@ namespace MDD4All.SpecIf.Microservice.Controllers
     /// </summary>
     [ApiController]
     [ApiVersion("1.1")]
-    [Route("specif/v{version:apiVersion}/health")]    
+    [Route("specif/v{version:apiVersion}/health")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class HealthController : ControllerBase
     {
         private readonly ILogger<HealthController> _logger;

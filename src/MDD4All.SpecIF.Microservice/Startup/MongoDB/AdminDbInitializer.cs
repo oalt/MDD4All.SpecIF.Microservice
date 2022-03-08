@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MDD4All.SpecIf.Microservice.Startup.MongoDB
+namespace MDD4All.SpecIF.Microservice.Startup.MongoDB
 {
     /// <summary>
     /// Check if the 

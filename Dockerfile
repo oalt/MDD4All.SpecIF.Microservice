@@ -10,7 +10,7 @@ ENV ASPNETCORE_URLS http://localhost:887
 ADD ["src/MDD4All.SpecIF.Microservice/bin/Release/netcoreapp3.1/linux-x64/publish", "/app"]
 
 WORKDIR /app
-ENTRYPOINT ["./MDD4All.SpecIf.Microservice"]
+ENTRYPOINT ["./MDD4All.SpecIF.Microservice"]
 
 
 

@@ -13,40 +13,26 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Security.Cryptography.X509Certificates;
 
 namespace MDD4All.SpecIF.Microservice.Startup
 {
     public class ServiceStarter
     {
-
         public static string Type { get; private set; }
         private static Logger _logger = LogManager.GetCurrentClassLogger();
 
-
-        public void Start(string[] args)
+        public void Start(CommandLineOptions commandLineOptions)
         {
             IWebHost webHost = null;
 
-            Type = "mongodb";
+            Type = commandLineOptions.ServiceType;
 
-            if (args != null && args.Length > 0)
-            {
-                ServiceStarter.Type = args[0];
-                webHost = CreateWebHost(args, ServiceStarter.Type);
-            }
-            else
-            {
-                webHost = CreateWebHost(args, null);
-            }
+            webHost = CreateWebHost(commandLineOptions);
+            
 
             if (webHost != null)
-            {   
-                
-                
-                
-                
+            {
+
                 webHost.Start();
 
                 ILogger<ServiceStarter> logger = webHost.Services.GetRequiredService<ILogger<ServiceStarter>>();
@@ -55,7 +41,7 @@ namespace MDD4All.SpecIF.Microservice.Startup
 
                 if (addresses.Count > 0) // Consul registration
                 {
-                    ISpecIfServiceDescription serviceDescription = ServiceDescriptionFactory.Create(ServiceStarter.Type, addresses.ToArray()[0]);
+                    ISpecIfServiceDescription serviceDescription = ServiceDescriptionFactory.Create(Type, addresses.ToArray()[0]);
 
                     if (serviceDescription != null)
                     {
@@ -64,14 +50,16 @@ namespace MDD4All.SpecIF.Microservice.Startup
                     }
                 }
 
-                
+
 
                 webHost.WaitForShutdown();
             }
         }
 
-        private IWebHost CreateWebHost(string[] args, string type)
+        private IWebHost CreateWebHost(CommandLineOptions options)
         {
+            StartupBase.CommandLineOptions = options;
+
             IWebHost result = null;
 
             string certificate = (Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Path"));
@@ -79,93 +67,84 @@ namespace MDD4All.SpecIF.Microservice.Startup
             {
                 Environment.SetEnvironmentVariable("httpOnly", "httpOnly");
                 _logger.Warn("SSL certificate not found. Check path and password. HTTPS deactivated. Environment variables:" +
-                    "ASPNETCORE_Kestrel__Certificates__Default__Path  ASPNETCORE_Kestrel__Certificates__Default__Password ");
+                             "ASPNETCORE_Kestrel__Certificates__Default__Path  ASPNETCORE_Kestrel__Certificates__Default__Password ");
             }
 
-            if (type == "mongodb" || type == null )
-            {   
-                if (Environment.GetEnvironmentVariable("httpOnly") == "httpOnly")
+            if (options.ServiceType == "mongodb" || options.ServiceType == null)
+            {
+                if (options.HttpsRedirectionActive)
                 {
-                    Startup.StartupBase.Urls = new List<string> { "http://+:887" };
-                    _logger.Warn("Warning: HTTPS connection deactivated. Not secure! Consider switching to https");
-
-
-    }
+                    StartupBase.Urls = new List<string> { "https://*:888", "http://+:887" };
+                }
                 else
                 {
-                    Startup.StartupBase.Urls = new List<string> { "https://*:888", "http://+:887" };
+                    StartupBase.Urls = new List<string> { "http://+:887" };
+                    _logger.Warn("Warning: HTTPS connection deactivated. Not secure! Consider switching to https");
                 }
-               
 
-                result = WebHost.CreateDefaultBuilder(args)
 
-                                                    .UseStartup<MongoDbStartup>()
-                                                   .UseUrls(Startup.StartupBase.Urls.ToArray())
-                                                   .UseKestrel()
-                                               
-                                                    .ConfigureLogging(ConfigureLoggingAction)
-                                                    .Build();
+                result = WebHost.CreateDefaultBuilder()
+                                .UseStartup<MongoDbStartup>()
+                                .UseUrls(StartupBase.Urls.ToArray())
+                                .UseKestrel()
+                                .ConfigureLogging(ConfigureLoggingAction)
+                                .Build();
             }
-            else if (type == "jira")
+            else if (options.ServiceType == "jira")
             {
-                Startup.StartupBase.Urls = new List<string> { "https://127.0.0.1:999", "http://127.0.0.1:998" };
+                StartupBase.Urls = new List<string> { "https://127.0.0.1:999", "http://127.0.0.1:998" };
 
-                result = WebHost.CreateDefaultBuilder(args)
-                                                    .UseStartup<JiraStartup>()
-                                                    .UseUrls(Startup.StartupBase.Urls.ToArray())
-                                                    .ConfigureLogging(ConfigureLoggingAction)
-                                                    .Build();
+                result = WebHost.CreateDefaultBuilder()
+                                .UseStartup<JiraStartup>()
+                                .UseUrls(StartupBase.Urls.ToArray())
+                                .ConfigureLogging(ConfigureLoggingAction)
+                                .Build();
 
 
             }
-            else if(type == "integration")
+            else if (options.ServiceType == "integration")
             {
-                Startup.StartupBase.Urls = new List<string> { "https://127.0.0.1:555", "http://127.0.0.1:554" };
+                StartupBase.Urls = new List<string> { "https://127.0.0.1:555", "http://127.0.0.1:554" };
 
-                result = WebHost.CreateDefaultBuilder(args)                                                       
-                                                    .UseStartup<IntegrationStartup>()
-                                                    .UseUrls(Startup.StartupBase.Urls.ToArray())
-                                                    .ConfigureLogging(ConfigureLoggingAction)
-                                                    .Build();
+                result = WebHost.CreateDefaultBuilder()
+                                .UseStartup<IntegrationStartup>()
+                                .UseUrls(StartupBase.Urls.ToArray())
+                                .ConfigureLogging(ConfigureLoggingAction)
+                                .Build();
             }
-            else if (type == "ea")
+            else if (options.ServiceType == "ea")
             {
-                Startup.StartupBase.Urls = new List<string> { "https://127.0.0.1:444", "http://127.0.0.1:443" };
+                StartupBase.Urls = new List<string> { "https://127.0.0.1:444", "http://127.0.0.1:443" };
 
-                result = WebHost.CreateDefaultBuilder(args)
-                                                    .UseStartup<EaStartup>()
-                                                    .UseUrls(Startup.StartupBase.Urls.ToArray())
-                                                    .ConfigureLogging(ConfigureLoggingAction)
-                                                    .Build();
-
-
-
+                result = WebHost.CreateDefaultBuilder()
+                                .UseStartup<EaStartup>()
+                                .UseUrls(StartupBase.Urls.ToArray())
+                                .ConfigureLogging(ConfigureLoggingAction)
+                                .Build();
             }
-            else if(type == "file")
+            else if (options.ServiceType == "file")
             {
-                Startup.StartupBase.Urls = new List<string> { "https://127.0.0.1:666", "http://127.0.0.1:665" };
+                StartupBase.Urls = new List<string> { "https://127.0.0.1:666", "http://127.0.0.1:665" };
 
-                result = WebHost.CreateDefaultBuilder(args)
-                                                    .UseStartup<FileStartup>()
-                                                    .UseUrls(Startup.StartupBase.Urls.ToArray())
-                                                    .ConfigureLogging(ConfigureLoggingAction)
-                                                    .Build();
-
-
+                result = WebHost.CreateDefaultBuilder()
+                                .UseStartup<FileStartup>()
+                                .UseUrls(StartupBase.Urls.ToArray())
+                                .ConfigureLogging(ConfigureLoggingAction)
+                                .Build();
             }
 
-            if(result != null)
+            if (result != null)
             {
                 ILogger<ServiceStarter> logger = result.Services.GetRequiredService<ILogger<ServiceStarter>>();
 
                 string urls = "";
-                
-                foreach(string url in StartupBase.Urls)
+
+                foreach (string url in StartupBase.Urls)
                 {
                     urls += url + " ";
                 }
 
-                logger.LogInformation("Start SpecIF API [" + type + "] on " + urls);
+                logger.LogInformation("Start SpecIF API [" + options.ServiceType + "] on " + urls);
             }
 
             return result;

@@ -8,7 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MDD4All.SpecIf.Microservice.Controllers
+namespace MDD4All.SpecIF.Microservice.Controllers
 {
     public class SpecIfUploadController : Controller
     {
