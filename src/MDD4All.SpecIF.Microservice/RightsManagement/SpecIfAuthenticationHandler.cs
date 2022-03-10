@@ -10,6 +10,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using MDD4All.SpecIF.DataModels.RightsManagement;
 using Microsoft.Extensions.Primitives;
+using Microsoft.Extensions.Configuration;
 
 namespace MDD4All.SpecIF.Microservice.RightsManagement
 {
@@ -18,16 +19,21 @@ namespace MDD4All.SpecIF.Microservice.RightsManagement
 
         private readonly IUserStore<ApplicationUser> _userStore;
         private readonly IUserRoleStore<ApplicationUser> _roleStore;
+        private IConfiguration _configuration;
+       
 
         public SpecIfAuthenticationHandler(IOptionsMonitor<SpecIfAuthenticationOptions> options,
                                            ILoggerFactory logger,
                                            UrlEncoder encoder,
                                            ISystemClock clock,
                                            IUserStore<ApplicationUser> userStore,
-                                           IUserRoleStore<ApplicationUser> roleStore) : base(options, logger, encoder, clock)
+                                           IUserRoleStore<ApplicationUser> roleStore,
+                                           IConfiguration configuration)
+                                           : base(options, logger, encoder, clock)
         {
             _userStore = userStore;
             _roleStore = roleStore;
+            _configuration = configuration;
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -42,8 +48,8 @@ namespace MDD4All.SpecIF.Microservice.RightsManagement
 
             if (apiKeyHeaderValues.Count == 0 || string.IsNullOrWhiteSpace(providedApiKey))
             {
-                string metadataReadAuthRequired = Environment.GetEnvironmentVariable("metadataReadAuthRequired");
-                if (metadataReadAuthRequired.ToLower().Equals("false"))
+                bool metadataReadAuthRequired = _configuration.GetValue<bool>("metadataReadAuthRequired");
+                if (metadataReadAuthRequired == false)
                 {
                     ApplicationUser user = new ApplicationUser();
                     List<Claim> claims = new List<Claim>

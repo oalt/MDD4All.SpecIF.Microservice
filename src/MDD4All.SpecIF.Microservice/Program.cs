@@ -2,8 +2,9 @@
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
 using System;
-using CommandLine;
+using System.IO;
 using MDD4All.SpecIF.Microservice.Startup;
+using Microsoft.Extensions.Configuration;
 
 namespace MDD4All.SpecIF.Microservice
 {
@@ -11,18 +12,22 @@ namespace MDD4All.SpecIF.Microservice
     {
         public static void Main(string[] args)
         {
-            Parser.Default.ParseArguments<CommandLineOptions>(args)
-                   .WithParsed<CommandLineOptions>(options =>
-                   {
-                       ServiceStarter serviceStarter = new ServiceStarter();
 
-                       Environment.SetEnvironmentVariable("metadataReadAuthRequired", options.MetadataReadRequiresAuthorization.ToString());
+            IConfiguration config = new ConfigurationBuilder()
 
-                       serviceStarter.Start(options);
-                   });
+           .SetBasePath(Directory.GetCurrentDirectory())
+           .AddJsonFile("appsettings.json", optional: false)
+           .AddEnvironmentVariables()
+           .AddCommandLine(args)
+           .Build();
+
+            ServiceStarter serviceStarter = new ServiceStarter(config);
+
+            serviceStarter.Start();
+
 
         }
 
-        
+
     }
 }

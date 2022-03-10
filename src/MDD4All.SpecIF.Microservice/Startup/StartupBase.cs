@@ -32,13 +32,12 @@ namespace MDD4All.SpecIF.Microservice.Startup
     {
         protected readonly ILogger _logger;
 
-        public IConfiguration Configuration { get; }
+        public IConfiguration Configuration { get; private set; }
 
         private ISpecIfServiceDescription _serviceDescription;
 
         public static List<string> Urls = new List<string> { "https://127.0.0.1:888", "http://127.0.0.1:887" };
 
-        public static CommandLineOptions CommandLineOptions;
 
         public StartupBase(IConfiguration configuration, ILogger<StartupBase> logger)
         {
@@ -61,7 +60,7 @@ namespace MDD4All.SpecIF.Microservice.Startup
 
             //HealthStatus
             services.AddHealthChecks();
-               
+            
 
             // MVC
             services.AddMvc()
@@ -229,11 +228,16 @@ namespace MDD4All.SpecIF.Microservice.Startup
         /// <summary>
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         /// </summary>
-        [Obsolete]
+        
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime)
         {
-            
-            if (!CommandLineOptions.HttpsRedirectionActive)
+            bool httpsRedirectionActive = true;
+
+            if (Configuration.GetValue<bool>("httpRedirection") == false)
+            {
+                httpsRedirectionActive = false;
+            }
+            if (!httpsRedirectionActive)
             {
                 _logger.LogInformation("HTTP redirection to HTTPS disabled");
             }
