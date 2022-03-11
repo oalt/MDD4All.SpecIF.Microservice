@@ -233,10 +233,12 @@ namespace MDD4All.SpecIF.Microservice.Startup
         {
             bool httpsRedirectionActive = true;
 
-            if (Configuration.GetValue<bool>("httpRedirection") == false)
+            if (Configuration.GetValue<bool>("httpRedirection") == false 
+                || Environment.GetEnvironmentVariable("httpsHosted") == "false")
             {
                 httpsRedirectionActive = false;
             }
+           
             if (!httpsRedirectionActive)
             {
                 _logger.LogInformation("HTTP redirection to HTTPS disabled");

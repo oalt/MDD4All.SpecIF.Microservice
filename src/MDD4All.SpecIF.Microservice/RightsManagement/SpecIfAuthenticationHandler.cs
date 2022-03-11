@@ -56,8 +56,7 @@ namespace MDD4All.SpecIF.Microservice.RightsManagement
                         {
                             new Claim(ClaimTypes.Name, "anonymousReader")
                         };
-                    claims.Add(new Claim(ClaimTypes.Role, "anonReader"));
-                    // claims.AddRange(user.Roles.Select(role => new Claim(ClaimTypes.Role, "anonReader")));
+                    claims.Add(new Claim(ClaimTypes.Role, "anonReader"));                   
                     ClaimsIdentity identity = new ClaimsIdentity(claims, Options.AuthenticationType);
                     List<ClaimsIdentity> identities = new List<ClaimsIdentity> { identity };
                     ClaimsPrincipal principal = new ClaimsPrincipal(identities);

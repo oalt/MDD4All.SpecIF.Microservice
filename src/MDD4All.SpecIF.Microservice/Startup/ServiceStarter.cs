@@ -35,8 +35,8 @@ namespace MDD4All.SpecIF.Microservice.Startup
             IWebHost webHost = null;
 
             Type = Configuration.GetValue<string>("dataSource");
-            
-           bool metadataReadAuthRequired = Configuration.GetValue<bool>("metadataReadAuthRequired");
+             
+            bool metadataReadAuthRequired = Configuration.GetValue<bool>("metadataReadAuthRequired");
             Environment.SetEnvironmentVariable("metadataReadAuthRequired", metadataReadAuthRequired.ToString());
 
             webHost = CreateWebHost();
@@ -85,13 +85,6 @@ namespace MDD4All.SpecIF.Microservice.Startup
             {
                 hostHttps = false;
             }
-
-            if (hostHttps == false)
-            {              
-                _logger.Warn("SSL certificate not found. Check path and password. HTTPS deactivated. Environment variables:" +
-                             "ASPNETCORE_Kestrel__Certificates__Default__Path  ASPNETCORE_Kestrel__Certificates__Default__Password ");
-            }
-
             if (serviceType == "mongodb" || serviceType == null)
             {
 
@@ -124,23 +117,42 @@ namespace MDD4All.SpecIF.Microservice.Startup
                 ILogger<ServiceStarter> logger = result.Services.GetRequiredService<ILogger<ServiceStarter>>();
 
                 string urls = "";
+                bool httpsHostingActive = false;
 
                 foreach (string url in StartupBase.Urls)
                 {
                     urls += url + " ";
+
+                    if (url.Contains("https"))
+                    {
+                        httpsHostingActive = true;
+                    }
                 }
 
                 logger.LogInformation("Start SpecIF API [" + serviceType + "] on " + urls);
+               
+                if (httpsHostingActive == false)
+                {
+                    logger.LogWarning("Hosting on http only. Use only in secure environment! See readme on how to use an SSL certificate.");
+                    Environment.SetEnvironmentVariable("httpsHosted", "false");
+
+                    if (String.IsNullOrEmpty(hostingCertificate))
+                    {
+                        logger.LogWarning("SSL certificate not found. Check path and password. HTTPS deactivated. Environment variables: " +
+                                          "ASPNETCORE_Kestrel__Certificates__Default__Path  ASPNETCORE_Kestrel__Certificates__Default__Password ");
+                    }
+
+                }
             }
 
             return result;
         }
 
-        private  IWebHost HostUrls(bool hostHttps, int portHttps, int portHttp, IWebHostBuilder webHostBuilder)
+        private IWebHost HostUrls(bool hostHttps, int portHttps, int portHttp, IWebHostBuilder webHostBuilder)
         {
             IWebHost result = null;
 
-            StartupBase.Urls = new List<string> { "https://*:" + portHttps, "http://+:" + portHttp };           
+            StartupBase.Urls = new List<string> { "https://*:" + portHttps, "http://+:" + portHttp };
 
             if (!hostHttps)
             {
@@ -153,8 +165,7 @@ namespace MDD4All.SpecIF.Microservice.Startup
                                 .UseUrls(StartupBase.Urls.ToArray())
                                 .UseKestrel()
                                 .ConfigureLogging(ConfigureLoggingAction)
-                               
-                            .UseConfiguration(Configuration)
+                                .UseConfiguration(Configuration)
                                 .Build();
             return result;
         }

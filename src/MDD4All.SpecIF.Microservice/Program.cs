@@ -13,19 +13,15 @@ namespace MDD4All.SpecIF.Microservice
         public static void Main(string[] args)
         {
 
-            IConfiguration config = new ConfigurationBuilder()
-
-           .SetBasePath(Directory.GetCurrentDirectory())
-           .AddJsonFile("appsettings.json", optional: false)
-           .AddEnvironmentVariables()
-           .AddCommandLine(args)
-           .Build();
+            IConfiguration config = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
+                                                              .AddJsonFile("appsettings.json", optional: false)
+                                                              .AddEnvironmentVariables()
+                                                              .AddCommandLine(args)
+                                                              .Build();
 
             ServiceStarter serviceStarter = new ServiceStarter(config);
 
             serviceStarter.Start();
-
-
         }
 
 
