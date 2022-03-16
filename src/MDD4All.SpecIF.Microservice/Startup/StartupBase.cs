@@ -108,6 +108,12 @@ namespace MDD4All.SpecIF.Microservice.Startup
 
             services.AddSwaggerGenNewtonsoftSupport();
 
+            services.AddHttpsRedirection(options =>
+            {
+                options.HttpsPort = Configuration.GetValue<int>("https_port");
+                
+            });
+
             // CORS
             services.AddCors(o => o.AddPolicy("ActivateCorsPolicy", builder =>
             {
@@ -231,25 +237,21 @@ namespace MDD4All.SpecIF.Microservice.Startup
         
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime)
         {
-            bool httpsRedirectionActive = true;
+          
 
             if (Configuration.GetValue<bool>("httpRedirection") == false 
                 || Environment.GetEnvironmentVariable("httpsHosted") == "false")
             {
-                httpsRedirectionActive = false;
-            }
-           
-            if (!httpsRedirectionActive)
-            {
+               
                 _logger.LogInformation("HTTP redirection to HTTPS disabled");
             }
             else
             {
                 app.UseHttpsRedirection();
                 _logger.LogInformation("HTTP redirection to HTTPS active");
-                
+
             }
-           
+
 
             app.UseAuthentication();
             

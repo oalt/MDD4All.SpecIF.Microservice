@@ -73,11 +73,19 @@ namespace MDD4All.SpecIF.Microservice.Startup
             IWebHost result = null;
 
             
-            string hostingCertificate = (Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Path"));
+            string hostingCertificate = (Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Path"));           
            
-            bool test = Configuration.GetValue<bool>("metadataReadAuthRequired");
             bool hostHttps = true;
             string serviceType = Type.ToLower();
+            int httpsPort = Configuration.GetValue<int>("https_port");
+            int httpPort = Configuration.GetValue<int>("http_port");
+
+            if (httpsPort == httpPort)
+            {
+                httpsPort += 1;
+            }
+            
+           
             IWebHostBuilder webHostBuilder = WebHost.CreateDefaultBuilder().UseConfiguration(Configuration);
 
             if (Configuration.GetValue<bool>("httpOnly") == true 
@@ -89,27 +97,27 @@ namespace MDD4All.SpecIF.Microservice.Startup
             {
 
                 webHostBuilder.UseStartup<MongoDbStartup>();
-                result = HostUrls(hostHttps, 888, 887, webHostBuilder);
+                result = HostUrls(hostHttps, httpsPort, httpPort, webHostBuilder);
             }
             else if (serviceType == "jira")
             {
                 webHostBuilder.UseStartup<JiraStartup>();
-                result = HostUrls(hostHttps, 999, 998, webHostBuilder);
+                result = HostUrls(hostHttps, httpsPort, httpPort, webHostBuilder);
             }
             else if (serviceType == "integration")
             {
                 webHostBuilder.UseStartup<IntegrationStartup>();
-                result = HostUrls(hostHttps, 555, 554, webHostBuilder);
+                result = HostUrls(hostHttps, httpsPort, httpPort, webHostBuilder);
             }
             else if (serviceType == "ea")
             {
                 webHostBuilder.UseStartup<EaStartup>();
-                result = HostUrls(hostHttps, 444, 443, webHostBuilder);
+                result = HostUrls(hostHttps, httpsPort, httpPort, webHostBuilder);
             }
             else if (serviceType == "file")
             {
                 webHostBuilder.UseStartup<FileStartup>();
-                result = HostUrls(hostHttps, 666, 665, webHostBuilder);
+                result = HostUrls(hostHttps, httpsPort, httpPort, webHostBuilder);
             }
 
             if (result != null)
@@ -136,7 +144,7 @@ namespace MDD4All.SpecIF.Microservice.Startup
                     logger.LogWarning("Hosting on http only. Use only in secure environment! See readme on how to use an SSL certificate.");
                     Environment.SetEnvironmentVariable("httpsHosted", "false");
 
-                    if (String.IsNullOrEmpty(hostingCertificate))
+                    if (String.IsNullOrEmpty(hostingCertificate) && hostHttps == true)
                     {
                         logger.LogWarning("SSL certificate not found. Check path and password. HTTPS deactivated. Environment variables: " +
                                           "ASPNETCORE_Kestrel__Certificates__Default__Path  ASPNETCORE_Kestrel__Certificates__Default__Password ");
@@ -161,12 +169,13 @@ namespace MDD4All.SpecIF.Microservice.Startup
             }
 
 
-            result = webHostBuilder
-                                .UseUrls(StartupBase.Urls.ToArray())
-                                .UseKestrel()
-                                .ConfigureLogging(ConfigureLoggingAction)
-                                .UseConfiguration(Configuration)
-                                .Build();
+            result = webHostBuilder.UseUrls(StartupBase.Urls.ToArray())
+                                   .UseKestrel()
+                                   .UseSetting("httpPort", portHttp.ToString())
+                                   .UseSetting("httpsPort", portHttps.ToString())
+                                   .ConfigureLogging(ConfigureLoggingAction)
+                                   .UseConfiguration(Configuration)
+                                   .Build();
             return result;
         }
 

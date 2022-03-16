@@ -19,12 +19,10 @@
     },
     "MDD4All.SpecIF.Microservice.Integration": {
       "commandName": "Project",
-      "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "applicationUrl": "http://127.0.0.1:887;https://127.0.0.1:888"
+      }
     },
     "Docker": {
       "commandName": "Docker",

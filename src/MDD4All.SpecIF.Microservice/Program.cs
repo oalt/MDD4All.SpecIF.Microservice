@@ -13,13 +13,23 @@ namespace MDD4All.SpecIF.Microservice
         public static void Main(string[] args)
         {
 
-            IConfiguration config = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
+            IConfiguration configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
                                                               .AddJsonFile("appsettings.json", optional: false)
-                                                              .AddEnvironmentVariables()
                                                               .AddCommandLine(args)
+                                                              .AddEnvironmentVariables()
                                                               .Build();
 
-            ServiceStarter serviceStarter = new ServiceStarter(config);
+          //  Used to persist settings set via args.Otherwise these are only available during the ServiceStarter
+            Environment.SetEnvironmentVariable("https_port", configuration.GetValue<string>("https_port"));
+            Environment.SetEnvironmentVariable("http_port", configuration.GetValue<string>("http_port"));
+            Environment.SetEnvironmentVariable("httpRedirection", configuration.GetValue<string>("httpRedirection"));
+            Environment.SetEnvironmentVariable("EaConnectionString", configuration.GetValue<string>("EaConnectionString"));
+            Environment.SetEnvironmentVariable("dataSource", configuration.GetValue<string>("dataSource"));
+            Environment.SetEnvironmentVariable("dataConnection", configuration.GetValue<string>("dataConnection"));
+
+
+
+            ServiceStarter serviceStarter = new ServiceStarter(configuration);
 
             serviceStarter.Start();
         }
