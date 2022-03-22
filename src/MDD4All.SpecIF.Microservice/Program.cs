@@ -26,6 +26,8 @@ namespace MDD4All.SpecIF.Microservice
             Environment.SetEnvironmentVariable("EaConnectionString", configuration.GetValue<string>("EaConnectionString"));
             Environment.SetEnvironmentVariable("dataSource", configuration.GetValue<string>("dataSource"));
             Environment.SetEnvironmentVariable("dataConnection", configuration.GetValue<string>("dataConnection"));
+            Environment.SetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Path", configuration.GetValue<string>("ASPNETCORE_Kestrel__Certificates__Default__Path"));
+            Environment.SetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Password", configuration.GetValue<string>("ASPNETCORE_Kestrel__Certificates__Default__Password"));
 
 
 
