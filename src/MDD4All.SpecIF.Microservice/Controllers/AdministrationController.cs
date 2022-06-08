@@ -79,9 +79,9 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         /// <param name="loginData">The user login data.</param>
         /// <returns></returns>
         [AllowAnonymous]
-        [HttpPost("oauth/token")]
-        [ProducesResponseType(typeof(JwtAccessToken), 200)]
-        public async Task<ActionResult> GetJwtToken([FromBody] LoginData loginData)
+        [HttpPost("auth/apikey")]
+        [ProducesResponseType(typeof(string), 200)]
+        public async Task<ActionResult> GetOwnApiKey([FromBody] LoginData loginData)
         {
             ActionResult result = new UnauthorizedResult();
 
@@ -115,7 +115,6 @@ namespace MDD4All.SpecIF.Microservice.Controllers
                 result = new OkObjectResult(users);
             }
 
-
             return result;
         }
 
@@ -127,7 +126,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         [Authorize(Roles = "Administrator")]
         [HttpPost("users")]
         [ProducesResponseType(200)]
-        public async Task<ActionResult> AddUser([FromBody] LoginData user)
+        public async Task<ActionResult> AddUser([FromBody] LoginData user, [FromQuery] List<string>? userRoles)
         {
             ActionResult result = BadRequest();
 
@@ -142,6 +141,16 @@ namespace MDD4All.SpecIF.Microservice.Controllers
                     NormalizedUserName = lookupNormalizer.NormalizeName(user.UserName),
                     Roles = new List<string>()
                 };
+                if (userRoles != null)
+                {
+                    foreach (string role in userRoles)
+                    {   
+                        if (!String.IsNullOrEmpty(role))
+                        {
+                            applicationUser.Roles.Add(role);                           
+                        }
+                    }
+                }
 
                 applicationUser.PasswordHash = passwordHasher.HashPassword(applicationUser, user.Password);
 
@@ -149,9 +158,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
                 {
                     await _userStore.CreateAsync(applicationUser, CancellationToken.None);
                     result = new OkResult();
-                }
-                
-
+                }                
             }
 
             return result;
