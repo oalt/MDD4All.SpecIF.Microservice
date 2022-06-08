@@ -26,7 +26,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
     [Produces("application/json")]
     [Route("specif/v{version:apiVersion}")]
     [ApiController]
-    [ApiExplorerSettings(IgnoreApi = true)]
+  //  [ApiExplorerSettings(IgnoreApi = true)]
     public class AdministrationController : Controller
     {
         private readonly IUserStore<ApplicationUser> _userStore;
@@ -41,38 +41,61 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         /// <param name="roleStore"></param>
         /// <param name="jwtConfigurationReader"></param>
         public AdministrationController(IUserStore<ApplicationUser> userStore,
-                               IUserRoleStore<ApplicationUser> roleStore,
-                               IJwtConfigurationReader jwtConfigurationReader)
+                               IUserRoleStore<ApplicationUser> roleStore
+                              /* IJwtConfigurationReader jwtConfigurationReader*/)
         {
             _userStore = userStore;
             _roleStore = roleStore;
-            _jwtConfigurationReader = jwtConfigurationReader;
+           // _jwtConfigurationReader = jwtConfigurationReader;
         }
 
+        ///// <summary>
+        ///// Returns a Jwt token to access some SpecIF API endpoints.
+        ///// </summary>
+        ///// <param name="loginData">The user login data.</param>
+        ///// <returns></returns>
+        //[AllowAnonymous]
+        //[HttpPost("oauth/token")]
+        //[ProducesResponseType(typeof(JwtAccessToken), 200)]
+        //public async Task<ActionResult> GetJwtToken([FromBody]LoginData loginData)
+        //{ 
+        //    ActionResult result = new UnauthorizedResult();
+
+        //    ApplicationUser checkUser = await CheckUser(loginData);
+
+        //    if (checkUser != null)
+        //    {
+        //        object tokenObject = await GenerateToken(checkUser);
+                
+        //        result = new OkObjectResult(tokenObject);
+        //    }
+
+        //    return result;
+        //}
+
         /// <summary>
-        /// Returns a Jwt token to access some SpecIF API endpoints.
+        /// Returns an API-KEY to access some SpecIF API endpoints.
         /// </summary>
         /// <param name="loginData">The user login data.</param>
         /// <returns></returns>
         [AllowAnonymous]
-        [HttpPost("oauth/token")]
-        [ProducesResponseType(typeof(JwtAccessToken), 200)]
-        public async Task<ActionResult> GetJwtToken([FromBody]LoginData loginData)
-        { 
+        [HttpPost("auth/apikey")]
+        [ProducesResponseType(typeof(string), 200)]
+        public async Task<ActionResult> GetOwnApiKey([FromBody] LoginData loginData)
+        {
             ActionResult result = new UnauthorizedResult();
 
             ApplicationUser checkUser = await CheckUser(loginData);
 
             if (checkUser != null)
             {
-                object tokenObject = await GenerateToken(checkUser);
-                
+                object tokenObject = await GetApiKey(checkUser);
+
                 result = new OkObjectResult(tokenObject);
             }
 
             return result;
         }
-    
         /// <summary>
         /// Returns the list of registered users.
         /// </summary>
@@ -92,7 +115,6 @@ namespace MDD4All.SpecIF.Microservice.Controllers
                 result = new OkObjectResult(users);
             }
 
-
             return result;
         }
 
@@ -104,7 +126,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         [Authorize(Roles = "Administrator")]
         [HttpPost("users")]
         [ProducesResponseType(200)]
-        public async Task<ActionResult> AddUser([FromBody] LoginData user)
+        public async Task<ActionResult> AddUser([FromBody] LoginData user, [FromQuery] List<string>? userRoles)
         {
             ActionResult result = BadRequest();
 
@@ -119,6 +141,16 @@ namespace MDD4All.SpecIF.Microservice.Controllers
                     NormalizedUserName = lookupNormalizer.NormalizeName(user.UserName),
                     Roles = new List<string>()
                 };
+                if (userRoles != null)
+                {
+                    foreach (string role in userRoles)
+                    {   
+                        if (!String.IsNullOrEmpty(role))
+                        {
+                            applicationUser.Roles.Add(role);                           
+                        }
+                    }
+                }
 
                 applicationUser.PasswordHash = passwordHasher.HashPassword(applicationUser, user.Password);
 
@@ -126,9 +158,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
                 {
                     await _userStore.CreateAsync(applicationUser, CancellationToken.None);
                     result = new OkResult();
-                }
-                
-
+                }                
             }
 
             return result;
@@ -297,7 +327,18 @@ namespace MDD4All.SpecIF.Microservice.Controllers
 
             return result;
         }
+        private async Task<string> GetApiKey(ApplicationUser user)
+        {
+            string result = "";
+            
+            if (user != null)
+            {
+                result = "X-API-KEY " + user.ApiKey.ToString();
+            }
+            
+            return result;
 
+        }
         private async Task<JwtAccessToken> GenerateToken(ApplicationUser user, int expireMinutes = 480)
         {
 

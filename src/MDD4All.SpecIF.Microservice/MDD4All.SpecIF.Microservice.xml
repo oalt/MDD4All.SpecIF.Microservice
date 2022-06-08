@@ -9,7 +9,7 @@
             Unofficial administration endpoint for the SpecIF Microservice.
             </summary>
         </member>
-        <member name="M:MDD4All.SpecIF.Microservice.Controllers.AdministrationController.#ctor(Microsoft.AspNetCore.Identity.IUserStore{MDD4All.SpecIF.DataModels.RightsManagement.ApplicationUser},Microsoft.AspNetCore.Identity.IUserRoleStore{MDD4All.SpecIF.DataModels.RightsManagement.ApplicationUser},MDD4All.SpecIF.DataProvider.Contracts.Authorization.IJwtConfigurationReader)">
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.AdministrationController.#ctor(Microsoft.AspNetCore.Identity.IUserStore{MDD4All.SpecIF.DataModels.RightsManagement.ApplicationUser},Microsoft.AspNetCore.Identity.IUserRoleStore{MDD4All.SpecIF.DataModels.RightsManagement.ApplicationUser})">
             <summary>
             Constructor.
             </summary>
@@ -17,9 +17,9 @@
             <param name="roleStore"></param>
             <param name="jwtConfigurationReader"></param>
         </member>
-        <member name="M:MDD4All.SpecIF.Microservice.Controllers.AdministrationController.GetJwtToken(MDD4All.SpecIF.DataModels.RightsManagement.LoginData)">
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.AdministrationController.GetOwnApiKey(MDD4All.SpecIF.DataModels.RightsManagement.LoginData)">
             <summary>
-            Returns a Jwt token to access some SpecIF API endpoints.
+            Returns an API-KEY to access some SpecIF API endpoints.
             </summary>
             <param name="loginData">The user login data.</param>
             <returns></returns>
@@ -30,7 +30,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:MDD4All.SpecIF.Microservice.Controllers.AdministrationController.AddUser(MDD4All.SpecIF.DataModels.RightsManagement.LoginData)">
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.AdministrationController.AddUser(MDD4All.SpecIF.DataModels.RightsManagement.LoginData,System.Collections.Generic.List{System.String})">
             <summary>
             Adds a new user.
             </summary>
