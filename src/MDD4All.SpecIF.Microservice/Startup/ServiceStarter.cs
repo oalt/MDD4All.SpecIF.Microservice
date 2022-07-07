@@ -5,6 +5,7 @@ using MDD4All.SpecIF.DataModels.Service;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -20,14 +21,25 @@ namespace MDD4All.SpecIF.Microservice.Startup
     {
         public static string Type { get; private set; }
         private static Logger _logger = LogManager.GetCurrentClassLogger();
+       
+        public IConfiguration Configuration { get;  }
 
-        public void Start(CommandLineOptions commandLineOptions)
+        public ServiceStarter(IConfiguration configuration)
+        {
+         Configuration = configuration;
+        }
+
+
+        public void Start()
         {
             IWebHost webHost = null;
 
-            Type = commandLineOptions.ServiceType;
+            Type = Configuration.GetValue<string>("dataSource");
+             
+            bool metadataReadAuthRequired = Configuration.GetValue<bool>("metadataReadAuthRequired");
+            Environment.SetEnvironmentVariable("metadataReadAuthRequired", metadataReadAuthRequired.ToString());
 
-            webHost = CreateWebHost(commandLineOptions);
+            webHost = CreateWebHost();
             
 
             if (webHost != null)
@@ -56,81 +68,56 @@ namespace MDD4All.SpecIF.Microservice.Startup
             }
         }
 
-        private IWebHost CreateWebHost(CommandLineOptions options)
+        private IWebHost CreateWebHost()
         {
-            StartupBase.CommandLineOptions = options;
-
             IWebHost result = null;
 
-            string certificate = (Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Path"));
-            if (File.Exists(certificate) != true)
+            
+            string hostingCertificate = (Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Path"));           
+           
+            bool hostHttps = true;
+            string serviceType = Type.ToLower();
+            int httpsPort = Configuration.GetValue<int>("https_port");
+            int httpPort = Configuration.GetValue<int>("http_port");
+
+            if (httpsPort == httpPort)
             {
-                Environment.SetEnvironmentVariable("httpOnly", "httpOnly");
-                _logger.Warn("SSL certificate not found. Check path and password. HTTPS deactivated. Environment variables:" +
-                             "ASPNETCORE_Kestrel__Certificates__Default__Path  ASPNETCORE_Kestrel__Certificates__Default__Password ");
+                httpsPort += 1;
             }
+            
+           
+            IWebHostBuilder webHostBuilder = WebHost.CreateDefaultBuilder().UseConfiguration(Configuration);
 
-            if (options.ServiceType == "mongodb" || options.ServiceType == null)
+            if (Configuration.GetValue<bool>("httpOnly") == true 
+                || !System.Diagnostics.Debugger.IsAttached && File.Exists(hostingCertificate) != true)
             {
-                if (options.HttpsRedirectionActive)
-                {
-                    StartupBase.Urls = new List<string> { "https://*:888", "http://+:887" };
-                }
-                else
-                {
-                    StartupBase.Urls = new List<string> { "http://+:887" };
-                    _logger.Warn("Warning: HTTPS connection deactivated. Not secure! Consider switching to https");
-                }
-
-
-                result = WebHost.CreateDefaultBuilder()
-                                .UseStartup<MongoDbStartup>()
-                                .UseUrls(StartupBase.Urls.ToArray())
-                                .UseKestrel()
-                                .ConfigureLogging(ConfigureLoggingAction)
-                                .Build();
+                hostHttps = false;
             }
-            else if (options.ServiceType == "jira")
+            if (serviceType == "mongodb" || serviceType == null)
             {
-                StartupBase.Urls = new List<string> { "https://127.0.0.1:999", "http://127.0.0.1:998" };
 
-                result = WebHost.CreateDefaultBuilder()
-                                .UseStartup<JiraStartup>()
-                                .UseUrls(StartupBase.Urls.ToArray())
-                                .ConfigureLogging(ConfigureLoggingAction)
-                                .Build();
-
-
+                webHostBuilder.UseStartup<MongoDbStartup>();
+                result = HostUrls(hostHttps, httpsPort, httpPort, webHostBuilder);
             }
-            else if (options.ServiceType == "integration")
+            else if (serviceType == "jira")
             {
-                StartupBase.Urls = new List<string> { "https://127.0.0.1:555", "http://127.0.0.1:554" };
-
-                result = WebHost.CreateDefaultBuilder()
-                                .UseStartup<IntegrationStartup>()
-                                .UseUrls(StartupBase.Urls.ToArray())
-                                .ConfigureLogging(ConfigureLoggingAction)
-                                .Build();
+                webHostBuilder.UseStartup<JiraStartup>();
+                result = HostUrls(hostHttps, httpsPort, httpPort, webHostBuilder);
             }
-            else if (options.ServiceType == "ea")
+            else if (serviceType == "integration")
             {
-                StartupBase.Urls = new List<string> { "https://127.0.0.1:444", "http://127.0.0.1:443" };
-
-                result = WebHost.CreateDefaultBuilder()
-                                .UseStartup<EaStartup>()
-                                .UseUrls(StartupBase.Urls.ToArray())
-                                .ConfigureLogging(ConfigureLoggingAction)
-                                .Build();
+                webHostBuilder.UseStartup<IntegrationStartup>();
+                result = HostUrls(hostHttps, httpsPort, httpPort, webHostBuilder);
             }
-            else if (options.ServiceType == "file")
+            else if (serviceType == "ea")
             {
-                StartupBase.Urls = new List<string> { "https://127.0.0.1:666", "http://127.0.0.1:665" };
-
-                result = WebHost.CreateDefaultBuilder()
-                                .UseStartup<FileStartup>()
-                                .UseUrls(StartupBase.Urls.ToArray())
-                                .ConfigureLogging(ConfigureLoggingAction)
-                                .Build();
+                webHostBuilder.UseStartup<EaStartup>();
+                result = HostUrls(hostHttps, httpsPort, httpPort, webHostBuilder);
+            }
+            else if (serviceType == "file")
+            {
+                webHostBuilder.UseStartup<FileStartup>();
+                result = HostUrls(hostHttps, httpsPort, httpPort, webHostBuilder);
             }
 
             if (result != null)
@@ -138,15 +125,57 @@ namespace MDD4All.SpecIF.Microservice.Startup
                 ILogger<ServiceStarter> logger = result.Services.GetRequiredService<ILogger<ServiceStarter>>();
 
                 string urls = "";
+                bool httpsHostingActive = false;
 
                 foreach (string url in StartupBase.Urls)
                 {
                     urls += url + " ";
+
+                    if (url.Contains("https"))
+                    {
+                        httpsHostingActive = true;
+                    }
                 }
 
-                logger.LogInformation("Start SpecIF API [" + options.ServiceType + "] on " + urls);
+                logger.LogInformation("Start SpecIF API [" + serviceType + "] on " + urls);
+               
+                if (httpsHostingActive == false)
+                {
+                    logger.LogWarning("Hosting on http only. Use only in secure environment! See readme on how to use an SSL certificate.");
+                    Environment.SetEnvironmentVariable("httpsHosted", "false");
+
+                    if (String.IsNullOrEmpty(hostingCertificate) && hostHttps == true)
+                    {
+                        logger.LogWarning("SSL certificate not found. Check path and password. HTTPS deactivated. Environment variables: " +
+                                          "ASPNETCORE_Kestrel__Certificates__Default__Path  ASPNETCORE_Kestrel__Certificates__Default__Password ");
+                    }
+
+                }
             }
 
+            return result;
+        }
+
+        private IWebHost HostUrls(bool hostHttps, int portHttps, int portHttp, IWebHostBuilder webHostBuilder)
+        {
+            IWebHost result = null;
+
+            StartupBase.Urls = new List<string> { "https://*:" + portHttps, "http://+:" + portHttp };
+
+            if (!hostHttps)
+            {
+                StartupBase.Urls = new List<string> { "http://+:" + portHttp };
+                _logger.Warn("Warning: HTTPS connection deactivated. Not secure! Consider switching to https");
+            }
+
+
+            result = webHostBuilder.UseUrls(StartupBase.Urls.ToArray())
+                                   .UseKestrel()
+                                   .UseSetting("httpPort", portHttp.ToString())
+                                   .UseSetting("httpsPort", portHttps.ToString())
+                                   .ConfigureLogging(ConfigureLoggingAction)
+                                   .UseConfiguration(Configuration)
+                                   .Build();
             return result;
         }
 

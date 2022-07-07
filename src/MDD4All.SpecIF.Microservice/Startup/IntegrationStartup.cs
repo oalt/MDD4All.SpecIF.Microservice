@@ -34,11 +34,11 @@ namespace MDD4All.SpecIF.Microservice.Startup
             string dataSource = Configuration.GetValue<string>("dataSource");
 
             string dataConnection = "";
-            dataConnection = Environment.GetEnvironmentVariable("dataConnection");
-            if (dataConnection == "" || dataConnection == null)
-            {
+            //dataConnection = Environment.GetEnvironmentVariable("dataConnection");
+            //if (dataConnection == "" || dataConnection == null)
+            //{
                  dataConnection = Configuration.GetValue<string>("dataConnection");
-            }
+           // }
            
 
             if (!string.IsNullOrEmpty(dataSource) && !string.IsNullOrEmpty(dataConnection))

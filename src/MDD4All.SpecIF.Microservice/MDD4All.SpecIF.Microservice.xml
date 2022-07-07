@@ -1,0 +1,586 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MDD4All.SpecIF.Microservice</name>
+    </assembly>
+    <members>
+        <member name="T:MDD4All.SpecIF.Microservice.Controllers.AdministrationController">
+            <summary>
+            Unofficial administration endpoint for the SpecIF Microservice.
+            </summary>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.AdministrationController.#ctor(Microsoft.AspNetCore.Identity.IUserStore{MDD4All.SpecIF.DataModels.RightsManagement.ApplicationUser},Microsoft.AspNetCore.Identity.IUserRoleStore{MDD4All.SpecIF.DataModels.RightsManagement.ApplicationUser},MDD4All.SpecIF.DataProvider.Contracts.Authorization.IJwtConfigurationReader)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="userStore"></param>
+            <param name="roleStore"></param>
+            <param name="jwtConfigurationReader"></param>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.AdministrationController.GetJwtToken(MDD4All.SpecIF.DataModels.RightsManagement.LoginData)">
+            <summary>
+            Returns a Jwt token to access some SpecIF API endpoints.
+            </summary>
+            <param name="loginData">The user login data.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.AdministrationController.GetUsers">
+            <summary>
+            Returns the list of registered users.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.AdministrationController.AddUser(MDD4All.SpecIF.DataModels.RightsManagement.LoginData)">
+            <summary>
+            Adds a new user.
+            </summary>
+            <param name="user"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.AdministrationController.DeleteUser(System.String)">
+            <summary>
+            Deletes an existing user.
+            </summary>
+            <param name="userID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.AdministrationController.UpdateRoles(System.String,System.Collections.Generic.List{System.String})">
+            <summary>
+            Updates the roles of a user.
+            </summary>
+            <param name="id"></param>
+            <param name="roles"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.AdministrationController.ChangePassword(MDD4All.SpecIF.DataModels.RightsManagement.LoginData)">
+            <summary>
+            Changes password. This endpoint is usable by all authenticated users.
+            </summary>
+            <param name="userLogin"></param>
+            <returns></returns>
+        </member>
+        <member name="T:MDD4All.SpecIF.Microservice.Controllers.DataTypeController">
+            <summary>
+            The controller to manage Data Types.
+            </summary>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.DataTypeController.#ctor(MDD4All.SpecIF.DataProvider.Contracts.ISpecIfMetadataReader)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="metadataReader">The metadata reader.</param>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.DataTypeController.GetAllDataTypes">
+            <summary>
+            Returns all data types with all available revisions.
+            </summary>
+            <returns>A list of all available data types.</returns>
+            <response code="200">List of data types successfully returned.</response>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.DataTypeController.GetDataTypeById(System.String,System.String)">
+            <summary>
+            Returns a data type with the given ID. 
+            </summary>
+            <param name="id">The data type ID.</param>
+            <param name="revision">The data type revision ID.</param>
+            <returns>The data type or a not found code.</returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.DataTypeController.GetAllDatatypeRevisions(System.String)">
+            <summary>
+            Returns all data type revisions for the given ID.
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.DataTypeController.CreateDataType(MDD4All.SpecIF.DataModels.DataType)">
+            <summary>
+            Creates a data type.
+            </summary>
+            <param name="dataType">The data type to create.</param>
+            <returns>The updated data type element.</returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.DataTypeController.UpdateDataType(MDD4All.SpecIF.DataModels.DataType)">
+            <summary>
+            Updates the data type; the supplied ID must exist.
+            </summary>
+            <param name="dataType">The data type data.</param>
+            <returns>The updated data type element.</returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.DataTypeController.DeleteDataType(System.String,System.String,System.String)">
+            <summary>
+            Deletes the data type; the supplied ID must exist. 
+            Returns an error if there are dependant model elements. 
+            </summary>
+            <param name="id"></param>
+            <param name="revision"></param>
+            <param name="mode">Delete mode. ?mode=forced results in deleting all directly and indirectly dependant model elements.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.FileController.GetAllFiles(System.String)">
+            <summary>
+            Returns all file descriptions for all available files in all revisions.
+            </summary>
+            <param name="projectID">An optional project ID as filter.</param>
+            <returns>All file descriptions.</returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.FileController.GetFileById(System.String,System.String)">
+            <summary>
+            Returns a specific file.
+            </summary>
+            <param name="id"></param>
+            <param name="revision"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.FileController.GetAllFileRevisions(System.String)">
+            <summary>
+            Returns all available file revisions as SpecIF file descriptions.
+            </summary>
+            <param name="id">The file ID.</param>
+            <returns>All available file descriptions for all revisions with this file ID.</returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.FileController.CreateNewFile(Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            Creates a file; the supplied ID must be unique.
+            </summary>
+            <param name="file"></param>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.FileController.UpdateFile(Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            Updates the file; the supplied ID must exist.
+            </summary>
+            <param name="file"></param>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.FileController.DeleteFile(System.String,System.String)">
+            <summary>
+            Deletes the file; the supplied ID must exist. 
+            </summary>
+            <param name="id"></param>
+            <param name="revision"></param>
+        </member>
+        <member name="T:MDD4All.SpecIF.Microservice.Controllers.HealthController">
+            <summary>
+            Health Check for SpecIF Backend
+            </summary>
+        </member>
+        <member name="T:MDD4All.SpecIF.Microservice.Controllers.HierarchyController">
+            <summary>
+            Web API controller for hierarchy elements. 
+            </summary>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.HierarchyController.#ctor(MDD4All.SpecIF.DataProvider.Contracts.ISpecIfDataReader,MDD4All.SpecIF.DataProvider.Contracts.ISpecIfDataWriter)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="dataReader">The data reader.</param>
+            <param name="dataWriter">The data writer.</param>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.HierarchyController.GetAllHierarchies(System.String,System.Boolean)">
+            <summary>
+            Gets all hierarchies.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.HierarchyController.GetHierarchyById(System.String,System.String,System.Int32)">
+            <summary>
+            Gets a hierarchy with a specific ID.
+            </summary>
+            <param name="id">The hierarchy ID.</param>
+            <param name="revision">The hierarchy revision.</param>
+            <param name="depth">The maximum depth of child nodes to return. If not set the complete hierarchy depth is returned.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.HierarchyController.GetAllHierarchyRevisions(System.String,System.Int32)">
+            <summary>
+            Gets all revisions from a hierarchy with a specific ID.
+            </summary>
+            <param name="id">The hierarchy ID.</param>
+            <param name="depth">The maximum depth of child nodes to return. If not set the complete hierarchy depth is returned.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.HierarchyController.CreateNewHierarchy(MDD4All.SpecIF.DataModels.Node,System.String,System.String,System.String)">
+            <summary>
+            Creates a hierarchy (sub-tree) with supplied nodes; the supplied ID must be unique. 
+            If no ID is supplied, it is created before insertion. 
+            Query ?parent=nodeId - the sub-tree will be inserted as first child; 
+            query ?predecessor=nodeId - the sub-tree will be inserted after the specified node; 
+            no query - the sub-tree will be inserted as first element at root level. 
+            Without query string, the node (sub-tree) is inserted as first element at root level.
+            </summary>
+            <param name="node">The hierarchy data to add.</param>
+            <param name="parent">An optional parent node ID. The sub-tree will be inserted as first child.</param>
+            <param name="predecessor">An optional predecessor node ID. The sub-tree will be inserted after the specified node.</param>
+            <param name="projectId">The project ID. If the ID is given, the new hierarchy will be added to the specific project. 
+            Only useful for new hierarchies - no parent or predecessor given.
+            </param>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.HierarchyController.UpdateHierarchy(MDD4All.SpecIF.DataModels.Node,System.String,System.String)">
+            <summary>
+            Updates an existing hierarchy node.
+            The supplied ID must exist somewhere in any hierarchy. 
+            Query ?parent=nodeId - the sub-tree will be moved and inserted as first child; 
+            query ?predecessor=nodeId - the sub-tree will be moved and inserted after the specified node. 
+            Without query string, the node (sub-tree) is not moved.
+            </summary>
+            <param name="node"></param>
+            <param name="parent">An optional parent node ID. The sub-tree will be inserted as first child.</param>
+            <param name="predecessor">An optional predecessor node ID. The sub-tree will be inserted after the specified node.</param>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.HierarchyController.DeleteHierarchy(System.String,System.String)">
+            <summary>
+            Deletes a hierarchy.
+            </summary>
+            <param name="id"></param>
+            <param name="revision"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.ProjectController.GetAllProjects">
+            <summary>
+            Returns all projects; to limit the size only root properties are delivered.
+            </summary>
+            <returns>A list of project descriptions.</returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.ProjectController.GetProjectByID(System.String,System.String,System.Boolean)">
+            <summary>
+            Returns the project with the given ID.
+            </summary>
+            <param name="id">The project ID.</param>
+            <param name="hierarchyFilter">An optional comma seperated list of hierarchy root node IDs to limit the output of selected hierarchies.</param>
+            <param name="includeMetedata">Set to true if the metadata should be included (e.g. resource classes etc.)</param>
+            <returns>The project as SpecIF JSON.</returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.ProjectController.CreateNewProject(MDD4All.SpecIF.DataModels.SpecIF,System.String)">
+            <summary>
+            Creates a project with supplied elements; the supplied ID must be unique in the project scope. 
+            If no ID is supplied, it is created before insertion.
+            </summary>
+            <param name="specIF">The SpecIF data defining the project.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.ProjectController.UpdateProject(MDD4All.SpecIF.DataModels.SpecIF)">
+            <summary>
+            Updates a project with the given ID by including the data into an existing project. The project with the supplied ID must exist.
+            </summary>
+            <param name="value">The SpecIF data to include.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.ProjectController.DeleteProject(System.String)">
+            <summary>
+            Deletes a project with the given ID.
+            </summary>
+            <param name="id">The ID of the project to delete.</param>
+            <returns></returns>
+        </member>
+        <member name="T:MDD4All.SpecIF.Microservice.Controllers.PropertyClassController">
+            <summary>
+            API controller for SpecIF property classes.
+            </summary>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.PropertyClassController.#ctor(MDD4All.SpecIF.DataProvider.Contracts.ISpecIfMetadataReader)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="metadataReader"></param>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.PropertyClassController.GetAllPropertyClasses">
+            <summary>
+            Returns all property classes with all available revisions.
+            </summary>
+            <returns>All property classes as a list.</returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.PropertyClassController.GetPropertyClassById(System.String,System.String)">
+            <summary>
+            Returns the property class with the given ID. 
+            </summary>
+            <param name="id">The property class ID.</param>
+            <param name="revision">The property class revsion.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.PropertyClassController.GetAllPropertyClassRevisions(System.String)">
+            <summary>
+            Returns all property class revisions for the given ID.
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.PropertyClassController.CreatePropertyClass(MDD4All.SpecIF.DataModels.PropertyClass)">
+            <summary>
+            Creates a new property class.
+            </summary>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.PropertyClassController.UpdatePropertyClass(MDD4All.SpecIF.DataModels.PropertyClass)">
+            <summary>
+            Updates the property class; the supplied ID must exist.
+            </summary>
+            <param name="propertyClass">The property class data to update.</param>
+            <returns>The updated property class element.</returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.PropertyClassController.DeletePropertyClass(System.String,System.String,System.String)">
+            <summary>
+            Deletes the property class; the supplied ID must exist. 
+            Returns an error if there are dependant model elements. 
+            </summary>
+            <param name="id">The property class ID.</param>
+            <param name="revision">The property class revision.</param>
+            <param name="mode">Delete mode. ?mode=forced results in deleting all directly and indirectly dependant model elements.</param>
+            <returns></returns>
+        </member>
+        <member name="T:MDD4All.SpecIF.Microservice.Controllers.ResourceClassController">
+            <summary>
+            API controller for SpecIF resource classes.
+            </summary>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.ResourceClassController.#ctor(MDD4All.SpecIF.DataProvider.Contracts.ISpecIfMetadataReader,MDD4All.SpecIF.DataProvider.Contracts.ISpecIfMetadataWriter)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="metadataReader"></param>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.ResourceClassController.GetAllResourceClasses">
+            <summary>
+            Returns all resource classes with all available revisions.
+            </summary>
+            <returns>All statement classes as a list.</returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.ResourceClassController.GetResourceClassById(System.String,System.String)">
+            <summary>
+            Returns the resource class with the given ID. 
+            </summary>
+            <param name="id">The resource class ID.</param>
+            <param name="revision">The resource class revision.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.ResourceClassController.GetAllResourceClassRevisions(System.String)">
+            <summary>
+            Returns all resource class revisions for the given ID.
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.ResourceClassController.CreateResourceClass(MDD4All.SpecIF.DataModels.ResourceClass)">
+            <summary>
+            Creates a new resource class.
+            </summary>
+            <param name="resourceClass">The resource class data.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.ResourceClassController.UpdateResourceClass(MDD4All.SpecIF.DataModels.ResourceClass)">
+            <summary>
+            Updates a resource class.
+            The subjected ID must exist.
+            </summary>
+            <param name="resourceClass">The statement class data.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.ResourceClassController.DeleteResourceClass(System.String,System.String)">
+            <summary>
+            Deletes a resource class with the given ID.
+            </summary>
+            <param name="id">The resource class ID.</param>
+            <param name="revision">The revision ID.</param>
+        </member>
+        <member name="T:MDD4All.SpecIF.Microservice.Controllers.ResourceController">
+            <summary>
+            Controller to manage resource data.
+            </summary>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.ResourceController.#ctor(MDD4All.SpecIF.DataProvider.Contracts.ISpecIfDataReader,MDD4All.SpecIF.DataProvider.Contracts.ISpecIfDataWriter)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="specIfDataReader">The SpecIF data reader.</param>
+            <param name="specIfDataWriter">The SpecIF data writer.</param>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.ResourceController.GetAllResources(System.String)">
+            <summary>
+            Returns all resources with all available revisions.
+            </summary>
+            <param name="projectID">An optional project ID. The endpoint then returns only resources for the given project.</param>
+            <returns>The resource data.</returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.ResourceController.GetResourceById(System.String,System.String)">
+            <summary>
+            Returns the latest version of the resource with the given ID.
+            </summary>
+            <param name="id">The resource ID.</param>
+            <param name="revision">The resource revision.</param>
+            <returns>The resource data.</returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.ResourceController.GetAllResourceRevisions(System.String)">
+            <summary>
+            Returns a list of all revisions for the resource with the given ID.
+            </summary>
+            <param name="id">The resource ID.</param>
+            <returns>All available revisions for this resource.</returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.ResourceController.AddNewResource(MDD4All.SpecIF.DataModels.Resource,System.String)">
+            <summary>
+            Adds a new resource to the SpecIF repository.
+            </summary>
+            <description>The new resource is added as a new element with a specific revision 
+            and a specific branch, depended on the given information.
+            The new resource element is returned as response.</description>
+            <param name="resource">The resource data.</param>
+            <param name="projectID">The optional project ID. If a project ID is not given, the data is added to a default project.</param>
+            <returns>The resulting resource data element.</returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.ResourceController.UpdateResource(MDD4All.SpecIF.DataModels.Resource)">
+            <summary>
+            Updates a resource. The ID included in the resource data must exist.
+            </summary>
+            <param name="resource"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.ResourceController.DeleteResource(System.String,System.String,System.String)">
+            <summary>
+            Deletes the resource.
+            </summary>
+            <param name="id">The resource ID.</param>
+            <param name="revision">The resource revision.</param>
+            <param name="mode">?mode=forced results in deleting all directly and indirectly dependant model elements.</param>
+            <returns></returns>
+        </member>
+        <member name="T:MDD4All.SpecIF.Microservice.Controllers.StatementClassController">
+            <summary>
+            API controller for SpecIF statement classes.
+            </summary>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.StatementClassController.#ctor(MDD4All.SpecIF.DataProvider.Contracts.ISpecIfMetadataReader)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="metadataReader"></param>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.StatementClassController.GetAllStatementClasses">
+            <summary>
+            Returns all statement classes with all available revisions.
+            </summary>
+            <returns>All statement classes as a list.</returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.StatementClassController.GetStatementClassById(System.String,System.String)">
+            <summary>
+            Returns the statement class with the given ID and revision. 
+            </summary>
+            <param name="id">The statement class ID.</param>
+            <param name="revision">The statement class revision identifier.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.StatementClassController.GetAllStatementClassRevisions(System.String)">
+            <summary>
+            Returns all statement class revisions for the given ID.
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.StatementClassController.CreateStatementClass(MDD4All.SpecIF.DataModels.Resource)">
+            <summary>
+            Creates a new statement class.
+            </summary>
+            <param name="statementClass">The statement class data.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.StatementClassController.UpdateStatementClass(MDD4All.SpecIF.DataModels.Resource)">
+            <summary>
+            Updates a statement class.
+            The supplied ID must exist.
+            </summary>
+            <param name="statementClass">The statement class data.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.StatementClassController.DeleteStatementClass(System.String,System.String)">
+            <summary>
+            Deletes a statement class with the given ID.
+            </summary>
+            <param name="id">The statement class ID.</param>
+            <param name="revision">The statement revision ID.</param>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.StatementController.#ctor(MDD4All.SpecIF.DataProvider.Contracts.ISpecIfDataReader,MDD4All.SpecIF.DataProvider.Contracts.ISpecIfDataWriter)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="specIfDataReader"></param>
+            <param name="specIfDataWriter"></param>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.StatementController.GetAllStatements(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Returns all statements with all available revisions.
+            With the optional project ID only the statements for the project are returned.
+            </summary>
+            <param name="projectID">The optional project ID to filter statements by project.</param>
+            <param name="objectID">The optional object ID to filter statements only targeting the element with the given ID.</param>
+            <param name="objectRevision">An optional object revision. Only useful together with object ID.</param>
+            <param name="subjectID">The optional subject ID to filter statements only sourcing the element with the given ID.</param>
+            <param name="subjectRevision">An optional subject revision. Only useful together with subject ID.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.StatementController.GetStatementById(System.String,System.String)">
+            <summary>
+            Returns the statement with the given ID.
+            </summary>
+            <param name="id">The statement ID.</param>
+            <param name="revision">The statement revision.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.StatementController.GetAllStatementRevisions(System.String)">
+            <summary>
+            Returns all available revisions for the statement with the given ID.
+            </summary>
+            <param name="id">The statement ID.</param>
+            <returns>A list of statement revsions.</returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.StatementController.CreateNewStatement(MDD4All.SpecIF.DataModels.Statement)">
+            <summary>
+            Creates a statement; the supplied ID must be unique in the project scope.
+            </summary>
+            <param name="statement">The statement to create.</param>
+            <returns>The created statement data.</returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.StatementController.UpdateStatement(MDD4All.SpecIF.DataModels.Statement)">
+            <summary>
+            Updates a new statement. If a statement with the given ID is existant, a new revision is created automatically.
+            </summary>
+            <param name="statemenet">The statement to update.</param>
+            <returns>The created statement data (perhaps with modified revision data).</returns>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Controllers.StatementController.DeleteStatement(System.String,System.String,System.String)">
+            <summary>
+            Deletes the statement; the supplied ID must exist. Returns an error if there are dependant model elements.
+            </summary>
+            <param name="id"></param>
+            <param name="revision"></param>
+            <param name="mode">?mode=forced results in deleting all directly and indirectly dependant model elements.</param>
+            <returns></returns>
+        </member>
+        <member name="T:MDD4All.SpecIF.Microservice.Startup.MongoDB.AdminDbInitializer">
+            <summary>
+            Check if the 
+            </summary>
+        </member>
+        <member name="T:MDD4All.SpecIF.Microservice.Startup.StartupBase">
+            <summary>
+            Common abstract base class to start the SpecIF Microservice.
+            </summary>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Startup.StartupBase.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            
+             This method gets called by the runtime. Use this method to add services to the container.
+            
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Startup.StartupBase.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IHostingEnvironment,Microsoft.AspNetCore.Hosting.IApplicationLifetime)">
+            <summary>
+            This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            </summary>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Startup.StartupBase.ConfigureSecurityServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Configure security.
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="M:MDD4All.SpecIF.Microservice.Startup.StartupBase.ConfigureSpecIfDataServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Call this method to configure the data services (DataReader/Writer) for SpecIF data access.
+            </summary>
+            <param name="services"></param>
+        </member>
+    </members>
+</doc>
