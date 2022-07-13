@@ -18,8 +18,8 @@ namespace MDD4All.SpecIF.Microservice.Controllers
     [ApiController]
     public class ResourceController : Controller
     {
-		private ISpecIfDataReader _specIfDataReader;
-		private ISpecIfDataWriter _specIfDataWriter;
+        private ISpecIfDataReader _specIfDataReader;
+        private ISpecIfDataWriter _specIfDataWriter;
 
         /// <summary>
         /// Constructor.
@@ -27,11 +27,11 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         /// <param name="specIfDataReader">The SpecIF data reader.</param>
         /// <param name="specIfDataWriter">The SpecIF data writer.</param>
 		public ResourceController(ISpecIfDataReader specIfDataReader,
-								  ISpecIfDataWriter specIfDataWriter)
-		{
-			_specIfDataReader = specIfDataReader;
-			_specIfDataWriter = specIfDataWriter;
-		}
+                                  ISpecIfDataWriter specIfDataWriter)
+        {
+            _specIfDataReader = specIfDataReader;
+            _specIfDataWriter = specIfDataWriter;
+        }
 
         /// <summary>
         /// Returns all resources with all available revisions.
@@ -41,7 +41,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         [HttpGet()]
         [ProducesResponseType(typeof(List<Resource>), 200)]
         [Authorize(Policy = "unregisteredReader")]
-        public ActionResult<List<Resource>> GetAllResources([FromQuery]string projectID)
+        public ActionResult<List<Resource>> GetAllResources([FromQuery] string projectID)
         {
             return new List<Resource>();
         }
@@ -55,21 +55,24 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Resource), 200)]
         [Authorize(Policy = "unregisteredReader")]
-        public ActionResult<Resource> GetResourceById(string id, [FromQuery]string revision)
-		{
+        public ActionResult<Resource> GetResourceById(string id, [FromQuery] string revision)
+        {
             ActionResult result = NotFound();
 
             if (!string.IsNullOrEmpty(id))
             {
+                Key key = new Key(id);
+
                 if (!string.IsNullOrEmpty(revision))
                 {
                     string rev = revision.Replace("%2F", "/");
-                    
-                    Resource resource = _specIfDataReader.GetResourceByKey(new Key() { ID = id, Revision = rev });
-                    if (resource != null)
-                    {
-                        result = new ObjectResult(resource);
-                    }
+
+                    key.Revision = rev;
+                }
+                Resource resource = _specIfDataReader.GetResourceByKey(key);
+                if (resource != null)
+                {
+                    result = new ObjectResult(resource);
                 }
                 else
                 {
@@ -123,11 +126,11 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         [Authorize(Roles = "Editor")]
         [HttpPost]
         [ProducesResponseType(typeof(Resource), 201)]
-        public ActionResult<Resource> AddNewResource([FromBody]Resource resource, [FromQuery]string projectID)
+        public ActionResult<Resource> AddNewResource([FromBody] Resource resource, [FromQuery] string projectID)
         {
-			ActionResult<Resource> result = _specIfDataWriter.SaveResource(resource, projectID);
+            ActionResult<Resource> result = _specIfDataWriter.SaveResource(resource, projectID);
 
-            if(result == null)
+            if (result == null)
             {
                 result = new BadRequestResult();
             }
@@ -143,7 +146,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         [Authorize(Roles = "Editor")]
         [HttpPut]
         [ProducesResponseType(typeof(Resource), 201)]
-        public ActionResult<Resource> UpdateResource([FromBody]Resource resource)
+        public ActionResult<Resource> UpdateResource([FromBody] Resource resource)
         {
             ActionResult<Resource> result = _specIfDataWriter.UpdateResource(resource);
 
@@ -164,12 +167,12 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         /// <returns></returns>
         [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]
-        public ActionResult DeleteResource(string id, [FromQuery]string revision, [FromQuery]string mode)
+        public ActionResult DeleteResource(string id, [FromQuery] string revision, [FromQuery] string mode)
         {
             ActionResult result = NotFound();
 
             return result;
         }
 
-	}
+    }
 }
