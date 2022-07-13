@@ -83,3 +83,9 @@
 	path = src/MDD4All.Excel.DataAccess
 	url = https://github.com/oalt/MDD4All.Excel.DataAccess.git
 	branch = main
+[submodule "src/MDD4All.SpecIF.Generators.Terms"]
+	path = src/MDD4All.SpecIF.Generators.Terms
+	url = https://github.com/oalt/MDD4All.SpecIF.Generators.Terms.git
+[submodule "src/MDD4All.MongoDB.DataAccess.Generic"]
+	path = src/MDD4All.MongoDB.DataAccess.Generic
+	url = https://github.com/oalt/MDD4All.MongoDB.DataAccess.Generic.git
