@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SOLUTION_NAME: SpecIF_Backend-dev.sln 
-      DOCKER_IMAGE_NAME: nicholas-mc/specif_backend 
+      DOCKER_IMAGE_NAME: oalt/specif_backend 
       
     steps:      
     - name: Checkout repository and submodules
@@ -47,11 +47,9 @@ jobs:
       uses: docker/login-action@v1
       with: 
         registry: ghcr.io
-        username: ${{ secrets.DOCKERHUB_USER }}
-        password: ${{ secrets.DOCKERHUB_PASS }}
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_TOKEN }}
         
-     
-    
     - name: push Docker
       run: docker push ghcr.io/${DOCKER_IMAGE_NAME}:$VERSION    
      
