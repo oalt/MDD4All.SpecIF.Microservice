@@ -1,6 +1,7 @@
 ﻿/*
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
+using MDD4All.SpecIF.Microservice.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MDD4All.SpecIF.Microservice.Controllers
@@ -9,7 +10,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            return View(new BaseViewModel());
         }
     }
 }

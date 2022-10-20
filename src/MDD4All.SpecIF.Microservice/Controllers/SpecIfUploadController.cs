@@ -1,4 +1,5 @@
 ﻿using MDD4All.SpecIF.DataProvider.Contracts;
+using MDD4All.SpecIF.Microservice.Models;
 using MDD4All.SpecIF.ViewModels.IntegrationService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -58,7 +59,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         [HttpGet()]
         public IActionResult Index()
         {
-            return View();
+            return View(new BaseViewModel());
         }
 
         [HttpPost]
