@@ -1,24 +1,11 @@
 ﻿/*
  * Copyright (c) MDD4All.de, Dr. Oliver Alt
  */
-using MDD4All.SpecIF.Microservice.RightsManagement;
-using MDD4All.SpecIF.DataModels.RightsManagement;
-using MDD4All.SpecIF.DataProvider.Contracts;
-using MDD4All.SpecIF.DataProvider.Contracts.Authorization;
 using MDD4All.SpecIF.DataProvider.File;
-using MDD4All.SpecIF.DataProvider.MongoDB.Authorization;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MDD4All.SpecIF.DataProvider.Contracts;
 
 namespace MDD4All.SpecIF.Microservice.Startup
 {
@@ -85,16 +72,17 @@ namespace MDD4All.SpecIF.Microservice.Startup
 
                 ISpecIfMetadataReader metadataReader = new SpecIfFileMetadataReader(fileMetadataRootPath);
 
+                ISpecIfMetadataWriter metadataWriter = new SpecIfFileMetadataWriter();
                 
                 ISpecIfDataReader dataReader = new SpecIfFileDataReader(fileDataRootPath);
 
                 ISpecIfDataWriter dataWriter = new SpecIfFileDataWriter(fileDataRootPath, metadataReader, dataReader);
 
-                services.AddScoped<ISpecIfMetadataReader>(dataProvider => metadataReader);
+                services.AddSingleton<ISpecIfMetadataReader>(dataProvider => metadataReader);
 
-                //services.AddScoped<ISpecIfMetadataWriter>(dataProvider => );
+                services.AddSingleton<ISpecIfMetadataWriter>(dataProvider => metadataWriter);
 
-                services.AddScoped<ISpecIfDataReader>(dataProvider => dataReader);
+                services.AddSingleton<ISpecIfDataReader>(dataProvider => dataReader);
 
                 services.AddScoped<ISpecIfDataWriter>(dataProvider => dataWriter);
 

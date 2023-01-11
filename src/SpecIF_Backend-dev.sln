@@ -107,6 +107,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.MongoDB.DataAccess.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.Jira.DataModels-dev", "MDD4All.Jira.DataModels\src\MDD4All.Jira.DataModels\MDD4All.Jira.DataModels-dev.csproj", "{F4AAC2B4-6288-4CC7-BBAC-0495ECDEC069}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDD4All.SpecIF.DataProvider.Base-dev", "MDD4All.SpecIF.DataProvider.Base\src\MDD4All.SpecIF.DataProvider.Base\MDD4All.SpecIF.DataProvider.Base-dev.csproj", "{D3072DAC-F679-4B96-B76F-F233B44935EC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -379,6 +381,14 @@ Global
 		{F4AAC2B4-6288-4CC7-BBAC-0495ECDEC069}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F4AAC2B4-6288-4CC7-BBAC-0495ECDEC069}.Release|x86.ActiveCfg = Release|Any CPU
 		{F4AAC2B4-6288-4CC7-BBAC-0495ECDEC069}.Release|x86.Build.0 = Release|Any CPU
+		{D3072DAC-F679-4B96-B76F-F233B44935EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3072DAC-F679-4B96-B76F-F233B44935EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3072DAC-F679-4B96-B76F-F233B44935EC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D3072DAC-F679-4B96-B76F-F233B44935EC}.Debug|x86.Build.0 = Debug|Any CPU
+		{D3072DAC-F679-4B96-B76F-F233B44935EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3072DAC-F679-4B96-B76F-F233B44935EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3072DAC-F679-4B96-B76F-F233B44935EC}.Release|x86.ActiveCfg = Release|Any CPU
+		{D3072DAC-F679-4B96-B76F-F233B44935EC}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -422,6 +432,7 @@ Global
 		{0352527A-13AA-489F-A56B-1197156182AC} = {7D0FA414-B3D2-4264-A91F-EAA551CA5A5D}
 		{1DA24F0F-E74D-4802-B269-4A6C6DE336D1} = {510CDA2A-99A0-4003-9F18-D255DAC52333}
 		{F4AAC2B4-6288-4CC7-BBAC-0495ECDEC069} = {B5974E23-6F5A-4D50-AE40-B5A8F74F950C}
+		{D3072DAC-F679-4B96-B76F-F233B44935EC} = {7DC60D00-FA4B-4C26-B32F-25D27611923A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C8F9327E-C222-4E00-A62F-20527B230190}
