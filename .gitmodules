@@ -89,3 +89,6 @@
 [submodule "src/MDD4All.MongoDB.DataAccess.Generic"]
 	path = src/MDD4All.MongoDB.DataAccess.Generic
 	url = https://github.com/oalt/MDD4All.MongoDB.DataAccess.Generic.git
+[submodule "src/MDD4All.SpecIF.DataProvider.Base"]
+	path = src/MDD4All.SpecIF.DataProvider.Base
+	url = https://github.com/oalt/MDD4All.SpecIF.DataProvider.Base.git
