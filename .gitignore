@@ -349,3 +349,4 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 src/MDD4All.SpecIF.Microservice/MDD4All.SpecIf.Microservice.xml
+MDD4All.SpecIF.Microservice.xml
