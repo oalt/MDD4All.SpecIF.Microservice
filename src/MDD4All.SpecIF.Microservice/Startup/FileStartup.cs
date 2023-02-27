@@ -72,7 +72,7 @@ namespace MDD4All.SpecIF.Microservice.Startup
 
                 ISpecIfMetadataReader metadataReader = new SpecIfFileMetadataReader(fileMetadataRootPath);
 
-                ISpecIfMetadataWriter metadataWriter = new SpecIfFileMetadataWriter();
+                ISpecIfMetadataWriter metadataWriter = new SpecIfFileMetadataWriter(fileMetadataRootPath);
                 
                 ISpecIfDataReader dataReader = new SpecIfFileDataReader(fileDataRootPath);
 
