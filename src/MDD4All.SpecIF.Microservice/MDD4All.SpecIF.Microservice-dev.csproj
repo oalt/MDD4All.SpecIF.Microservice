@@ -35,7 +35,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="5.6.3" />
     <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="5.6.3" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.8.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.34.0" />
   </ItemGroup>
 
 
@@ -47,9 +47,9 @@
         <ProjectReference Include="$(SolutionDir)\MDD4All.SpecIF.DataProvider.Integration\src\MDD4All.SpecIF.DataProvvider.Integration\MDD4All.SpecIF.DataProvider.Integration-dev.csproj" />
         <ProjectReference Include="$(SolutionDir)\MDD4All.SpecIF.DataProvider.Jira\src\MDD4All.SpecIF.DataProvider.Jira\MDD4All.SpecIF.DataProvider.Jira-dev.csproj" />
         <ProjectReference Include="$(SolutionDir)\MDD4All.SpecIF.DataProvider.MongoDB\src\MDD4All.SpecIF.DataProvider.MongoDB\MDD4All.SpecIF.DataProvider.MongoDB-dev.csproj" />
-        <ProjectReference Include="$(SolutionDir)\MDD4All.SpecIF.DataProvider.WebAPI\src\MDD4All.SpecIF.DataProvvider.WebAPI\MDD4All.SpecIF.DataProvider.WebAPI-dev.csproj" />
         <ProjectReference Include="$(SolutionDir)\MDD4All.SpecIF.ViewModels.IntegrationService\src\MDD4All.SpecIF.ViewModels.IntegrationService\MDD4All.SpecIF.ViewModels.IntegrationService-dev.csproj" />
         <ProjectReference Include="$(SolutionDir)\MDD4All.SpecIF.ViewModels.SpecIfEvent\src\MDD4All.SpecIF.ViewModels.SpecIfEvent\MDD4All.SpecIF.ViewModels.SpecIfEvent-dev.csproj" />
+        <ProjectReference Include="..\..\..\MDD4All.SpecIF.DataProvider.WebAPI\src\MDD4All.SpecIF.DataProvider.WebAPI\MDD4All.SpecIF.DataProvider.WebAPI-dev.csproj" />
     </ItemGroup>
     <ItemGroup>
         <Reference Include="Interop.EA">
