@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MDD4All.SpecIF.DataProvider.Contracts;
+using MDD4All.SpecIF.DataModels;
 
 namespace MDD4All.SpecIF.Microservice.Startup
 {
@@ -70,13 +71,13 @@ namespace MDD4All.SpecIF.Microservice.Startup
 
                 string fileDataRootPath = Configuration.GetValue<string>("FileDataRootPath");
 
-                ISpecIfMetadataReader metadataReader = new SpecIfFileMetadataReader(fileMetadataRootPath);
+                ISpecIfMetadataReader metadataReader = new SpecIfFileMetadataReader<ExtendedSpecIF>(fileMetadataRootPath);
 
                 ISpecIfMetadataWriter metadataWriter = new SpecIfFileMetadataWriter(fileMetadataRootPath);
                 
-                ISpecIfDataReader dataReader = new SpecIfFileDataReader(fileDataRootPath);
+                ISpecIfDataReader dataReader = new SpecIfFileDataReader<ExtendedSpecIF>(fileDataRootPath);
 
-                ISpecIfDataWriter dataWriter = new SpecIfFileDataWriter(fileDataRootPath, metadataReader, dataReader);
+                ISpecIfDataWriter dataWriter = new SpecIfFileDataWriter<ExtendedSpecIF>(fileDataRootPath, metadataReader, dataReader);
 
                 services.AddSingleton<ISpecIfMetadataReader>(dataProvider => metadataReader);
 

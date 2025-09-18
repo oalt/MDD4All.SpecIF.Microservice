@@ -190,7 +190,7 @@ namespace MDD4All.SpecIF.Microservice.Controllers
         {
             ActionResult result = Ok();
 
-            _dataWriter.DeleteNode(id);
+            _dataWriter.DeleteNode(id, null);
 
             return result;
         }

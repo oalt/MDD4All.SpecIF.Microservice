@@ -50,13 +50,6 @@
         <ProjectReference Include="$(SolutionDir)\MDD4All.SpecIF.ViewModels.SpecIfEvent\src\MDD4All.SpecIF.ViewModels.SpecIfEvent\MDD4All.SpecIF.ViewModels.SpecIfEvent-dev.csproj" />
         <ProjectReference Include="..\..\..\MDD4All.SpecIF.DataProvider.WebAPI\src\MDD4All.SpecIF.DataProvider.WebAPI\MDD4All.SpecIF.DataProvider.WebAPI-dev.csproj" />
     </ItemGroup>
-    <ItemGroup>
-        <Reference Include="Interop.EA">
-          <HintPath>..\libs\Interop.EA.dll</HintPath>
-          <EmbedInteropTypes>false</EmbedInteropTypes>
-          <Private>true</Private>
-        </Reference>
-    </ItemGroup>
 
     <ItemGroup>
         <None Include="wwwroot\*" />
@@ -68,6 +61,13 @@
 
     <ItemGroup>
       <None Include="Scripts\tsconfig.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Interop.EA">
+        <HintPath>..\..\..\libs\Interop.EA.dll</HintPath>
+        <EmbedInteropTypes>False</EmbedInteropTypes>
+      </Reference>
     </ItemGroup>
 
     <ItemGroup>
